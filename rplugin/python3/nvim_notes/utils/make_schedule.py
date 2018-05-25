@@ -1,4 +1,4 @@
-from google_cal_integration import get_events_for_day
+from .google_cal_integration import get_events_for_day
 from dateutil import parser
 
 DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
