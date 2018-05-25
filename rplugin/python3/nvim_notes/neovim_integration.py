@@ -9,12 +9,9 @@ class NotesPlugin(object):
 
     @neovim.autocmd('BufNewFile', pattern='*.md')
     def on_new_file(self):
-        schedule_today = make_markdown_file.produce_daily_schedule()
-        self.nvim.current.buffer.append(schedule_today)
-
-    @neovim.function('TestFunction', sync=True)
-    def testfunction(self, args):
-        return 3
+        schedule_today = produce_daily_schedule()
+        buffer_number = self.nvim.buffer.number
+        self.nvim.api.buf_set_lines(buffer_number, 0, -1, true, schedule_today)
 
     @neovim.command('GenerateSchedule')
     def testcommand(self):
