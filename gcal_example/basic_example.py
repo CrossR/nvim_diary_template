@@ -121,12 +121,18 @@ def format_events(events_list):
     return filtered_events
 
 
-def run_test():
+def get_events_for_day():
+    """get_events_for_day
+
+    A wrapper function to call the functions required to get all events
+    for the current day.
+    """
     calendar_service = setup_google_calendar_api()
     user_calendars = get_user_calendars(calendar_service)
     todays_events = get_events_for_timeframe(calendar_service, user_calendars)
-    print(todays_events)
+
+    return todays_events
 
 
 if __name__ == '__main__':
-    run_test()
+    get_events_for_day()
