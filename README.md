@@ -1,2 +1,3 @@
-# nvim-notes
-Test repo for a notes plugin for Nvim (with Oni)
+# nvim_notes
+
+Test repo for a notes plugin for Nvim.

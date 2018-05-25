@@ -108,4 +108,4 @@ venv.bak/
 
 # Ignore JSON files incase there is any
 # credentials here.
-/rplugin/python3/nvim-notes/*.json
+/rplugin/python3/nvim_notes/*.json
