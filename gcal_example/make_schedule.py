@@ -25,7 +25,7 @@ def format_events_line(event):
     Given an event, will produce a formatted line for that event.
     """
 
-    # TODO: Make the format string here into a config option.
+    # TODO: Make the format strings here into a config option.
     start_time = get_time(event['start_time']).strftime("%d/%m/%Y %H:%M")
     end_time = get_time(event['end_time']).strftime("%d/%m/%Y %H:%M")
     event_name = event['event_name']
