@@ -3,7 +3,7 @@ from .make_schedule import make_schedule
 # TODO: Plug this in as a config option
 HEADINGS = ['Notes', 'Issues', 'ToDo']
 
-def produce_daily_markdown(headings):
+def produce_daily_markdown(headings=HEADINGS):
     full_markdown_file = []
 
     for heading in headings:
