@@ -106,6 +106,6 @@ venv.bak/
 # Ignore VS Code files
 /.vscode/**
 
-# Ignore GCal JSON files as this
-# incase there is any credentials here.
-/gcal_example/*.json
+# Ignore JSON files incase there is any
+# credentials here.
+/rplugin/python3/oni-notes/*.json
