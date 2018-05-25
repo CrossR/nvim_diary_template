@@ -1,5 +1,5 @@
 import neovim
-from make_markdown_file import make_schedule
+from utils.make_markdown_file import make_schedule
 
 @neovim.plugin
 class NotesPlugin(object):
