@@ -102,3 +102,10 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# Ignore VS Code files
+/.vscode/**
+
+# Ignore GCal JSON files as this
+# incase there is any credentials here.
+/gcal_example/*.json
