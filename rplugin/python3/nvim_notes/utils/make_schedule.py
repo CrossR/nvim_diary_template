@@ -1,5 +1,8 @@
-from .google_cal_integration import get_events_for_day
+from os import path
+
 from dateutil import parser
+
+from .google_cal_integration import get_events_for_day
 
 DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
 
@@ -52,18 +55,13 @@ def produce_schedule_markdown(event_list):
     
     return markdown_lines
 
-def make_schedule():
+def make_schedule(options):
     """make_schedule
 
     A wrapper function to make a schedule for the current day.
     """
 
-    todays_events = get_events_for_day()
+    todays_events = get_events_for_day(options)
     markdown = produce_schedule_markdown(todays_events)
 
     return markdown
-
-
-if __name__ == '__main__':
-    make_schedule()
-
