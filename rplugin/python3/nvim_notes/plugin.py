@@ -45,7 +45,7 @@ class NotesPlugin(object):
     @neovim.command('GenerateSchedule')
     # @if_active
     def generate_schedule_markdown(self):
-        self._nvim.write_out(self._options)
+        self._nvim.out_write(self._options)
         schedule_today = produce_daily_markdown(self._options)
         self._nvim.current.buffer.append(schedule_today)
 
