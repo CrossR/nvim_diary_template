@@ -12,7 +12,7 @@ def if_active(function):
     """if_active
 
     A decorator for a function, such that it is only run when
-    nvim-notes is ready.
+    nvim_notes is ready.
 
     Taken from numirias/semshi
     """
@@ -43,8 +43,9 @@ class NotesPlugin(object):
         self._nvim.api.buf_set_lines(buffer_number, 0, -1, True, schedule_today)
 
     @neovim.command('GenerateSchedule')
-    @if_active
-    def testcommand(self):
+    # @if_active
+    def generate_schedule_markdown(self):
+        self._nvim.write_out(self._options)
         schedule_today = produce_daily_markdown(self._options)
         self._nvim.current.buffer.append(schedule_today)
 
