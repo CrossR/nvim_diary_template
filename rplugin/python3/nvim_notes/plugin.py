@@ -45,7 +45,6 @@ class NotesPlugin(object):
     @neovim.command('GenerateSchedule')
     # @if_active
     def generate_schedule_markdown(self):
-        self._nvim.out_write(self._options)
         schedule_today = produce_daily_markdown(self._options)
         self._nvim.current.buffer.append(schedule_today)
 
@@ -61,10 +60,4 @@ class PluginOptions:
             value = nvim.vars.get(f"nvim_notes#{key}", default_value)
             nvim.vars[f"nvim_notes#{key}"] = value
 
-            try:
-                converter = getattr(PluginOptions, f"_convert_{key}")
-            except AttributeError:
-                pass
-            else:
-                val = converter(value)
-            setattr(self, key, val)
+            setattr(self, key, value)
