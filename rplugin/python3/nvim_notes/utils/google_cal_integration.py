@@ -134,7 +134,7 @@ def get_events_for_day(options):
     A wrapper function to call the functions required to get all events
     for the current day.
     """
-    google_calendar = SimpleGoogleCal(options['credentials_path'])
+    google_calendar = SimpleGoogleCal(options.credentials_path)
     user_calendars = google_calendar.get_user_calendars()
     todays_events = google_calendar.get_events_for_timeframe(user_calendars)
 
