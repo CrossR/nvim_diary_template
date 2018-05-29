@@ -5,13 +5,15 @@ from os import path
 from httplib2 import Http
 from oauth2client import client, file, tools
 
-FILTER_LIST = []
 SCOPES = 'https://www.googleapis.com/auth/calendar.readonly'
 
 class SimpleGoogleCal():
 
-    def __init__(self, credentials_path):
-        self.service = self.setup_google_calendar_api(credentials_path)
+    def __init__(self, options):
+        self.service = self.setup_google_calendar_api(options.credentials_path)
+        self.filter_list = options.calendar_filter_list
+        self.all_calendars = self.get_all_calendars()
+        self.filtered_calendars = self.filter_calendars()
 
     def setup_google_calendar_api(self, credentials_path):
         """setup_google_calendar_api
@@ -34,21 +36,19 @@ class SimpleGoogleCal():
         return service
 
 
-    def filter_user_calendars(self, calender_list):
-        """filter_user_calendars
+    def filter_calendars(self):
+        """filter_calendars
 
-        Given a list of all calendars, will remove the ones that events should
-        be ignored from.
+        Filters the calendars to only those the user cares about.
         """
 
-        # TODO: Plumb through an actual filter list.
-        return [cal for cal in calender_list if cal not in FILTER_LIST]
+        return [cal for cal in self.all_calendars if cal not in self.filter_list]
 
-    def get_user_calendars(self):
-        """get_user_calendars
+    def get_all_calendars(self):
+        """get_all_calendars
 
-        Returns a list of user calendars, that has been filtered to only include
-        those the user cares about.
+        Returns a list of all the users calendars, which will include ones that
+        are in the exclude list.
         """
 
         page_token = None
@@ -62,19 +62,16 @@ class SimpleGoogleCal():
                 'id': calendar_list_entry['id']
             })
 
-        filtered_user_calendars = self.filter_user_calendars(all_calendars)
-
-        return filtered_user_calendars
+        return all_calendars
 
     def get_events_for_timeframe(self,
-                                 calendar_list,
                                  start_date=None,
                                  end_date=None):
         """get_events_for_timeframe
 
-        Gets all the events for a given period, for the calendars provided.
-        Both the start and end date must be provided, else it will default to
-        getting for the current day only.
+        Gets all the events for a given period, from the filtered users
+        calendars. Both the start and end date must be provided, else it will
+        default to getting for the current day only.
 
         Events are brought in from 00:00 on the first day, to 23:59 on the
         last day.
@@ -91,7 +88,7 @@ class SimpleGoogleCal():
         page_token = None
         events_in_timeframe = []
 
-        for calendar_id in [d['id'] for d in calendar_list]:
+        for calendar_id in [d['id'] for d in self.filtered_calendars]:
             events = self.service.events().list(
                 calendarId=calendar_id,
                 pageToken=page_token,
@@ -134,8 +131,7 @@ def get_events_for_day(options):
     A wrapper function to call the functions required to get all events
     for the current day.
     """
-    google_calendar = SimpleGoogleCal(options.credentials_path)
-    user_calendars = google_calendar.get_user_calendars()
-    todays_events = google_calendar.get_events_for_timeframe(user_calendars)
+    google_calendar = SimpleGoogleCal(options)
+    todays_events = google_calendar.get_events_for_timeframe()
 
     return todays_events

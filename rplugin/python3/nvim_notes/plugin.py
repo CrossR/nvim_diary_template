@@ -52,7 +52,9 @@ class PluginOptions:
 
     _defaults = {
         'active': True,
-        'credentials_path': ''
+        'credentials_path': '',
+        'headings': ['Notes', 'Issues', 'ToDo'],
+        'calendar_filter_list': []
     }
 
     def __init__(self, nvim):

@@ -52,7 +52,7 @@ def produce_schedule_markdown(event_list):
     for event in event_list:
         current_schedule_line = format_events_line(event)
         markdown_lines.append(current_schedule_line)
-    
+
     return markdown_lines
 
 def make_schedule(options):
