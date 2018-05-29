@@ -84,16 +84,20 @@ class SimpleGoogleCal():
         to the API when needed.
         """
         cache_file_pattern = f"cache/nvim_notes_cache_*.json"
-        cache_file_name = glob.glob(cache_file_pattern)[0]
 
-        epoch = cache_file_name.split("_")[3] \
-                               .split(".")[0]
+        try:
+            cache_file_name = glob.glob(cache_file_pattern)[0]
 
-        cache_file_creation_date = datetime.fromtimestamp(int(epoch))
-        today = datetime.today()
-        differece = today - cache_file_creation_date
+            epoch = cache_file_name.split("_")[3] \
+                                   .split(".")[0]
 
-        if differece.days <= CALENDAR_CACHE_DURATION:
+            cache_file_creation_date = datetime.fromtimestamp(int(epoch))
+            today = datetime.today()
+            differece = today - cache_file_creation_date
+        except IndexError:
+            cache_file_error = True
+
+        if differece.days <= CALENDAR_CACHE_DURATION and not cache_file_error:
             with open(cache_file_name) as cache_file:
                 self.all_calendars = json.load(cache_file)
         else:
