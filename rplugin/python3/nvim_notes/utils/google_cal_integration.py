@@ -167,7 +167,7 @@ class SimpleGoogleCal():
         events_today = self.get_events_for_timeframe()
 
         missing_events = [
-            event for event in markdown_events if event is not in events_today
+            event for event in markdown_events if event not in events_today
         ]
 
         for event_string in missing_events:
