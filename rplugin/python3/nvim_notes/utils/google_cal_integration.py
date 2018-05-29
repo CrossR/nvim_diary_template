@@ -1,3 +1,7 @@
+import json
+import time as t
+import glob
+
 from datetime import date, datetime, time
 
 from apiclient.discovery import build
@@ -5,13 +9,16 @@ from os import path
 from httplib2 import Http
 from oauth2client import client, file, tools
 
+
+CALENDAR_CACHE_DURATION = 31
+
+
 class SimpleGoogleCal():
 
     def __init__(self, options):
         self.service = self.setup_google_calendar_api(options.credentials_path)
         self.filter_list = options.calendar_filter_list
-        self.all_calendars = self.get_all_calendars()
-        self.filtered_calendars = self.filter_calendars()
+        self.load_calendars()
 
     def setup_google_calendar_api(self, credentials_path):
         """setup_google_calendar_api
@@ -60,6 +67,41 @@ class SimpleGoogleCal():
             })
 
         return all_calendars
+
+    def store_calendars(self):
+        """store_calendars
+
+        Store calendars to a cache file to skip API call.
+        """
+        cache_file_name = f"cache/nvim_notes_cache_{int(t.time())}.json"
+        with open(cache_file_name, 'w') as cache_file:
+            json.dump(self.all_calendars, cache_file)
+
+    def load_calendars(self):
+        """load_calendars
+
+        When possible, load the calendars from the cache, but default
+        to the API when needed.
+        """
+        cache_file_pattern = f"cache/nvim_notes_cache_*.json"
+        cache_file_name = glob.glob(cache_file_pattern)[0]
+
+        epoch = cache_file_name.split("_")[3]
+                               .split(".")[0]
+
+        cache_file_creation_date = datetime.fromtimestamp(int(epoch))
+        today = datetime.today()
+        differece = today - cache_file_creation_date
+
+        if differece.days <= CALENDAR_CACHE_DURATION:
+            with open(cache_file_name) as cache_file:
+                self.all_calendars = json.load(cache_file)
+        else:
+            self.all_calendars = self.get_all_calendars()
+            self.store_calendars()
+
+        self.filtered_calendars = self.filter_calendars()
+
 
     def get_events_for_timeframe(self,
                                  start_date=None,
@@ -120,6 +162,19 @@ class SimpleGoogleCal():
             filtered_events.append(event_dict)
 
         return filtered_events
+
+    def compare_events(markdown_events):
+        events_today = self.get_events_for_timeframe()
+
+        missing_events = [
+            event for event in markdown_events if event is not in events_today
+        ]
+
+        for event_string in missing_events:
+            self.service.event.quickAdd(
+                calendarId=calendar_id,
+                text=event_string
+            )
 
 
 def get_events_for_day(options):
