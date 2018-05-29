@@ -60,6 +60,7 @@ class PluginOptions:
         'active': True,
         'credentials_path': '',
         'headings': ['Notes', 'Issues', 'ToDo'],
+        'use_google_calendar': True,
         'calendar_filter_list': []
     }
 

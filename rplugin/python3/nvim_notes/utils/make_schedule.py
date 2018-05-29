@@ -61,7 +61,11 @@ def make_schedule(options):
     A wrapper function to make a schedule for the current day.
     """
 
-    todays_events = get_events_for_day(options)
+    todays_events = []
+
+    if options.use_google_calendar:
+        todays_events.extend(get_events_for_day(options))
+
     markdown = produce_schedule_markdown(todays_events)
 
     return markdown
