@@ -86,7 +86,7 @@ class SimpleGoogleCal():
         cache_file_pattern = f"cache/nvim_notes_cache_*.json"
         cache_file_name = glob.glob(cache_file_pattern)[0]
 
-        epoch = cache_file_name.split("_")[3]
+        epoch = cache_file_name.split("_")[3] \
                                .split(".")[0]
 
         cache_file_creation_date = datetime.fromtimestamp(int(epoch))
