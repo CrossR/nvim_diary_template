@@ -26,10 +26,9 @@ class SimpleGoogleCal():
         creds = store.get()
 
         if not creds or creds.invalid:
-            flow = client.flow_from_clientsecrets(
-                path.join(credentials_path, 'client_secret.json'),
-                 SCOPES)
-            creds = tools.run_flow(flow, store)
+            self.nvim.err_write(
+                "Credentials invalid, try re-generating or checking the path."
+            )
 
         service = build('calendar', 'v3', http=creds.authorize(Http()))
 

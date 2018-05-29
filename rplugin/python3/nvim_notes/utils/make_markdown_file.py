@@ -1,13 +1,9 @@
 from .make_schedule import make_schedule
 
-# TODO: Plug this in as a config option
-HEADINGS = ['Notes', 'Issues', 'ToDo']
-
-def produce_daily_markdown(options,
-                           headings=HEADINGS):
+def produce_daily_markdown(options):
     full_markdown_file = []
 
-    for heading in headings:
+    for heading in options.headings:
         full_markdown_file.append(f"# {heading}")
         full_markdown_file.append("\n")
 
