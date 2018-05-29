@@ -93,18 +93,16 @@ class SimpleGoogleCal():
 
             cache_file_creation_date = datetime.fromtimestamp(int(epoch))
             today = datetime.today()
-            differece = today - cache_file_creation_date
-        except IndexError:
-            cache_file_error = True
+            difference = today - cache_file_creation_date
 
-        if differece.days <= CALENDAR_CACHE_DURATION and not cache_file_error:
-            with open(cache_file_name) as cache_file:
-                self.all_calendars = json.load(cache_file)
-        else:
+            if difference.days <= CALENDAR_CACHE_DURATION:
+                with open(cache_file_name) as cache_file:
+                    self.all_calendars = json.load(cache_file)
+        except IndexError:
             self.all_calendars = self.get_all_calendars()
             self.store_calendars()
-
-        self.filtered_calendars = self.filter_calendars()
+        else:
+            self.filtered_calendars = self.filter_calendars()
 
 
     def get_events_for_timeframe(self,
