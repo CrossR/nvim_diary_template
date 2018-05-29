@@ -42,7 +42,7 @@ class NotesPlugin(object):
         buffer_number = self._nvim.current.buffer.number
         self._nvim.api.buf_set_lines(buffer_number, 0, -1, True, schedule_today)
 
-    @neovim.command('GenerateSchedule')
+    @neovim.command('GenerateSchedule', sync=True)
     # @if_active
     def generate_schedule_markdown(self):
 

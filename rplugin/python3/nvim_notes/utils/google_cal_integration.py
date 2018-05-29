@@ -5,8 +5,6 @@ from os import path
 from httplib2 import Http
 from oauth2client import client, file, tools
 
-SCOPES = 'https://www.googleapis.com/auth/calendar.readonly'
-
 class SimpleGoogleCal():
 
     def __init__(self, options):
