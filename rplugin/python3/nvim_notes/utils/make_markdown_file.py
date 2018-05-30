@@ -38,7 +38,7 @@ def parse_buffer_events(events):
 
         # TODO: Regex is probably going to be a giant pain here,
         # and not work if the string pattern change.
-        parsed_event_line = re.search(DATE_REGEX, event)
+        parsed_event_line = re.findall(DATE_REGEX, event)
 
         start_date = parsed_event_line[0]
         end_date = parsed_event_line[1]
