@@ -7,6 +7,7 @@ from datetime import date, datetime, time
 
 from apiclient.discovery import build
 from os import path, makedirs
+from functools import wraps
 from httplib2 import Http
 from oauth2client import client, file, tools
 
@@ -23,6 +24,19 @@ class SimpleNvimGoogleCal():
         self.service = self.setup_google_calendar_api()
         self.filter_list = options.calendar_filter_list
         self.get_calendars()
+
+    def check_service(function):
+        """check_service
+
+        A decorator to check the Google cal service exists
+        """
+
+        @wraps(function)
+        def wrapper(self):
+            if self.service is None:
+                return
+            function(self)
+        return wrapper
 
     def setup_google_calendar_api(self):
         """setup_google_calendar_api
@@ -45,6 +59,7 @@ class SimpleNvimGoogleCal():
         return service
 
 
+    @check_service
     def filter_calendars(self):
         """filter_calendars
 
@@ -53,15 +68,13 @@ class SimpleNvimGoogleCal():
 
         return [cal for cal in self.all_calendars if cal not in self.filter_list]
 
+    @check_service
     def get_all_calendars(self):
         """get_all_calendars
 
         Returns a list of all the users calendars, which will include ones that
         are in the exclude list.
         """
-
-        if self.service is None:
-            return
 
         page_token = None
         calendar_list = self.service.calendarList().list(pageToken=page_token).execute()
@@ -90,6 +103,7 @@ class SimpleNvimGoogleCal():
         with open(cache_file_name, 'w') as cache_file:
             json.dump(self.all_calendars, cache_file)
 
+    @check_service
     def get_calendars(self):
         """get_calendars
 
@@ -118,6 +132,7 @@ class SimpleNvimGoogleCal():
             self.filtered_calendars = self.filter_calendars()
 
 
+    @check_service
     def get_events_for_timeframe(self,
                                  start_date=None,
                                  end_date=None):
@@ -130,9 +145,6 @@ class SimpleNvimGoogleCal():
         Events are brought in from 00:00 on the first day, to 23:59 on the
         last day.
         """
-
-        if self.service is None:
-            return
 
         if not start_date or not end_date:
             date_today = date.today()
