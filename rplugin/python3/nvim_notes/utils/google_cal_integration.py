@@ -3,7 +3,7 @@ import json
 import re
 import time as t
 from datetime import date, datetime, time, timedelta
-from os import makedirs, path
+from os import makedirs, path, remove
 
 from apiclient.discovery import build
 from httplib2 import Http
@@ -151,7 +151,7 @@ class SimpleNvimGoogleCal():
     def check_cache(self, data_name, data_age, fallback_function):
         """check_cache
 
-        A function decorator to check for valid cache files.
+        A function to check for valid cache files.
         If one is found, then it can be used, but otherwise the original function
         is called to generate the data and cache it.
         """
@@ -181,18 +181,32 @@ class SimpleNvimGoogleCal():
         return data
 
     def set_cache(self, data, data_name):
+        """set_cache
+
+        Given some data and a name, creates a cache file
+        in the config folder. Cleans up any existing cache files
+        when creting a new one.
+        """
 
         cache_file_name = f"{self.config_path}/cache/" + \
             f"nvim_notes_{data_name}_cache_{int(t.time())}.json"
 
+        pattern = f"{self.config_path}/cache/" + \
+            f"nvim_notes_{data_name}_cache_*.json"
+
         makedirs(path.dirname(cache_file_name), exist_ok=True)
+        old_cache_files = glob.glob(pattern)
 
         with open(cache_file_name, 'w') as cache_file:
             json.dump(data, cache_file)
 
+        for old_cache_file in old_cache_files:
+            remove(old_cache_file)
+
     def update_calendar(self, markdown_events):
         events_today = self.get_events_for_today()
 
+        # TODO: Fix this.
         missing_events = [
             event for event in markdown_events if event not in events_today
         ]
