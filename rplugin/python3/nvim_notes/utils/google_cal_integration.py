@@ -76,8 +76,9 @@ class SimpleGoogleCal():
 
         Store calendars to a cache file to skip API call.
         """
-        cache_file_name = f"{self.config_path}/cache/" +
-                          f"nvim_notes_cache_{int(t.time())}.json"
+
+        cache_file_name = f"{self.config_path}/cache/" + \
+            f"nvim_notes_cache_{int(t.time())}.json"
 
         makedirs(path.dirname(cache_file_name), exist_ok=True)
 
@@ -90,6 +91,7 @@ class SimpleGoogleCal():
         When possible, load the calendars from the cache, but default
         to the API when needed.
         """
+
         cache_file_pattern = f"{self.config_path}/cache/nvim_notes_cache_*.json"
 
         try:
@@ -140,7 +142,8 @@ class SimpleGoogleCal():
                 calendarId=calendar_id,
                 pageToken=page_token,
                 timeMin=timeMin,
-                timeMax=timeMax).execute()
+                timeMax=timeMax
+            ).execute()
 
             events_in_timeframe.extend(events['items'])
 
