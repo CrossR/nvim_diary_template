@@ -1,31 +1,13 @@
-import glob
-import json
-import re
-import time as t
 from datetime import date, datetime, time
-from functools import wraps
-from os import makedirs, path
+from os import path
 
 from apiclient.discovery import build
 from httplib2 import Http
 from oauth2client import client, file, tools
 
+from .function_wrappers import SimpleCache, check_service
+
 CALENDAR_CACHE_DURATION = 31
-CACHE_EPOCH_REGEX = '([0-9])+'
-
-
-def check_service(function):
-    """check_service
-
-    A decorator to check the Google cal service exists
-    """
-
-    @wraps(function)
-    def wrapper(self):
-        if self.service is None:
-            return
-        function(self)
-    return wrapper
 
 
 class SimpleNvimGoogleCal():
@@ -33,9 +15,13 @@ class SimpleNvimGoogleCal():
     def __init__(self, nvim, options):
         self.nvim = nvim
         self.config_path = options.config_path
+
         self.service = self.setup_google_calendar_api()
+
+        self.all_calendars = self.get_all_calendars()
+
         self.filter_list = options.calendar_filter_list
-        self.get_calendars()
+        self.filtered_calendars = self.filtered_calendars()
 
     def setup_google_calendar_api(self):
         """setup_google_calendar_api
@@ -44,12 +30,12 @@ class SimpleNvimGoogleCal():
             for future work.
         """
 
-        store = file.Storage(path.join(self.config_path, 'credentials.json'))
+        store = file.Storage(path.join(self.config_path, "credentials.json"))
         creds = store.get()
 
         if not creds or creds.invalid:
-            self.nvim.err_writeln(
-                "Credentials invalid, try re-generating or checking the path."
+            self.nvim.err_write(
+                "Credentials invalid, try re-generating or checking the path.\n"
             )
             return
 
@@ -67,6 +53,7 @@ class SimpleNvimGoogleCal():
         return [cal for cal in self.all_calendars if cal not in self.filter_list]
 
     @check_service
+    @SimpleCache('calendar', CALENDAR_CACHE_DURATION)
     def get_all_calendars(self):
         """get_all_calendars
 
@@ -86,48 +73,6 @@ class SimpleNvimGoogleCal():
             })
 
         return all_calendars
-
-    def store_calendars(self):
-        """store_calendars
-
-        Store calendars to a cache file to skip API call.
-        """
-
-        cache_file_name = f"{self.config_path}/cache/" + \
-            f"nvim_notes_cache_{int(t.time())}.json"
-
-        makedirs(path.dirname(cache_file_name), exist_ok=True)
-
-        with open(cache_file_name, 'w') as cache_file:
-            json.dump(self.all_calendars, cache_file)
-
-    @check_service
-    def get_calendars(self):
-        """get_calendars
-
-        When possible, load the calendars from the cache, but default
-        to the API when needed.
-        """
-
-        cache_file_pattern = f"{self.config_path}/cache/nvim_notes_cache_*.json"
-
-        try:
-            cache_file_name = glob.glob(cache_file_pattern)[0]
-
-            epoch = re.search(CACHE_EPOCH_REGEX, cache_file_name)[0]
-
-            cache_file_creation_date = datetime.fromtimestamp(int(epoch))
-            today = datetime.today()
-            difference = today - cache_file_creation_date
-
-            if difference.days <= CALENDAR_CACHE_DURATION:
-                with open(cache_file_name) as cache_file:
-                    self.all_calendars = json.load(cache_file)
-        except (IndexError, FileNotFoundError):
-            self.all_calendars = self.get_all_calendars()
-            self.store_calendars()
-        finally:
-            self.filtered_calendars = self.filter_calendars()
 
     @check_service
     def get_events_for_timeframe(self,
