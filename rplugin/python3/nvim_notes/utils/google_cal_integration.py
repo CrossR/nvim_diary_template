@@ -8,24 +8,9 @@ from os import makedirs, path
 from apiclient.discovery import build
 from httplib2 import Http
 from oauth2client import client, file, tools
-from functools import wraps
 
 CACHE_EPOCH_REGEX = '([0-9])+'
 CALENDAR_CACHE_DURATION = 31
-
-
-def check_service(function):
-    """check_service
-
-    A decorator to check the Google cal service exists
-    """
-
-    @wraps(function)
-    def wrapper(self):
-        if self.service is None:
-            return
-        function(self)
-    return wrapper
 
 
 class SimpleNvimGoogleCal():
@@ -65,7 +50,12 @@ class SimpleNvimGoogleCal():
 
         return service
 
-    @check_service
+    def service_is_not_up(self):
+        if self.service is None:
+            return True
+
+        return False
+
     def filter_calendars(self):
         """filter_calendars
 
@@ -74,13 +64,15 @@ class SimpleNvimGoogleCal():
 
         return [cal for cal in self.all_calendars if cal not in self.filter_list]
 
-    @check_service
     def get_all_calendars(self):
         """get_all_calendars
 
         Returns a list of all the users calendars, which will include ones that
         are in the exclude list.
         """
+
+        if self.service_is_not_up():
+            return
 
         page_token = None
         calendar_list = self.service.calendarList().list(pageToken=page_token).execute()
@@ -95,7 +87,6 @@ class SimpleNvimGoogleCal():
 
         return all_calendars
 
-    @check_service
     def get_events_for_timeframe(self,
                                  start_date=None,
                                  end_date=None):
@@ -108,6 +99,9 @@ class SimpleNvimGoogleCal():
         Events are brought in from 00:00 on the first day, to 23:59 on the
         last day.
         """
+
+        if self.service_is_not_up():
+            return
 
         if not start_date or not end_date:
             date_today = date.today()
@@ -181,14 +175,13 @@ class SimpleNvimGoogleCal():
                     data = json.load(cache_file)
         except (IndexError, FileNotFoundError):
             data = fallback_function(self)
-            self.set_cache(self.config_path, data, data_name)
+            self.set_cache(data, data_name)
 
         return data
 
-    @staticmethod
-    def set_cache(config_path, data, data_name):
+    def set_cache(self, data, data_name):
 
-        cache_file_name = f"{config_path}/cache/" + \
+        cache_file_name = f"{self.config_path}/cache/" + \
             f"nvim_notes_{data_name}_cache_{int(t.time())}.json"
 
         makedirs(path.dirname(cache_file_name), exist_ok=True)
