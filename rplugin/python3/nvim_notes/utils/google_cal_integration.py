@@ -21,7 +21,7 @@ class SimpleNvimGoogleCal():
         self.all_calendars = self.get_all_calendars()
 
         self.filter_list = options.calendar_filter_list
-        self.filtered_calendars = self.filtered_calendars()
+        self.filtered_calendars = self.filter_calendars()
 
     def setup_google_calendar_api(self):
         """setup_google_calendar_api
