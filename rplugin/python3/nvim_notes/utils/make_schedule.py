@@ -36,7 +36,7 @@ def produce_schedule_markdown(event_list):
     # something like f"{importance * #}".
     markdown_lines.append("# Schedule")
 
-    current_schedule_line = format_events_lines(event_list)
-    markdown_lines.append(current_schedule_line)
+    schedule_lines = format_events_lines(event_list)
+    markdown_lines.extend(schedule_lines)
 
     return markdown_lines
