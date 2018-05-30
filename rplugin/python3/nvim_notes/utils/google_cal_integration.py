@@ -38,6 +38,7 @@ class SimpleNvimGoogleCal():
             self.nvim.err_write(
                 "Credentials invalid, try re-generating or checking the path."
             )
+            return
 
         service = build('calendar', 'v3', http=creds.authorize(Http()))
 
@@ -58,6 +59,9 @@ class SimpleNvimGoogleCal():
         Returns a list of all the users calendars, which will include ones that
         are in the exclude list.
         """
+
+        if self.service is None:
+            return
 
         page_token = None
         calendar_list = self.service.calendarList().list(pageToken=page_token).execute()
@@ -126,6 +130,9 @@ class SimpleNvimGoogleCal():
         Events are brought in from 00:00 on the first day, to 23:59 on the
         last day.
         """
+
+        if self.service is None:
+            return
 
         if not start_date or not end_date:
             date_today = date.today()
