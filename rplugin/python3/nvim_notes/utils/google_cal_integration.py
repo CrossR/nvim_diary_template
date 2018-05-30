@@ -10,7 +10,8 @@ from httplib2 import Http
 from oauth2client import client, file, tools
 
 CACHE_EPOCH_REGEX = '([0-9])+'
-CALENDAR_CACHE_DURATION = 31
+CALENDAR_CACHE_DURATION = datetime.timedelta(days=31)
+EVENT_CACHE_DURATION = datetime.timedelta(minutes=30)
 
 
 class SimpleNvimGoogleCal():
@@ -23,12 +24,18 @@ class SimpleNvimGoogleCal():
 
         self.all_calendars = self.check_cache(
             "calendars",
-            31,
+            CALENDAR_CACHE_DURATION,
             self.get_all_calendars
         )
 
         self.filter_list = options.calendar_filter_list
         self.filtered_calendars = self.filter_calendars()
+
+        self.events = self.check_cache(
+            'events',
+            EVENT_CACHE_DURATION,
+            self.get_events_for_today
+        )
 
     def setup_google_calendar_api(self):
         """setup_google_calendar_api
@@ -87,15 +94,10 @@ class SimpleNvimGoogleCal():
 
         return all_calendars
 
-    def get_events_for_timeframe(self,
-                                 start_date=None,
-                                 end_date=None):
-        """get_events_for_timeframe
+    def get_events_for_today(self):
+        """get_events_for_today
 
-        Gets all the events for a given period, from the filtered users
-        calendars. Both the start and end date must be provided, else it will
-        default to getting for the current day only.
-
+        Gets all the events for today calendars.
         Events are brought in from 00:00 on the first day, to 23:59 on the
         last day.
         """
@@ -103,13 +105,9 @@ class SimpleNvimGoogleCal():
         if self.service_is_not_up():
             return
 
-        if not start_date or not end_date:
-            date_today = date.today()
-            timeMin = datetime.combine(date_today, time.min).isoformat() + 'Z'
-            timeMax = datetime.combine(date_today, time.max).isoformat() + 'Z'
-        else:
-            timeMin = datetime.combine(start_date, time.min).isoformat() + 'Z'
-            timeMax = datetime.combine(end_date, time.max).isoformat() + 'Z'
+        date_today = date.today()
+        timeMin = datetime.combine(date_today, time.min).isoformat() + 'Z'
+        timeMax = datetime.combine(date_today, time.max).isoformat() + 'Z'
 
         page_token = None
         events_in_timeframe = []
@@ -170,11 +168,11 @@ class SimpleNvimGoogleCal():
             today = datetime.today()
             difference = today - cache_file_creation_date
 
-            if difference.days <= data_age:
+            if difference <= data_age:
                 with open(cache_file_name) as cache_file:
                     data = json.load(cache_file)
         except (IndexError, FileNotFoundError):
-            data = fallback_function(self)
+            data = fallback_function()
             self.set_cache(data, data_name)
 
         return data
@@ -190,7 +188,7 @@ class SimpleNvimGoogleCal():
             json.dump(data, cache_file)
 
     def compare_events(self, markdown_events):
-        events_today = self.get_events_for_timeframe()
+        events_today = self.get_events_for_today()
 
         missing_events = [
             event for event in markdown_events if event not in events_today
@@ -210,6 +208,5 @@ def get_events_for_day(nvim, options):
     for the current day.
     """
     google_calendar = SimpleNvimGoogleCal(nvim, options)
-    todays_events = google_calendar.get_events_for_timeframe()
 
-    return todays_events
+    return google_calendar.events
