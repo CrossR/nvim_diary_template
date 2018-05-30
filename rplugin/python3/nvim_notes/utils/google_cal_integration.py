@@ -9,6 +9,8 @@ from apiclient.discovery import build
 from httplib2 import Http
 from oauth2client import client, file, tools
 
+from .make_schedule import convert_events
+
 CACHE_EPOCH_REGEX = '([0-9])+'
 CALENDAR_CACHE_DURATION = timedelta(days=31)
 EVENT_CACHE_DURATION = timedelta(minutes=30)
@@ -204,7 +206,7 @@ class SimpleNvimGoogleCal():
             remove(old_cache_file)
 
     def update_calendar(self, markdown_events):
-        events_today = self.get_events_for_today()
+        events_today = convert_events(self.get_events_for_today())
 
         # TODO: Fix this.
         missing_events = [

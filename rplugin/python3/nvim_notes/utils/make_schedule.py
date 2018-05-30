@@ -21,20 +21,52 @@ def get_time(time_dict):
 
     return datetime_obj
 
+def convert_events(events):
+    """convert_events
 
-def format_events_line(event):
-    """format_events_line
+    Given a list of events, convert the time objects to a human readable
+    form.
+    """
+
+    formatted_events = []
+
+    for event in events:
+        # TODO: Make the format strings here into a config option.
+        start_time = get_time(event['start_time']).strftime(DATETIME_FORMAT)
+        end_time = get_time(event['end_time']).strftime(DATETIME_FORMAT)
+        event_name = event['event_name']
+
+        formatted_events.append({
+            'event_name': event_name,
+            'start_time': start_time,
+            'end_time': end_time
+        })
+
+    return formatted_events
+
+
+def format_events_lines(events):
+    """format_events_lines
 
     Given an event, will produce a formatted line for that event.
     """
 
-    # TODO: Make the format strings here into a config option.
-    start_time = get_time(event['start_time']).strftime(DATETIME_FORMAT)
-    end_time = get_time(event['end_time']).strftime(DATETIME_FORMAT)
-    event_name = event['event_name']
+    events_lines = []
 
-    # TODO: Similarly, make this string into a config option.
-    return f"    - {start_time} - {end_time}: {event_name}"
+    simplified_events = convert_events(events)
+
+    for event in simplified_events:
+
+        start_time = event['start_time']
+        end_time = event['end_time']
+        event_name = event['event_name']
+
+        # TODO: Similarly, make this string into a config option.
+        current_line = f"    - {start_time} - {end_time}: {event_name}"
+
+        events_lines.append(current_line)
+
+    return events_lines
 
 def produce_schedule_markdown(event_list):
     """produce_schedule_markdown
@@ -49,9 +81,8 @@ def produce_schedule_markdown(event_list):
     # something like f"{importance * #}".
     markdown_lines.append("# Schedule")
 
-    for event in event_list:
-        current_schedule_line = format_events_line(event)
-        markdown_lines.append(current_schedule_line)
+    current_schedule_line = format_events_lines(event_list)
+    markdown_lines.append(current_schedule_line)
 
     return markdown_lines
 
