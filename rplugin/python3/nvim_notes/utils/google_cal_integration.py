@@ -2,7 +2,7 @@ import glob
 import json
 import re
 import time as t
-from datetime import date, datetime, time
+from datetime import date, datetime, time, timedelta
 from os import makedirs, path
 
 from apiclient.discovery import build
@@ -10,8 +10,8 @@ from httplib2 import Http
 from oauth2client import client, file, tools
 
 CACHE_EPOCH_REGEX = '([0-9])+'
-CALENDAR_CACHE_DURATION = datetime.timedelta(days=31)
-EVENT_CACHE_DURATION = datetime.timedelta(minutes=30)
+CALENDAR_CACHE_DURATION = timedelta(days=31)
+EVENT_CACHE_DURATION = timedelta(minutes=30)
 
 
 class SimpleNvimGoogleCal():
