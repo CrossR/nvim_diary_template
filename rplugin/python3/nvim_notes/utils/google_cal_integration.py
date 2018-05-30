@@ -109,7 +109,7 @@ class SimpleGoogleCal():
         except (IndexError, FileNotFoundError):
             self.all_calendars = self.get_all_calendars()
             self.store_calendars()
-        else:
+        finally:
             self.filtered_calendars = self.filter_calendars()
 
 
