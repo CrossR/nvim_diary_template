@@ -1,4 +1,10 @@
+import re
+
 from .make_schedule import make_schedule
+
+DATE_REGEX = r"[0-9]{2}\/[0-9]{2}\/[0-9]{4} [0-9]{2}:[0-9]{2}"
+EVENT_REGEX = r"(?<=: ).*$"
+
 
 def produce_daily_markdown(nvim, options):
     """produce_daily_markdown
@@ -16,17 +22,45 @@ def produce_daily_markdown(nvim, options):
 
     return full_markdown_file
 
+
 def parse_buffer_events(events):
+    """parse_buffer_events
+
+    Given a list of events, parse the buffer lines and create event objects.
+    """
+
     formatted_events = []
 
     for event in events:
         if event == '':
             continue
 
-        format_string = f"    - {start_time} - {end_time}: {event_name}"
+        # TODO: Regex is probably going to be a giant pain here,
+        # and not work if the string pattern change.
+        parsed_event_line = re.search(DATE_REGEX, event)
+
+        start_date = parsed_event_line[0]
+        end_date = parsed_event_line[1]
+        event_details = re.search(EVENT_REGEX, event)[0]
+
+        event_dict = {
+            'event_name': event_details,
+            'start_time': start_date,
+            'end_time': end_date
+        }
+
+        formatted_events.append(event_dict)
+
+    return formatted_events
 
 
 def parse_markdown_file_for_events(nvim):
+    """parse_markdown_file_for_events
+
+    Gets the contents of the current NeoVim buffer,
+    and parses the schedule section into events.
+    """
+
     buffer_number = nvim.current.buffer.number
     current_buffer_contents = nvim.api.buf_get_lines(
         buffer_number,
@@ -35,7 +69,7 @@ def parse_markdown_file_for_events(nvim):
         True
     )
 
-    # Do the search in reverse since we know the schdule comes last
+    # Do the search in reverse since we know the schedule comes last
     for line_index, line in enumerate(reversed(current_buffer_contents)):
         if line == '# Schedule':
             buffer_events_index = line_index
@@ -44,3 +78,4 @@ def parse_markdown_file_for_events(nvim):
     events = current_buffer_contents[buffer_events_index:]
     formatted_events = parse_buffer_events(events)
 
+    return formatted_events
