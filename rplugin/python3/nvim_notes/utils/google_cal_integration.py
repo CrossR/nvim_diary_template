@@ -48,7 +48,7 @@ class SimpleNvimGoogleCal():
         creds = store.get()
 
         if not creds or creds.invalid:
-            self.nvim.err_write(
+            self.nvim.err_writeln(
                 "Credentials invalid, try re-generating or checking the path."
             )
             return
