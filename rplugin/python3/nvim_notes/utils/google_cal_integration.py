@@ -39,7 +39,7 @@ class SimpleNvimGoogleCal():
         self.all_calendars = self.check_cache(
             "calendars",
             31,
-            self.get_all_calendars()
+            self.get_all_calendars
         )
 
         self.filter_list = options.calendar_filter_list
@@ -181,13 +181,14 @@ class SimpleNvimGoogleCal():
                     data = json.load(cache_file)
         except (IndexError, FileNotFoundError):
             data = fallback_function(self)
-            self.set_cache(data, data_name)
+            self.set_cache(self.config_path, data, data_name)
 
         return data
 
-    def set_cache(self, data, data_name):
+    @staticmethod
+    def set_cache(config_path, data, data_name):
 
-        cache_file_name = f"{self.config_path}/cache/" + \
+        cache_file_name = f"{config_path}/cache/" + \
             f"nvim_notes_{data_name}_cache_{int(t.time())}.json"
 
         makedirs(path.dirname(cache_file_name), exist_ok=True)
