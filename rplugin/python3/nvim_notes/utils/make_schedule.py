@@ -64,7 +64,10 @@ def make_schedule(nvim, options):
     todays_events = []
 
     if options.use_google_calendar:
-        todays_events.extend(get_events_for_day(nvim, options))
+        calendar_events = get_events_for_day(nvim, options)
+
+        if calendar_events is not None:
+            todays_events.extend(calendar_events)
 
     markdown = produce_schedule_markdown(todays_events)
 

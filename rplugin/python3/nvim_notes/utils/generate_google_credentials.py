@@ -1,9 +1,9 @@
 import argparse
 import sys
 import warnings
+from os import path
 
 from apiclient.discovery import build
-from os import path
 from httplib2 import Http
 from oauth2client import client, file, tools
 
@@ -48,4 +48,3 @@ def generate_credentials():
 
 if __name__ == "__main__":
     generate_credentials()
-

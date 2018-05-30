@@ -1,19 +1,31 @@
-import json
-import time as t
 import glob
+import json
 import re
-
+import time as t
 from datetime import date, datetime, time
+from functools import wraps
+from os import makedirs, path
 
 from apiclient.discovery import build
-from os import path, makedirs
-from functools import wraps
 from httplib2 import Http
 from oauth2client import client, file, tools
 
-
 CALENDAR_CACHE_DURATION = 31
 CACHE_EPOCH_REGEX = '([0-9])+'
+
+
+def check_service(function):
+    """check_service
+
+    A decorator to check the Google cal service exists
+    """
+
+    @wraps(function)
+    def wrapper(self):
+        if self.service is None:
+            return
+        function(self)
+    return wrapper
 
 
 class SimpleNvimGoogleCal():
@@ -24,19 +36,6 @@ class SimpleNvimGoogleCal():
         self.service = self.setup_google_calendar_api()
         self.filter_list = options.calendar_filter_list
         self.get_calendars()
-
-    def check_service(function):
-        """check_service
-
-        A decorator to check the Google cal service exists
-        """
-
-        @wraps(function)
-        def wrapper(self):
-            if self.service is None:
-                return
-            function(self)
-        return wrapper
 
     def setup_google_calendar_api(self):
         """setup_google_calendar_api
@@ -57,7 +56,6 @@ class SimpleNvimGoogleCal():
         service = build('calendar', 'v3', http=creds.authorize(Http()))
 
         return service
-
 
     @check_service
     def filter_calendars(self):
@@ -83,7 +81,7 @@ class SimpleNvimGoogleCal():
 
         for calendar_list_entry in calendar_list['items']:
             all_calendars.append({
-                'name':calendar_list_entry['summary'],
+                'name': calendar_list_entry['summary'],
                 'id': calendar_list_entry['id']
             })
 
@@ -131,7 +129,6 @@ class SimpleNvimGoogleCal():
         finally:
             self.filtered_calendars = self.filter_calendars()
 
-
     @check_service
     def get_events_for_timeframe(self,
                                  start_date=None,
@@ -173,7 +170,6 @@ class SimpleNvimGoogleCal():
 
         return self.format_events(events_in_timeframe)
 
-
     def format_events(self, events_list):
         """format_events
 
@@ -194,7 +190,7 @@ class SimpleNvimGoogleCal():
 
         return filtered_events
 
-    def compare_events(markdown_events):
+    def compare_events(self, markdown_events):
         events_today = self.get_events_for_timeframe()
 
         missing_events = [

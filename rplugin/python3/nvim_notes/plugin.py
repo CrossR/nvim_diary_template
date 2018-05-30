@@ -1,10 +1,9 @@
+import os
 from functools import wraps
 
 import neovim
-import os
 
 from nvim_notes.utils.make_markdown_file import produce_daily_markdown
-
 
 FILE_TYPE = '*.md'
 
@@ -41,19 +40,32 @@ class NotesPlugin(object):
     def on_new_file(self):
         schedule_today = produce_daily_markdown(self._nvim, self._options)
         buffer_number = self._nvim.current.buffer.number
-        self._nvim.api.buf_set_lines(buffer_number, 0, -1, True, schedule_today)
+        self._nvim.api.buf_set_lines(
+            buffer_number,
+            0,
+            -1,
+            True,
+            schedule_today
+        )
 
     @neovim.command('GenerateSchedule', sync=True)
     # @if_active
     def generate_schedule_markdown(self):
 
-        #TODO: Remove this, since it shouldn't be needed due to the autocmds.
+        # TODO: Remove this, since it shouldn't be needed due to the autocmds.
         if self._options is None:
             self._options = PluginOptions(self._nvim)
 
         schedule_today = produce_daily_markdown(self._nvim, self._options)
         buffer_number = self._nvim.current.buffer.number
-        self._nvim.api.buf_set_lines(buffer_number, 0, -1, True, schedule_today)
+        self._nvim.api.buf_set_lines(
+            buffer_number,
+            0,
+            -1,
+            True,
+            schedule_today
+        )
+
 
 class PluginOptions:
 
