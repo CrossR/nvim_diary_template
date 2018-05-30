@@ -171,6 +171,9 @@ class SimpleNvimGoogleCal():
             if difference <= data_age:
                 with open(cache_file_name) as cache_file:
                     data = json.load(cache_file)
+            else:
+                data = fallback_function()
+                self.set_cache(data, data_name)
         except (IndexError, FileNotFoundError):
             data = fallback_function()
             self.set_cache(data, data_name)
