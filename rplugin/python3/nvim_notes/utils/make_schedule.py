@@ -4,10 +4,10 @@ from dateutil import parser
 
 from .google_cal_integration import get_events_for_day
 
-DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
+DATETIME_FORMAT = "%d/%m/%Y %H:%M"
 
 def get_time(time_dict):
-    """get_time_obj
+    """get_time
 
     Since the Google API response can either be a 'dateTime' or
     'date' object depending on if the event is timed, or the whole day,
@@ -29,8 +29,8 @@ def format_events_line(event):
     """
 
     # TODO: Make the format strings here into a config option.
-    start_time = get_time(event['start_time']).strftime("%d/%m/%Y %H:%M")
-    end_time = get_time(event['end_time']).strftime("%d/%m/%Y %H:%M")
+    start_time = get_time(event['start_time']).strftime(DATETIME_FORMAT)
+    end_time = get_time(event['end_time']).strftime(DATETIME_FORMAT)
     event_name = event['event_name']
 
     # TODO: Similarly, make this string into a config option.

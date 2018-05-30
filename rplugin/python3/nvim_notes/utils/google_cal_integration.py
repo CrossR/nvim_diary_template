@@ -1,6 +1,7 @@
 import json
 import time as t
 import glob
+import re
 
 from datetime import date, datetime, time
 
@@ -11,6 +12,7 @@ from oauth2client import client, file, tools
 
 
 CALENDAR_CACHE_DURATION = 31
+CACHE_EPOCH_REGEX = '([0-9])+'
 
 
 class SimpleGoogleCal():
@@ -18,7 +20,7 @@ class SimpleGoogleCal():
     def __init__(self, options):
         self.service = self.setup_google_calendar_api(options.credentials_path)
         self.filter_list = options.calendar_filter_list
-        self.load_calendars()
+        self.get_calendars()
 
     def setup_google_calendar_api(self, credentials_path):
         """setup_google_calendar_api
@@ -77,8 +79,8 @@ class SimpleGoogleCal():
         with open(cache_file_name, 'w') as cache_file:
             json.dump(self.all_calendars, cache_file)
 
-    def load_calendars(self):
-        """load_calendars
+    def get_calendars(self):
+        """get_calendars
 
         When possible, load the calendars from the cache, but default
         to the API when needed.
@@ -88,8 +90,7 @@ class SimpleGoogleCal():
         try:
             cache_file_name = glob.glob(cache_file_pattern)[0]
 
-            epoch = cache_file_name.split("_")[3] \
-                                   .split(".")[0]
+            epoch = re.search(CACHE_EPOCH_REGEX, cache_file_name)[0]
 
             cache_file_creation_date = datetime.fromtimestamp(int(epoch))
             today = datetime.today()
@@ -98,7 +99,7 @@ class SimpleGoogleCal():
             if difference.days <= CALENDAR_CACHE_DURATION:
                 with open(cache_file_name) as cache_file:
                     self.all_calendars = json.load(cache_file)
-        except IndexError:
+        except (IndexError, FileNotFoundError):
             self.all_calendars = self.get_all_calendars()
             self.store_calendars()
         else:
