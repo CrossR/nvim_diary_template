@@ -66,6 +66,10 @@ class NotesPlugin(object):
         # TODO: Remove this, since it shouldn't be needed due to the autocmds.
         if self._options is None:
             self._options = PluginOptions(self._nvim)
+            self._gcal_service = SimpleNvimGoogleCal(
+                self._nvim,
+                self._options
+            )
 
         schedule_today = produce_daily_markdown(
             self._nvim,
