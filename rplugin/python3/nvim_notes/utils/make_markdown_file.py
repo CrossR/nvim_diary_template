@@ -6,7 +6,7 @@ DATE_REGEX = r"[0-9]{2}\/[0-9]{2}\/[0-9]{4} [0-9]{2}:[0-9]{2}"
 EVENT_REGEX = r"(?<=: ).*$"
 
 
-def produce_daily_markdown(nvim, options):
+def produce_daily_markdown(nvim, options, gcal_service):
     """produce_daily_markdown
 
     Produce the actual markdown that is shown on the page.
@@ -18,7 +18,8 @@ def produce_daily_markdown(nvim, options):
         full_markdown_file.append(f"# {heading}")
         full_markdown_file.append("")
 
-    full_markdown_file.extend(make_schedule(nvim, options))
+    todays_events = gcal_service.get_events_for_today()
+    full_markdown_file.extend(make_schedule(nvim, options, todays_events))
 
     return full_markdown_file
 

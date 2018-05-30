@@ -55,19 +55,11 @@ def produce_schedule_markdown(event_list):
 
     return markdown_lines
 
-def make_schedule(nvim, options):
+def make_schedule(nvim, options, todays_events = []):
     """make_schedule
 
     A wrapper function to make a schedule for the current day.
     """
-
-    todays_events = []
-
-    if options.use_google_calendar:
-        calendar_events = get_events_for_day(nvim, options)
-
-        if calendar_events is not None:
-            todays_events.extend(calendar_events)
 
     markdown = produce_schedule_markdown(todays_events)
 

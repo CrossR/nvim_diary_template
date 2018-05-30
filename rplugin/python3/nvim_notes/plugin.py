@@ -3,7 +3,8 @@ from functools import wraps
 
 import neovim
 
-from nvim_notes.utils.make_markdown_file import produce_daily_markdown
+from nvim_notes.utils.make_markdown_file import produce_daily_markdown, parse_markdown_file_for_events
+from nvim_notes.utils.google_cal_integration import SimpleNvimGoogleCal
 
 FILE_TYPE = '*.md'
 
@@ -30,15 +31,25 @@ class NotesPlugin(object):
     def __init__(self, nvim):
         self._nvim = nvim
         self._options = None
+        self._gcal_service = None
 
     @neovim.autocmd('BufEnter', pattern=FILE_TYPE, sync=True)
     def event_buf_enter(self):
         if self._options is None:
             self._options = PluginOptions(self._nvim)
+            self._gcal_service = SimpleNvimGoogleCal(
+                self._nvim,
+                self._options
+            )
 
     @neovim.autocmd('BufNewFile', pattern=FILE_TYPE)
     def on_new_file(self):
-        schedule_today = produce_daily_markdown(self._nvim, self._options)
+        schedule_today = produce_daily_markdown(
+            self._nvim,
+            self._options,
+            self._gcal_service
+        )
+
         buffer_number = self._nvim.current.buffer.number
         self._nvim.api.buf_set_lines(
             buffer_number,
@@ -48,7 +59,7 @@ class NotesPlugin(object):
             schedule_today
         )
 
-    @neovim.command('GenerateSchedule', sync=True)
+    @neovim.command('GenerateSchedule')
     # @if_active
     def generate_schedule_markdown(self):
 
@@ -56,7 +67,12 @@ class NotesPlugin(object):
         if self._options is None:
             self._options = PluginOptions(self._nvim)
 
-        schedule_today = produce_daily_markdown(self._nvim, self._options)
+        schedule_today = produce_daily_markdown(
+            self._nvim,
+            self._options,
+            self._gcal_service
+        )
+
         buffer_number = self._nvim.current.buffer.number
         self._nvim.api.buf_set_lines(
             buffer_number,
@@ -65,6 +81,15 @@ class NotesPlugin(object):
             True,
             schedule_today
         )
+
+        return
+
+    @neovim.command('UpdateCalendar')
+    def update_calendar(self):
+        markdown_events = parse_markdown_file_for_events(self._nvim)
+        self._gcal_service.update_calendar(markdown_events)
+
+        return
 
 
 class PluginOptions:

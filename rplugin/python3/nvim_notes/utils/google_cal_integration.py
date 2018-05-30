@@ -187,18 +187,14 @@ class SimpleNvimGoogleCal():
         with open(cache_file_name, 'w') as cache_file:
             json.dump(data, cache_file)
 
-    def compare_events(self, markdown_events):
+    def update_calendar(self, markdown_events):
         events_today = self.get_events_for_today()
 
         missing_events = [
             event for event in markdown_events if event not in events_today
         ]
 
-        for event_string in missing_events:
-            self.service.event.quickAdd(
-                calendarId=calendar_id,
-                text=event_string
-            )
+        self.set_cache(missing_events, 'missing_events')
 
 
 def get_events_for_day(nvim, options):
