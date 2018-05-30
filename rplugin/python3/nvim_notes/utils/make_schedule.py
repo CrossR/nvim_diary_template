@@ -1,49 +1,4 @@
-from os import path
-
-from dateutil import parser
-
-from .google_cal_integration import get_events_for_day
-
-DATETIME_FORMAT = "%d/%m/%Y %H:%M"
-
-def get_time(time_dict):
-    """get_time
-
-    Since the Google API response can either be a 'dateTime' or
-    'date' object depending on if the event is timed, or the whole day,
-    we need to parse and return the object differently for each.
-    """
-
-    try:
-        datetime_obj = parser.parse(time_dict['dateTime'])
-    except KeyError:
-        datetime_obj = parser.parse(time_dict['date'])
-
-    return datetime_obj
-
-def convert_events(events):
-    """convert_events
-
-    Given a list of events, convert the time objects to a human readable
-    form.
-    """
-
-    formatted_events = []
-
-    for event in events:
-        # TODO: Make the format strings here into a config option.
-        start_time = get_time(event['start_time']).strftime(DATETIME_FORMAT)
-        end_time = get_time(event['end_time']).strftime(DATETIME_FORMAT)
-        event_name = event['event_name']
-
-        formatted_events.append({
-            'event_name': event_name,
-            'start_time': start_time,
-            'end_time': end_time
-        })
-
-    return formatted_events
-
+from .helpers import convert_events
 
 def format_events_lines(events):
     """format_events_lines
@@ -85,13 +40,3 @@ def produce_schedule_markdown(event_list):
     markdown_lines.append(current_schedule_line)
 
     return markdown_lines
-
-def make_schedule(nvim, options, todays_events = []):
-    """make_schedule
-
-    A wrapper function to make a schedule for the current day.
-    """
-
-    markdown = produce_schedule_markdown(todays_events)
-
-    return markdown

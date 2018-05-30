@@ -9,7 +9,7 @@ from apiclient.discovery import build
 from httplib2 import Http
 from oauth2client import client, file, tools
 
-import make_schedule
+from .helpers import convert_events, format_events
 
 CACHE_EPOCH_REGEX = '([0-9])+'
 CALENDAR_CACHE_DURATION = timedelta(days=31)
@@ -128,27 +128,7 @@ class SimpleNvimGoogleCal():
             if not page_token:
                 break
 
-        return self.format_events(events_in_timeframe)
-
-    def format_events(self, events_list):
-        """format_events
-
-        Formats a list of events down to the event name, and the
-        start and end date of the event.
-        """
-
-        filtered_events = []
-
-        for event in events_list:
-            event_dict = {
-                'event_name': event['summary'],
-                'start_time': event['start'],
-                'end_time': event['end']
-            }
-
-            filtered_events.append(event_dict)
-
-        return filtered_events
+        return format_events(events_in_timeframe)
 
     def check_cache(self, data_name, data_age, fallback_function):
         """check_cache
@@ -206,7 +186,7 @@ class SimpleNvimGoogleCal():
             remove(old_cache_file)
 
     def update_calendar(self, markdown_events):
-        events_today = make_schedule.convert_events(self.get_events_for_today())
+        events_today = convert_events(self.get_events_for_today())
 
         # TODO: Fix this.
         missing_events = [
@@ -214,14 +194,3 @@ class SimpleNvimGoogleCal():
         ]
 
         self.set_cache(missing_events, 'missing_events')
-
-
-def get_events_for_day(nvim, options):
-    """get_events_for_day
-
-    A wrapper function to call the functions required to get all events
-    for the current day.
-    """
-    google_calendar = SimpleNvimGoogleCal(nvim, options)
-
-    return google_calendar.events

@@ -1,6 +1,6 @@
 import re
 
-from .make_schedule import make_schedule
+from .make_schedule import produce_schedule_markdown
 
 DATE_REGEX = r"[0-9]{2}\/[0-9]{2}\/[0-9]{4} [0-9]{2}:[0-9]{2}"
 EVENT_REGEX = r"(?<=: ).*$"
@@ -19,7 +19,8 @@ def produce_daily_markdown(nvim, options, gcal_service):
         full_markdown_file.append("")
 
     todays_events = gcal_service.get_events_for_today()
-    full_markdown_file.extend(make_schedule(nvim, options, todays_events))
+    schedule_markdown = produce_schedule_markdown(todays_events)
+    full_markdown_file.extend(schedule_markdown)
 
     return full_markdown_file
 
@@ -37,7 +38,7 @@ def parse_buffer_events(events):
             continue
 
         # TODO: Regex is probably going to be a giant pain here,
-        # and not work if the string pattern change.
+        # and won't work if the string pattern changes.
         parsed_event_line = re.findall(DATE_REGEX, event)
 
         start_date = parsed_event_line[0]
