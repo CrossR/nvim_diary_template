@@ -1,6 +1,7 @@
 from functools import wraps
 
 import neovim
+import os
 
 from nvim_notes.utils.make_markdown_file import produce_daily_markdown
 
@@ -58,7 +59,7 @@ class PluginOptions:
 
     _defaults = {
         'active': True,
-        'credentials_path': '',
+        'config_path': os.getcwd(),
         'headings': ['Notes', 'Issues', 'ToDo'],
         'use_google_calendar': True,
         'calendar_filter_list': []

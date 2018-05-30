@@ -18,18 +18,19 @@ CACHE_EPOCH_REGEX = '([0-9])+'
 class SimpleGoogleCal():
 
     def __init__(self, options):
-        self.service = self.setup_google_calendar_api(options.credentials_path)
+        self.config_path = options.config_path
+        self.service = self.setup_google_calendar_api()
         self.filter_list = options.calendar_filter_list
         self.get_calendars()
 
-    def setup_google_calendar_api(self, credentials_path):
+    def setup_google_calendar_api(self):
         """setup_google_calendar_api
 
             Sets up the initial Google calendar service, which can then be used
             for future work.
         """
 
-        store = file.Storage(path.join(credentials_path, 'credentials.json'))
+        store = file.Storage(path.join(self.config_path, 'credentials.json'))
         creds = store.get()
 
         if not creds or creds.invalid:
@@ -75,7 +76,8 @@ class SimpleGoogleCal():
 
         Store calendars to a cache file to skip API call.
         """
-        cache_file_name = f"cache/nvim_notes_cache_{int(t.time())}.json"
+        cache_file_name = f"{self.config_path}/cache/" +
+                          f"nvim_notes_cache_{int(t.time())}.json"
 
         makedirs(path.dirname(cache_file_name), exist_ok=True)
 
@@ -88,7 +90,7 @@ class SimpleGoogleCal():
         When possible, load the calendars from the cache, but default
         to the API when needed.
         """
-        cache_file_pattern = f"cache/nvim_notes_cache_*.json"
+        cache_file_pattern = f"{self.config_path}/cache/nvim_notes_cache_*.json"
 
         try:
             cache_file_name = glob.glob(cache_file_pattern)[0]
