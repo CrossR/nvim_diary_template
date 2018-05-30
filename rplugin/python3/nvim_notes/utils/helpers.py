@@ -45,7 +45,7 @@ def convert_events(events):
     return formatted_events
 
 
-def format_events(self, events_list):
+def format_events(events_list):
     """format_events
 
     Formats a list of GCal events down to the event name, and the
