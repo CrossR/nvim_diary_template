@@ -6,7 +6,7 @@ import re
 from datetime import date, datetime, time
 
 from apiclient.discovery import build
-from os import path
+from os import path, makedirs
 from httplib2 import Http
 from oauth2client import client, file, tools
 
@@ -76,6 +76,9 @@ class SimpleGoogleCal():
         Store calendars to a cache file to skip API call.
         """
         cache_file_name = f"cache/nvim_notes_cache_{int(t.time())}.json"
+
+        makedirs(path.dirname(cache_file_name), exist_ok=True)
+
         with open(cache_file_name, 'w') as cache_file:
             json.dump(self.all_calendars, cache_file)
 
