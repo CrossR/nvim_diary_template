@@ -1,6 +1,6 @@
 from .make_schedule import make_schedule
 
-def produce_daily_markdown(options):
+def produce_daily_markdown(nvim, options):
     """produce_daily_markdown
 
     Produce the actual markdown that is shown on the page.
@@ -12,6 +12,6 @@ def produce_daily_markdown(options):
         full_markdown_file.append(f"# {heading}")
         full_markdown_file.append("")
 
-    full_markdown_file.extend(make_schedule(options))
+    full_markdown_file.extend(make_schedule(nvim, options))
 
     return full_markdown_file

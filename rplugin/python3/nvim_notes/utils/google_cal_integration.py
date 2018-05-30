@@ -15,9 +15,10 @@ CALENDAR_CACHE_DURATION = 31
 CACHE_EPOCH_REGEX = '([0-9])+'
 
 
-class SimpleGoogleCal():
+class SimpleNvimGoogleCal():
 
-    def __init__(self, options):
+    def __init__(self, nvim, options):
+        self.nvim = nvim
         self.config_path = options.config_path
         self.service = self.setup_google_calendar_api()
         self.filter_list = options.calendar_filter_list
@@ -188,13 +189,13 @@ class SimpleGoogleCal():
             )
 
 
-def get_events_for_day(options):
+def get_events_for_day(nvim, options):
     """get_events_for_day
 
     A wrapper function to call the functions required to get all events
     for the current day.
     """
-    google_calendar = SimpleGoogleCal(options)
+    google_calendar = SimpleNvimGoogleCal(nvim, options)
     todays_events = google_calendar.get_events_for_timeframe()
 
     return todays_events

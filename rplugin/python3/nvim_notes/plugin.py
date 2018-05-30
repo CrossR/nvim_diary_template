@@ -39,7 +39,7 @@ class NotesPlugin(object):
 
     @neovim.autocmd('BufNewFile', pattern=FILE_TYPE)
     def on_new_file(self):
-        schedule_today = produce_daily_markdown(self._options)
+        schedule_today = produce_daily_markdown(self._nvim, self._options)
         buffer_number = self._nvim.current.buffer.number
         self._nvim.api.buf_set_lines(buffer_number, 0, -1, True, schedule_today)
 
@@ -51,7 +51,7 @@ class NotesPlugin(object):
         if self._options is None:
             self._options = PluginOptions(self._nvim)
 
-        schedule_today = produce_daily_markdown(self._options)
+        schedule_today = produce_daily_markdown(self._nvim, self._options)
         buffer_number = self._nvim.current.buffer.number
         self._nvim.api.buf_set_lines(buffer_number, 0, -1, True, schedule_today)
 
