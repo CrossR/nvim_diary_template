@@ -1,5 +1,5 @@
 import re
-from datetime import datetime
+from datetime import date
 
 from .make_schedule import produce_schedule_markdown
 
@@ -37,8 +37,8 @@ def generate_markdown_metadata():
     metadata = []
 
     metadata.append("<!---")
-    metadata.append(f"    Date: {datetime.today()}")
-    metadata.append(f"    Tags: ")
+    metadata.append(f"    Date: {date.today()}")
+    metadata.append(f"    Tags:")
     metadata.append("--->")
     metadata.append("")
 
