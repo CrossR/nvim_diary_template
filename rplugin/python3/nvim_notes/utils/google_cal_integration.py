@@ -182,7 +182,6 @@ class SimpleNvimGoogleCal():
 
     def update_calendar(self, markdown_events):
 
-
         todays_events = self.check_cache(
             'events',
             EVENT_CACHE_DURATION,

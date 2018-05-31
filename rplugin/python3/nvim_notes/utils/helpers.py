@@ -67,7 +67,7 @@ def format_events(events_list):
 
 def create_google_event(event, timezone):
     return {
-        "summary": event.event_name,
+        "summary": event['event_name'],
         "start": {
             "timeZone": timezone,
             "dateTime": get_time(event['start_time']).isoformat()
