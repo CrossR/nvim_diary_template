@@ -1,4 +1,5 @@
 import re
+from datetime import date
 
 from .make_schedule import produce_schedule_markdown
 
@@ -14,6 +15,8 @@ def produce_daily_markdown(nvim, options, gcal_service):
 
     full_markdown_file = []
 
+    full_markdown_file.extend(generate_markdown_metadata())
+
     for heading in options.headings:
         full_markdown_file.append(f"# {heading}")
         full_markdown_file.append("")
@@ -23,6 +26,23 @@ def produce_daily_markdown(nvim, options, gcal_service):
     full_markdown_file.extend(schedule_markdown)
 
     return full_markdown_file
+
+def generate_markdown_metadata():
+    """generate_markdown_metadata
+
+    Add some basic metadata to the stop of the file
+    in HTML tags.
+    """
+
+    metadata = []
+
+    metadata.append("<!---")
+    metadata.append(f"    Date: {date.today()}")
+    metadata.append(f"    Tags:")
+    metadata.append("--->")
+    metadata.append("")
+
+    return metadata
 
 
 def parse_buffer_events(events):
