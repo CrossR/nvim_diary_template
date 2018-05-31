@@ -2,8 +2,11 @@ import re
 from datetime import date
 from os import makedirs, path
 
-from .helpers import (get_buffer_contents, get_schedule_section_line,
-                      open_file, set_buffer_contents, sort_events)
+from dateutil import parser
+
+from .helpers import (DATETIME_FORMAT, get_buffer_contents,
+                      get_schedule_section_line, open_file,
+                      set_buffer_contents, sort_events)
 from .make_schedule import format_events_lines, produce_schedule_markdown
 
 DATE_REGEX = r"[0-9]{1,2}\/[0-9]{1,2}\/[0-9]{4} [0-9]{1,2}:[0-9]{1,2}"
@@ -80,10 +83,10 @@ def parse_buffer_events(events):
 
         # TODO: Regex is probably going to be a giant pain here,
         # and won't work if the string pattern changes.
-        parsed_event_line = re.findall(DATE_REGEX, event)
+        parsed_line = re.findall(DATE_REGEX, event)
 
-        start_date = parsed_event_line[0]
-        end_date = parsed_event_line[1]
+        start_date = parser.parse(parsed_line[0]).strftime(DATETIME_FORMAT)
+        end_date = parser.parse(parsed_line[1]).strftime(DATETIME_FORMAT)
         event_details = re.search(EVENT_REGEX, event)[0]
 
         event_dict = {
