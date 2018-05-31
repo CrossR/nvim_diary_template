@@ -45,14 +45,6 @@ class NotesPlugin(object):
                 self._options
             )
 
-    @neovim.autocmd('BufNewFile', pattern=FILE_TYPE)
-    def on_new_file(self):
-        make_markdown_file(
-            self._nvim,
-            self._options,
-            self._gcal_service
-        )
-
     @neovim.command('GenerateSchedule')
     # @if_active
     def generate_schedule_markdown(self):
