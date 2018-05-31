@@ -1,11 +1,13 @@
 import os
 from functools import wraps
+from pathlib import Path
 
 import neovim
 
-from nvim_notes.utils.make_markdown_file import produce_daily_markdown, parse_markdown_file_for_events
 from nvim_notes.utils.google_cal_integration import SimpleNvimGoogleCal
 from nvim_notes.utils.keybind_actions import strikeout_line
+from nvim_notes.utils.make_markdown_file import (make_markdown_file,
+                                                 parse_markdown_file_for_events)
 
 FILE_TYPE = '*.md'
 
@@ -43,26 +45,9 @@ class NotesPlugin(object):
                 self._options
             )
 
-    @neovim.autocmd('BufNewFile', pattern=FILE_TYPE)
-    def on_new_file(self):
-        schedule_today = produce_daily_markdown(
-            self._nvim,
-            self._options,
-            self._gcal_service
-        )
-
-        buffer_number = self._nvim.current.buffer.number
-        self._nvim.api.buf_set_lines(
-            buffer_number,
-            0,
-            -1,
-            True,
-            schedule_today
-        )
-
-    @neovim.command('GenerateSchedule')
+    @neovim.command('OpenSchedule')
     # @if_active
-    def generate_schedule_markdown(self):
+    def open_schedule(self):
 
         # TODO: Remove this, since it shouldn't be needed due to the autocmds.
         if self._options is None:
@@ -72,22 +57,11 @@ class NotesPlugin(object):
                 self._options
             )
 
-        schedule_today = produce_daily_markdown(
+        make_markdown_file(
             self._nvim,
             self._options,
             self._gcal_service
         )
-
-        buffer_number = self._nvim.current.buffer.number
-        self._nvim.api.buf_set_lines(
-            buffer_number,
-            0,
-            -1,
-            True,
-            schedule_today
-        )
-
-        return
 
     @neovim.command('UpdateCalendar')
     def update_calendar(self):
@@ -114,12 +88,13 @@ class NotesPlugin(object):
         )
 
 
-
 class PluginOptions:
 
     _defaults = {
         'active': True,
         'config_path': os.getcwd(),
+        'notes_path': os.path.join(str(Path.home()), "nvim_notes"),
+        'open_method': 'tabnew',
         'headings': ['Notes', 'Issues', 'ToDo'],
         'use_google_calendar': True,
         'calendar_filter_list': [],

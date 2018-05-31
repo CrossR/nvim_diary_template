@@ -17,7 +17,7 @@ def format_events_lines(events):
         event_name = event['event_name']
 
         # TODO: Similarly, make this string into a config option.
-        current_line = f"- {start_time} - {end_time}: {event_name}"
+        current_line = f"* {start_time} - {end_time}: {event_name}"
 
         events_lines.append(current_line)
 
