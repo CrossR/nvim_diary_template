@@ -94,13 +94,11 @@ class SimpleNvimGoogleCal():
         page_token = None
         calendar_list = self.service.calendarList().list(pageToken=page_token).execute()
 
-        all_calendars = []
+        all_calendars = {}
 
         for calendar_list_entry in calendar_list['items']:
-            all_calendars.append({
-                'name': calendar_list_entry['summary'],
-                'id': calendar_list_entry['id']
-            })
+            all_calendars[calendar_list_entry['summary']] = \
+                calendar_list_entry['id']
 
         return all_calendars
 
@@ -209,14 +207,22 @@ class SimpleNvimGoogleCal():
         # TODO: Remove this debug command.
         self.set_cache(missing_events, 'missing_events')
 
+        target_calendar = self.get_calendar_id()
+
         for event in missing_events:
             gcal_event = create_google_event(event, self.options.timezone)
 
             self.service.events().insert(
-                self.options.google_cal_id,
+                target_calendar,
                 gcal_event
             )
 
         # Now that the events have been updated, update the cache.
         updated_events = self.get_events_for_today()
         self.set_cache(updated_events, 'events')
+
+    def get_calendar_id(self):
+        if self.options.google_cal_name == 'primary':
+            return 'primary'
+        else:
+            return self.all_calendars[self.options.google_cal_name]
