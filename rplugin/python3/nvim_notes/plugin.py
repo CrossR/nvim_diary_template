@@ -102,6 +102,7 @@ class PluginOptions:
         'active': True,
         'config_path': os.getcwd(),
         'notes_path': str(Path.home()),
+        'open_method': 'tabnew',
         'headings': ['Notes', 'Issues', 'ToDo'],
         'use_google_calendar': True,
         'calendar_filter_list': [],

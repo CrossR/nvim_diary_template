@@ -16,7 +16,7 @@ def make_markdown_file(nvim, options, gcal_service):
     todays_file = f"{options.notes_path}/{str(date.today())}.md"
 
     if path.isfile(todays_file):
-        open_file(nvim, todays_file)
+        open_file(nvim, todays_file, options.open_method)
         return
 
     full_markdown = []
@@ -31,7 +31,7 @@ def make_markdown_file(nvim, options, gcal_service):
     schedule_markdown = produce_schedule_markdown(todays_events)
     full_markdown.extend(schedule_markdown)
 
-    open_file(nvim, todays_file)
+    open_file(nvim, todays_file, options.open_method)
 
     new_buffer_number = nvim.current.buffer.number
 
@@ -44,8 +44,8 @@ def make_markdown_file(nvim, options, gcal_service):
     )
 
 
-def open_file(nvim, path):
-    nvim.command(f":e {path}")
+def open_file(nvim, path, open_method):
+    nvim.command(f":{open_method} {path}")
 
 
 def generate_markdown_metadata():
