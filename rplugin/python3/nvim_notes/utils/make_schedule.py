@@ -21,6 +21,8 @@ def format_events_lines(events):
 
         events_lines.append(current_line)
 
+    events_lines.append("")
+
     return events_lines
 
 def produce_schedule_markdown(event_list):
