@@ -4,7 +4,7 @@ from os import makedirs, path
 
 from .helpers import (get_buffer_contents, get_schedule_section_line,
                       open_file, set_buffer_contents, sort_events)
-from .make_schedule import produce_schedule_markdown
+from .make_schedule import format_events_lines, produce_schedule_markdown
 
 DATE_REGEX = r"[0-9]{2}\/[0-9]{2}\/[0-9]{4} [0-9]{2}:[0-9]{2}"
 EVENT_REGEX = r"(?<=: ).*$"
@@ -110,6 +110,22 @@ def sort_markdown_events(nvim):
     # If its already sorted, return to stop any API calls.
     if sorted_events == unsorted_events:
         return
+
+    event_lines = format_events_lines(sorted_events)
+
+    buffer_number = nvim.current.buffer.number
+    current_buffer = get_buffer_contents(nvim)
+
+    old_events_start_line = get_schedule_section_line(current_buffer)
+    old_events_end_line = old_events_start_line + len(sorted_events)
+
+    nvim.api.buf_set_lines(
+        buffer_number,
+        old_events_start_line,
+        old_events_end_line,
+        True,
+        event_lines
+    )
 
 
 def parse_markdown_file_for_events(nvim):

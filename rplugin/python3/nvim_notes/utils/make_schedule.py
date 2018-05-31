@@ -3,7 +3,7 @@ from .helpers import convert_events
 def format_events_lines(events):
     """format_events_lines
 
-    Given an event, will produce a formatted line for that event.
+    Given some events, will produce formatted lines for them.
     """
 
     events_lines = []
