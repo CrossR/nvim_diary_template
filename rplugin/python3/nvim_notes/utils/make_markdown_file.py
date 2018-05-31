@@ -1,6 +1,7 @@
 import re
 from datetime import date
 from os import makedirs, path
+from operator import attrgetter
 
 from .make_schedule import produce_schedule_markdown
 
@@ -111,6 +112,17 @@ def parse_buffer_events(events):
         formatted_events.append(event_dict)
 
     return formatted_events
+
+def sort_events(events):
+    """sort_events
+
+    Given a list of events, sort them by their start time first,
+    then end time and finally event name.
+    """
+    return sorted(
+        events,
+        key=attrgetter('start_time', 'end_time', 'event_name')
+    )
 
 
 def parse_markdown_file_for_events(nvim):
