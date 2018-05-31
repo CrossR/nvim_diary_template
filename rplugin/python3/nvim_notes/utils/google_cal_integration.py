@@ -216,7 +216,7 @@ class SimpleNvimGoogleCal():
             gcal_event = create_google_event(event, self.options.timezone)
 
             self.service.events().insert(
-                calendar_id=target_calendar,
+                calendarId=target_calendar,
                 body=gcal_event
             ).execute()
 
