@@ -110,7 +110,7 @@ class NotesPlugin(object):
             self._nvim.current.window.cursor[0] - 1,
             self._nvim.current.window.cursor[0],
             True,
-            strikeout_line(current_line)
+            strikeout_line(current_line[0])
         )
 
 
