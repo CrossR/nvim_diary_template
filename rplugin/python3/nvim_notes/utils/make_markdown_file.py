@@ -13,7 +13,7 @@ def make_markdown_file(nvim, options, gcal_service):
 
     Produce the actual markdown file.
     """
-    todays_file = f"{options.notes_path}/{date.today}.md"
+    todays_file = f"{options.notes_path}/{str(date.today())}.md"
 
     if path.isfile(todays_file):
         open_file(nvim, todays_file)
