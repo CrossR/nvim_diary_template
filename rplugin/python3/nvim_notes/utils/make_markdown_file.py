@@ -1,5 +1,6 @@
 import re
 from datetime import date
+from os import path
 
 from .make_schedule import produce_schedule_markdown
 
@@ -7,25 +8,45 @@ DATE_REGEX = r"[0-9]{2}\/[0-9]{2}\/[0-9]{4} [0-9]{2}:[0-9]{2}"
 EVENT_REGEX = r"(?<=: ).*$"
 
 
-def produce_daily_markdown(nvim, options, gcal_service):
-    """produce_daily_markdown
+def make_markdown_file(nvim, options, gcal_service):
+    """make_markdown_file
 
-    Produce the actual markdown that is shown on the page.
+    Produce the actual markdown file.
     """
+    todays_file = f"{options.notes_path}/{date.today}.md"
 
-    full_markdown_file = []
+    if path.isfile(todays_file):
+        open_file(nvim, todays_file)
+        return
 
-    full_markdown_file.extend(generate_markdown_metadata())
+    full_markdown = []
+
+    full_markdown.extend(generate_markdown_metadata())
 
     for heading in options.headings:
-        full_markdown_file.append(f"# {heading}")
-        full_markdown_file.append("")
+        full_markdown.append(f"# {heading}")
+        full_markdown.append("")
 
     todays_events = gcal_service.todays_events
     schedule_markdown = produce_schedule_markdown(todays_events)
-    full_markdown_file.extend(schedule_markdown)
+    full_markdown.extend(schedule_markdown)
 
-    return full_markdown_file
+    open_file(nvim, todays_file)
+
+    new_buffer_number = nvim.current.buffer.number
+
+    nvim.api.buf_set_lines(
+        new_buffer_number,
+        0,
+        -1,
+        True,
+        full_markdown
+    )
+
+
+def open_file(nvim, path):
+    nvim.command(f":e {path}")
+
 
 def generate_markdown_metadata():
     """generate_markdown_metadata
