@@ -8,9 +8,7 @@ def format_events_lines(events):
 
     events_lines = []
 
-    simplified_events = convert_events(events)
-
-    for event in simplified_events:
+    for event in events:
 
         start_time = event['start_time']
         end_time = event['end_time']
@@ -38,7 +36,8 @@ def produce_schedule_markdown(event_list):
     # something like f"{importance * #}".
     markdown_lines.append("# Schedule")
 
-    schedule_lines = format_events_lines(event_list)
+    converted_events = convert_events(event_list)
+    schedule_lines = format_events_lines(converted_events)
     markdown_lines.extend(schedule_lines)
 
     return markdown_lines
