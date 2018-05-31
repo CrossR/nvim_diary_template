@@ -106,7 +106,7 @@ class PluginOptions:
         'calendar_filter_list': [],
         'add_to_google_cal': False,
         'google_cal_name': 'primary',
-        'timezone': 'Europe/Zurich'
+        'timezone': 'Europe/London'
     }
 
     def __init__(self, nvim):
