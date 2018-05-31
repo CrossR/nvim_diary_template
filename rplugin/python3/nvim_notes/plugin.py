@@ -101,7 +101,7 @@ class PluginOptions:
     _defaults = {
         'active': True,
         'config_path': os.getcwd(),
-        'notes_path': os.path(str(Path.home()), "nvim_notes"),
+        'notes_path': os.path.join(str(Path.home()), "nvim_notes"),
         'open_method': 'tabnew',
         'headings': ['Notes', 'Issues', 'ToDo'],
         'use_google_calendar': True,
