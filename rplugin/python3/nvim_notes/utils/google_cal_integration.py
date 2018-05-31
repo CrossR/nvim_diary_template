@@ -120,7 +120,7 @@ class SimpleNvimGoogleCal():
         page_token = None
         events_in_timeframe = []
 
-        for calendar_id in [d['id'] for d in self.filtered_calendars]:
+        for calendar_name, calendar_id in self.filtered_calendars.items():
             events = self.service.events().list(
                 calendarId=calendar_id,
                 pageToken=page_token,
