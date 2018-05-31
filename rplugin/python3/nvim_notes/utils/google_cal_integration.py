@@ -9,7 +9,7 @@ from apiclient.discovery import build
 from httplib2 import Http
 from oauth2client import client, file, tools
 
-from .helpers import convert_events, format_events
+from .helpers import convert_events, format_events, create_google_event
 
 CACHE_EPOCH_REGEX = '([0-9])+'
 CALENDAR_CACHE_DURATION = timedelta(days=31)
@@ -21,6 +21,7 @@ class SimpleNvimGoogleCal():
     def __init__(self, nvim, options):
         self.nvim = nvim
         self.config_path = options.config_path
+        self.options = options
 
         self.service = self.setup_google_calendar_api()
 
@@ -32,12 +33,6 @@ class SimpleNvimGoogleCal():
 
         self.filter_list = options.calendar_filter_list
         self.filtered_calendars = self.filter_calendars()
-
-        self.events = self.check_cache(
-            'events',
-            EVENT_CACHE_DURATION,
-            self.get_events_for_today
-        )
 
     def setup_google_calendar_api(self):
         """setup_google_calendar_api
@@ -186,11 +181,29 @@ class SimpleNvimGoogleCal():
             remove(old_cache_file)
 
     def update_calendar(self, markdown_events):
-        events_today = convert_events(self.get_events_for_today())
 
-        # TODO: Fix this.
+
+        todays_events = self.check_cache(
+            'events',
+            EVENT_CACHE_DURATION,
+            self.get_events_for_today
+        )
+
+        todays_events = convert_events(todays_events)
+
         missing_events = [
-            event for event in markdown_events if event not in events_today
+            event for event in markdown_events if event not in todays_events
         ]
 
         self.set_cache(missing_events, 'missing_events')
+
+        for event in missing_events:
+            gcal_event = create_google_event(event, self.options.timezone)
+
+            self.service.events.insert(
+                self.options.calendar_id,
+                gcal_event
+            )
+
+        updated_events = self.get_events_for_today()
+        self.set_cache(updated_events, 'events')
