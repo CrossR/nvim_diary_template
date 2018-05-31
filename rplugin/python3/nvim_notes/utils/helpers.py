@@ -1,4 +1,4 @@
-from operator import attrgetter
+from operator import itemgetter
 from os import path
 
 from dateutil import parser
@@ -100,7 +100,7 @@ def sort_events(events):
     """
     return sorted(
         events,
-        key=attrgetter('start_time', 'end_time', 'event_name')
+        key=itemgetter('start_time', 'end_time', 'event_name')
     )
 
 
