@@ -101,7 +101,7 @@ class PluginOptions:
     _defaults = {
         'active': True,
         'config_path': os.getcwd(),
-        'notes_path': Path.home(),
+        'notes_path': str(Path.home()),
         'headings': ['Notes', 'Issues', 'ToDo'],
         'use_google_calendar': True,
         'calendar_filter_list': [],
