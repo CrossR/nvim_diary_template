@@ -80,7 +80,7 @@ class SimpleNvimGoogleCal():
         """
 
         return {
-            cal_name:cal_id for cal_name, cal_id in self.all_calendars.items() 
+            cal_name: cal_id for cal_name, cal_id in self.all_calendars.items()
             if cal_name not in self.filter_list
         }
 
@@ -212,7 +212,7 @@ class SimpleNvimGoogleCal():
 
         target_calendar = self.get_calendar_id()
 
-        #TODO: This needs to be wrapped in an try/catch probably.
+        # TODO: This needs to be wrapped in an try/catch probably.
         for event in missing_events:
             gcal_event = create_google_event(event, self.options.timezone)
 
