@@ -18,7 +18,7 @@ def produce_daily_markdown(nvim, options, gcal_service):
         full_markdown_file.append(f"# {heading}")
         full_markdown_file.append("")
 
-    todays_events = gcal_service.get_events_for_today()
+    todays_events = gcal_service.todays_events
     schedule_markdown = produce_schedule_markdown(todays_events)
     full_markdown_file.extend(schedule_markdown)
 

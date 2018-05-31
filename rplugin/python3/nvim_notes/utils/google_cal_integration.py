@@ -9,7 +9,7 @@ from apiclient.discovery import build
 from httplib2 import Http
 from oauth2client import client, file, tools
 
-from .helpers import convert_events, format_events, create_google_event
+from .helpers import convert_events, create_google_event, format_events
 
 CACHE_EPOCH_REGEX = '([0-9])+'
 CALENDAR_CACHE_DURATION = timedelta(days=31)
@@ -24,7 +24,6 @@ class SimpleNvimGoogleCal():
         self.options = options
 
         self.service = self.setup_google_calendar_api()
-
         self.all_calendars = self.check_cache(
             "calendars",
             CALENDAR_CACHE_DURATION,
@@ -33,6 +32,20 @@ class SimpleNvimGoogleCal():
 
         self.filter_list = options.calendar_filter_list
         self.filtered_calendars = self.filter_calendars()
+
+        self._events = self.check_cache(
+            'events',
+            EVENT_CACHE_DURATION,
+            self.get_events_for_today
+        )
+
+    @property
+    def todays_events(self):
+        return self.check_cache(
+            "events",
+            EVENT_CACHE_DURATION,
+            self.get_events_for_today
+        )
 
     def setup_google_calendar_api(self):
         """setup_google_calendar_api
@@ -181,19 +194,19 @@ class SimpleNvimGoogleCal():
             remove(old_cache_file)
 
     def update_calendar(self, markdown_events):
+        """update_calendar
 
-        todays_events = self.check_cache(
-            'events',
-            EVENT_CACHE_DURATION,
-            self.get_events_for_today
-        )
+        Given a set of events that are missing from Google calendar, will upload
+        them to the calendar that is specified in the users options.
+        """
 
-        todays_events = convert_events(todays_events)
+        todays_events = convert_events(self.todays_events)
 
         missing_events = [
             event for event in markdown_events if event not in todays_events
         ]
 
+        # TODO: Remove this debug command.
         self.set_cache(missing_events, 'missing_events')
 
         for event in missing_events:
@@ -204,5 +217,6 @@ class SimpleNvimGoogleCal():
                 gcal_event
             )
 
+        # Now that the events have been updated, update the cache.
         updated_events = self.get_events_for_today()
         self.set_cache(updated_events, 'events')
