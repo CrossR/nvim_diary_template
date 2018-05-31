@@ -64,3 +64,16 @@ def format_events(events_list):
         filtered_events.append(event_dict)
 
     return filtered_events
+
+def create_google_event(event, timezone):
+    return {
+        "summary": event.event_name,
+        "start": {
+            "timeZone": timezone,
+            "dateTime": get_time(event['start_time']).isoformat()
+        },
+        "end": {
+            "timeZone": timezone,
+            "dateTime": get_time(event['end_time']).isoformat()
+        }
+    }
