@@ -6,7 +6,7 @@ from .helpers import (get_buffer_contents, get_schedule_section_line,
                       open_file, set_buffer_contents, sort_events)
 from .make_schedule import format_events_lines, produce_schedule_markdown
 
-DATE_REGEX = r"[0-9]{2}\/[0-9]{2}\/[0-9]{4} [0-9]{2}:[0-9]{2}"
+DATE_REGEX = r"[0-9]{1:2}\/[0-9]{1:2}\/[0-9]{4} [0-9]{1:2}:[0-9]{1:2}"
 EVENT_REGEX = r"(?<=: ).*$"
 
 
