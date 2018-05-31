@@ -1,6 +1,6 @@
 import re
 from datetime import date
-from os import path
+from os import makedirs, path
 
 from .make_schedule import produce_schedule_markdown
 
@@ -12,6 +12,9 @@ def make_markdown_file(nvim, options, gcal_service):
     """make_markdown_file
 
     Produce the actual markdown file.
+    This includes the following steps:
+        * Open the file if it already exists.
+        * If not, put the default template in and save.
     """
     todays_file = path.join(
         options.notes_path,
@@ -36,6 +39,7 @@ def make_markdown_file(nvim, options, gcal_service):
     schedule_markdown = produce_schedule_markdown(todays_events)
     full_markdown.extend(schedule_markdown)
 
+    makedirs(path.dirname(todays_file), exist_ok=True)
     open_file(nvim, todays_file, options.open_method)
 
     new_buffer_number = nvim.current.buffer.number
@@ -52,6 +56,11 @@ def make_markdown_file(nvim, options, gcal_service):
 
 
 def open_file(nvim, path, open_method):
+    """open_file
+
+    Opens the file in the specified way.
+    """
+
     nvim.command(f":{open_method} {path}")
 
 
