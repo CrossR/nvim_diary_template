@@ -45,9 +45,9 @@ class NotesPlugin(object):
                 self._options
             )
 
-    @neovim.command('GenerateSchedule')
+    @neovim.command('OpenSchedule')
     # @if_active
-    def generate_schedule_markdown(self):
+    def open_schedule(self):
 
         # TODO: Remove this, since it shouldn't be needed due to the autocmds.
         if self._options is None:
