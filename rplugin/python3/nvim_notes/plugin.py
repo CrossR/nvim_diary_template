@@ -103,7 +103,9 @@ class PluginOptions:
         'config_path': os.getcwd(),
         'headings': ['Notes', 'Issues', 'ToDo'],
         'use_google_calendar': True,
-        'calendar_filter_list': []
+        'calendar_filter_list': [],
+        'add_to_google_cal': False,
+        'google_cal_id': 'primary'
     }
 
     def __init__(self, nvim):
