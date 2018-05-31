@@ -3,11 +3,13 @@ import json
 import re
 import time as t
 from datetime import date, datetime, time, timedelta
-from os import makedirs, path
+from os import makedirs, path, remove
 
 from apiclient.discovery import build
 from httplib2 import Http
 from oauth2client import client, file, tools
+
+from .helpers import convert_events, create_google_event, format_events
 
 CACHE_EPOCH_REGEX = '([0-9])+'
 CALENDAR_CACHE_DURATION = timedelta(days=31)
@@ -19,9 +21,9 @@ class SimpleNvimGoogleCal():
     def __init__(self, nvim, options):
         self.nvim = nvim
         self.config_path = options.config_path
+        self.options = options
 
         self.service = self.setup_google_calendar_api()
-
         self.all_calendars = self.check_cache(
             "calendars",
             CALENDAR_CACHE_DURATION,
@@ -31,8 +33,16 @@ class SimpleNvimGoogleCal():
         self.filter_list = options.calendar_filter_list
         self.filtered_calendars = self.filter_calendars()
 
-        self.events = self.check_cache(
+        self._events = self.check_cache(
             'events',
+            EVENT_CACHE_DURATION,
+            self.get_events_for_today
+        )
+
+    @property
+    def todays_events(self):
+        return self.check_cache(
+            "events",
             EVENT_CACHE_DURATION,
             self.get_events_for_today
         )
@@ -69,7 +79,10 @@ class SimpleNvimGoogleCal():
         Filters the calendars to only those the user cares about.
         """
 
-        return [cal for cal in self.all_calendars if cal not in self.filter_list]
+        return {
+            cal_name:cal_id for cal_name, cal_id in self.all_calendars.items() 
+            if cal_name not in self.filter_list
+        }
 
     def get_all_calendars(self):
         """get_all_calendars
@@ -84,13 +97,11 @@ class SimpleNvimGoogleCal():
         page_token = None
         calendar_list = self.service.calendarList().list(pageToken=page_token).execute()
 
-        all_calendars = []
+        all_calendars = {}
 
         for calendar_list_entry in calendar_list['items']:
-            all_calendars.append({
-                'name': calendar_list_entry['summary'],
-                'id': calendar_list_entry['id']
-            })
+            all_calendars[calendar_list_entry['summary']] = \
+                calendar_list_entry['id']
 
         return all_calendars
 
@@ -112,7 +123,7 @@ class SimpleNvimGoogleCal():
         page_token = None
         events_in_timeframe = []
 
-        for calendar_id in [d['id'] for d in self.filtered_calendars]:
+        for _, calendar_id in self.filtered_calendars.items():
             events = self.service.events().list(
                 calendarId=calendar_id,
                 pageToken=page_token,
@@ -126,32 +137,12 @@ class SimpleNvimGoogleCal():
             if not page_token:
                 break
 
-        return self.format_events(events_in_timeframe)
-
-    def format_events(self, events_list):
-        """format_events
-
-        Formats a list of events down to the event name, and the
-        start and end date of the event.
-        """
-
-        filtered_events = []
-
-        for event in events_list:
-            event_dict = {
-                'event_name': event['summary'],
-                'start_time': event['start'],
-                'end_time': event['end']
-            }
-
-            filtered_events.append(event_dict)
-
-        return filtered_events
+        return format_events(events_in_timeframe)
 
     def check_cache(self, data_name, data_age, fallback_function):
         """check_cache
 
-        A function decorator to check for valid cache files.
+        A function to check for valid cache files.
         If one is found, then it can be used, but otherwise the original function
         is called to generate the data and cache it.
         """
@@ -171,6 +162,9 @@ class SimpleNvimGoogleCal():
             if difference <= data_age:
                 with open(cache_file_name) as cache_file:
                     data = json.load(cache_file)
+            else:
+                data = fallback_function()
+                self.set_cache(data, data_name)
         except (IndexError, FileNotFoundError):
             data = fallback_function()
             self.set_cache(data, data_name)
@@ -178,35 +172,77 @@ class SimpleNvimGoogleCal():
         return data
 
     def set_cache(self, data, data_name):
+        """set_cache
+
+        Given some data and a name, creates a cache file
+        in the config folder. Cleans up any existing cache files
+        when creting a new one.
+        """
 
         cache_file_name = f"{self.config_path}/cache/" + \
             f"nvim_notes_{data_name}_cache_{int(t.time())}.json"
 
+        pattern = f"{self.config_path}/cache/" + \
+            f"nvim_notes_{data_name}_cache_*.json"
+
         makedirs(path.dirname(cache_file_name), exist_ok=True)
+        old_cache_files = glob.glob(pattern)
 
         with open(cache_file_name, 'w') as cache_file:
             json.dump(data, cache_file)
 
-    def compare_events(self, markdown_events):
-        events_today = self.get_events_for_today()
+        for old_cache_file in old_cache_files:
+            remove(old_cache_file)
+
+    def update_calendar(self, markdown_events):
+        """update_calendar
+
+        Given a set of events that are missing from Google calendar, will upload
+        them to the calendar that is specified in the users options.
+        """
+
+        todays_events = convert_events(self.todays_events)
 
         missing_events = [
-            event for event in markdown_events if event not in events_today
+            event for event in markdown_events if event not in todays_events
         ]
 
-        for event_string in missing_events:
-            self.service.event.quickAdd(
-                calendarId=calendar_id,
-                text=event_string
-            )
+        # TODO: Remove this debug command.
+        self.set_cache(missing_events, 'missing_events')
 
+        target_calendar = self.get_calendar_id()
 
-def get_events_for_day(nvim, options):
-    """get_events_for_day
+        #TODO: This needs to be wrapped in an try/catch probably.
+        for event in missing_events:
+            gcal_event = create_google_event(event, self.options.timezone)
 
-    A wrapper function to call the functions required to get all events
-    for the current day.
-    """
-    google_calendar = SimpleNvimGoogleCal(nvim, options)
+            self.service.events().insert(
+                calendarId=target_calendar,
+                body=gcal_event
+            ).execute()
 
-    return google_calendar.events
+        # Now that the events have been updated, update the cache.
+        updated_events = self.get_events_for_today()
+        self.set_cache(updated_events, 'events')
+
+        self.nvim.out_write(
+            f"Added {len(missing_events)} events to {self.options.google_cal_name} calendar.\n"
+        )
+
+    def get_calendar_id(self):
+        """get_calendar_id
+
+        Gets the ID of a calendar from its name.
+        """
+
+        target_calendar = self.options.google_cal_name
+
+        if target_calendar == 'primary':
+            return 'primary'
+        else:
+            try:
+                return self.all_calendars[target_calendar]
+            except KeyError:
+                self.nvim.err_write(
+                    f"No calendar named {target_calendar} exists.\n"
+                )
