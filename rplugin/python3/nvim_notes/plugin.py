@@ -1,13 +1,14 @@
-import os
 from functools import wraps
-from pathlib import Path
 
 import neovim
 
 from nvim_notes.utils.google_cal_integration import SimpleNvimGoogleCal
+from nvim_notes.utils.helpers import get_line_content, set_line_content
 from nvim_notes.utils.keybind_actions import strikeout_line
-from nvim_notes.utils.make_markdown_file import (make_markdown_file,
-                                                 parse_markdown_file_for_events)
+from nvim_notes.utils.make_markdown_file import (open_markdown_file,
+                                                 parse_markdown_file_for_events,
+                                                 sort_markdown_events)
+from nvim_notes.utils.plugin_options import PluginOptions
 
 FILE_TYPE = '*.md'
 
@@ -57,7 +58,7 @@ class NotesPlugin(object):
                 self._options
             )
 
-        make_markdown_file(
+        open_markdown_file(
             self._nvim,
             self._options,
             self._gcal_service
@@ -68,44 +69,11 @@ class NotesPlugin(object):
         markdown_events = parse_markdown_file_for_events(self._nvim)
         self._gcal_service.update_calendar(markdown_events)
 
-        return
+    @neovim.command('SortCalendar')
+    def sort_calendar(self):
+        sort_markdown_events(self._nvim)
 
     @neovim.command('StrikeoutLine')
     def strikeout(self):
-        current_line = self._nvim.api.buf_get_lines(
-            self._nvim.current.buffer.number,
-            self._nvim.current.window.cursor[0] - 1,
-            self._nvim.current.window.cursor[0],
-            True
-        )
-
-        self._nvim.api.buf_set_lines(
-            self._nvim.current.buffer.number,
-            self._nvim.current.window.cursor[0] - 1,
-            self._nvim.current.window.cursor[0],
-            True,
-            strikeout_line(current_line[0])
-        )
-
-
-class PluginOptions:
-
-    _defaults = {
-        'active': True,
-        'config_path': os.getcwd(),
-        'notes_path': os.path.join(str(Path.home()), "nvim_notes"),
-        'open_method': 'tabnew',
-        'headings': ['Notes', 'Issues', 'ToDo'],
-        'use_google_calendar': True,
-        'calendar_filter_list': [],
-        'add_to_google_cal': False,
-        'google_cal_name': 'primary',
-        'timezone': 'Europe/London'
-    }
-
-    def __init__(self, nvim):
-        for key, default_value in PluginOptions._defaults.items():
-            value = nvim.vars.get(f"nvim_notes#{key}", default_value)
-            nvim.vars[f"nvim_notes#{key}"] = value
-
-            setattr(self, key, value)
+        current_line = get_line_content(self._nvim)
+        set_line_content(self._nvim, strikeout_line(current_line))

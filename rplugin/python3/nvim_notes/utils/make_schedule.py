@@ -3,21 +3,19 @@ from .helpers import convert_events
 def format_events_lines(events):
     """format_events_lines
 
-    Given an event, will produce a formatted line for that event.
+    Given some events, will produce formatted lines for them.
     """
 
     events_lines = []
 
-    simplified_events = convert_events(events)
-
-    for event in simplified_events:
+    for event in events:
 
         start_time = event['start_time']
         end_time = event['end_time']
         event_name = event['event_name']
 
         # TODO: Similarly, make this string into a config option.
-        current_line = f"* {start_time} - {end_time}: {event_name}"
+        current_line = f"*   {start_time} - {end_time}: {event_name}"
 
         events_lines.append(current_line)
 
@@ -38,7 +36,8 @@ def produce_schedule_markdown(event_list):
     # something like f"{importance * #}".
     markdown_lines.append("# Schedule")
 
-    schedule_lines = format_events_lines(event_list)
+    converted_events = convert_events(event_list)
+    schedule_lines = format_events_lines(converted_events)
     markdown_lines.extend(schedule_lines)
 
     return markdown_lines
