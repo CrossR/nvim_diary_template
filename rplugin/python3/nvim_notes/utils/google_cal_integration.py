@@ -79,7 +79,10 @@ class SimpleNvimGoogleCal():
         Filters the calendars to only those the user cares about.
         """
 
-        return [cal for cal in self.all_calendars if cal not in self.filter_list]
+        return {
+            cal_name:cal_id for cal_name, cal_id in self.all_calendars.items() 
+            if cal_name not in self.filter_list
+        }
 
     def get_all_calendars(self):
         """get_all_calendars
@@ -120,7 +123,7 @@ class SimpleNvimGoogleCal():
         page_token = None
         events_in_timeframe = []
 
-        for calendar_name, calendar_id in self.filtered_calendars.items():
+        for _, calendar_id in self.filtered_calendars.items():
             events = self.service.events().list(
                 calendarId=calendar_id,
                 pageToken=page_token,
@@ -222,6 +225,12 @@ class SimpleNvimGoogleCal():
         self.set_cache(updated_events, 'events')
 
     def get_calendar_id(self):
+        """get_calendar_id
+
+        Gets the ID of a calendar from its name.
+        """
+
+        # TODO: Add try/catch.
         if self.options.google_cal_name == 'primary':
             return 'primary'
         else:
