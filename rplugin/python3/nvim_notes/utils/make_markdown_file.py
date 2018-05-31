@@ -1,18 +1,19 @@
 import re
 from datetime import date
 from os import makedirs, path
-from operator import attrgetter
 
+from .helpers import (get_buffer_contents, get_schedule_section_line,
+                      open_file, set_buffer_contents, sort_events)
 from .make_schedule import produce_schedule_markdown
 
 DATE_REGEX = r"[0-9]{2}\/[0-9]{2}\/[0-9]{4} [0-9]{2}:[0-9]{2}"
 EVENT_REGEX = r"(?<=: ).*$"
 
 
-def make_markdown_file(nvim, options, gcal_service):
-    """make_markdown_file
+def open_markdown_file(nvim, options, gcal_service):
+    """open_markdown_file
 
-    Produce the actual markdown file.
+    Open the actual markdown file.
     This includes the following steps:
         * Open the file if it already exists.
         * If not, put the default template in and save.
@@ -43,26 +44,8 @@ def make_markdown_file(nvim, options, gcal_service):
     makedirs(path.dirname(todays_file), exist_ok=True)
     open_file(nvim, todays_file, options.open_method)
 
-    new_buffer_number = nvim.current.buffer.number
-
-    nvim.api.buf_set_lines(
-        new_buffer_number,
-        0,
-        -1,
-        True,
-        full_markdown
-    )
-
+    set_buffer_contents(nvim, full_markdown)
     nvim.command(":w")
-
-
-def open_file(nvim, path, open_method):
-    """open_file
-
-    Opens the file in the specified way.
-    """
-
-    nvim.command(f":{open_method} {path}")
 
 
 def generate_markdown_metadata():
@@ -113,16 +96,20 @@ def parse_buffer_events(events):
 
     return formatted_events
 
-def sort_events(events):
-    """sort_events
 
-    Given a list of events, sort them by their start time first,
-    then end time and finally event name.
+def sort_markdown_events(nvim):
+    """sort_markdown_events
+
+    Given the markdown file, will sort the events currently
+    in the file and then update them in place.
     """
-    return sorted(
-        events,
-        key=attrgetter('start_time', 'end_time', 'event_name')
-    )
+
+    unsorted_events = parse_markdown_file_for_events(nvim)
+    sorted_events = sort_events(unsorted_events)
+
+    # If its already sorted, return to stop any API calls.
+    if sorted_events == unsorted_events:
+        return
 
 
 def parse_markdown_file_for_events(nvim):
@@ -132,21 +119,10 @@ def parse_markdown_file_for_events(nvim):
     and parses the schedule section into events.
     """
 
-    buffer_number = nvim.current.buffer.number
-    current_buffer_contents = nvim.api.buf_get_lines(
-        buffer_number,
-        0,
-        -1,
-        True
-    )
+    current_buffer = get_buffer_contents(nvim)
 
-    # Do the search in reverse since we know the schedule comes last
-    for line_index, line in enumerate(reversed(current_buffer_contents)):
-        if line == '# Schedule':
-            buffer_events_index = line_index
-
-    buffer_events_index = len(current_buffer_contents) - buffer_events_index
-    events = current_buffer_contents[buffer_events_index:]
+    buffer_events_index = get_schedule_section_line(current_buffer)
+    events = current_buffer[buffer_events_index:]
     formatted_events = parse_buffer_events(events)
 
     return formatted_events
