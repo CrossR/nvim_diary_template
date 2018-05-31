@@ -43,6 +43,8 @@ def make_markdown_file(nvim, options, gcal_service):
         full_markdown
     )
 
+    nvim.command(":w")
+
 
 def open_file(nvim, path, open_method):
     nvim.command(f":{open_method} {path}")
