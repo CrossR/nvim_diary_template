@@ -212,6 +212,7 @@ class SimpleNvimGoogleCal():
 
         target_calendar = self.get_calendar_id()
 
+        #TODO: This needs to be wrapped in an try/catch probably.
         for event in missing_events:
             gcal_event = create_google_event(event, self.options.timezone)
 
@@ -224,14 +225,24 @@ class SimpleNvimGoogleCal():
         updated_events = self.get_events_for_today()
         self.set_cache(updated_events, 'events')
 
+        self.nvim.out_write(
+            f"Added {len(missing_events)} events to {self.options.google_cal_name} calendar.\n"
+        )
+
     def get_calendar_id(self):
         """get_calendar_id
 
         Gets the ID of a calendar from its name.
         """
 
-        # TODO: Add try/catch.
-        if self.options.google_cal_name == 'primary':
+        target_calendar = self.options.google_cal_name
+
+        if target_calendar == 'primary':
             return 'primary'
         else:
-            return self.all_calendars[self.options.google_cal_name]
+            try:
+                return self.all_calendars[target_calendar]
+            except KeyError:
+                self.nvim.err_write(
+                    f"No calendar named {target_calendar} exists.\n"
+                )
