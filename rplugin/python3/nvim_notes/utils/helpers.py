@@ -8,6 +8,8 @@ DATETIME_FORMAT = "%d/%m/%Y %H:%M"
 def get_time(time_dict):
     """get_time
 
+    Time object parser for Google Calendar responses.
+
     Since the Google API response can either be a 'dateTime' or
     'date' object depending on if the event is timed, or the whole day,
     we need to parse and return the object differently for each.
@@ -70,10 +72,10 @@ def create_google_event(event, timezone):
         "summary": event['event_name'],
         "start": {
             "timeZone": timezone,
-            "dateTime": get_time(event['start_time']).isoformat()
+            "dateTime": parser.parse(event['start_time']).isoformat()
         },
         "end": {
             "timeZone": timezone,
-            "dateTime": get_time(event['end_time']).isoformat()
+            "dateTime": parser.parse(event['end_time']).isoformat()
         }
     }
