@@ -17,8 +17,7 @@ def make_markdown_file(nvim, options, gcal_service):
         options.notes_path,
         date.today().strftime("%Y"),
         date.today().strftime("%B"),
-        str(date.today()),
-        ".md"
+        str(date.today()) + ".md"
     )
 
     if path.isfile(todays_file):
