@@ -213,9 +213,9 @@ class SimpleNvimGoogleCal():
             gcal_event = create_google_event(event, self.options.timezone)
 
             self.service.events().insert(
-                target_calendar,
-                gcal_event
-            )
+                calendar_id=target_calendar,
+                body=gcal_event
+            ).execute()
 
         # Now that the events have been updated, update the cache.
         updated_events = self.get_events_for_today()
