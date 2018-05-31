@@ -116,7 +116,8 @@ def sort_markdown_events(nvim):
     buffer_number = nvim.current.buffer.number
     current_buffer = get_buffer_contents(nvim)
 
-    old_events_start_line = get_schedule_section_line(current_buffer)
+    # We want the line after, as this gives the line of the heading.
+    old_events_start_line = get_schedule_section_line(current_buffer) + 1
     old_events_end_line = old_events_start_line + len(sorted_events)
 
     nvim.api.buf_set_lines(
