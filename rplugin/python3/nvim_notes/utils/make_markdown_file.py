@@ -161,4 +161,6 @@ def combine_markdown_and_calendar_events(nvim,
         event for event in calendar_events if event not in buffer_events
     )
 
-    return combined_events
+    return [
+        format_event(event, TIME_FORMAT) for event in combined_events
+    ]
