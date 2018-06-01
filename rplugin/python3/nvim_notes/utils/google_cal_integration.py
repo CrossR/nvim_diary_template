@@ -207,9 +207,6 @@ class SimpleNvimGoogleCal():
             event for event in markdown_events if event not in todays_events
         ]
 
-        # TODO: Remove this debug command.
-        self.set_cache(missing_events, 'missing_events')
-
         target_calendar = self.get_calendar_id()
 
         # TODO: This needs to be wrapped in an try/catch probably.
