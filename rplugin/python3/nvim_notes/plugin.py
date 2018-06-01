@@ -64,10 +64,10 @@ class NotesPlugin(object):
             self._gcal_service
         )
 
-    @neovim.command('UpdateCalendar')
-    def update_calendar(self):
+    @neovim.command('UploadCalendar')
+    def upload_to_calendar(self):
         markdown_events = parse_markdown_file_for_events(self._nvim)
-        self._gcal_service.update_calendar(markdown_events)
+        self._gcal_service.upload_to_calendar(markdown_events)
 
     @neovim.command('SortCalendar')
     def sort_calendar(self):
