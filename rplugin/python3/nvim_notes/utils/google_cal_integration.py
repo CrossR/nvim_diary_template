@@ -9,7 +9,8 @@ from apiclient.discovery import build
 from httplib2 import Http
 from oauth2client import client, file, tools
 
-from .helpers import convert_events, create_google_event, format_events
+from .helpers import (ISO_FORMAT, convert_events,
+                      create_google_event, format_google_events)
 
 CACHE_EPOCH_REGEX = '([0-9])+'
 CALENDAR_CACHE_DURATION = timedelta(days=31)
@@ -137,7 +138,7 @@ class SimpleNvimGoogleCal():
             if not page_token:
                 break
 
-        return format_events(events_in_timeframe)
+        return format_google_events(events_in_timeframe)
 
     def check_cache(self, data_name, data_age, fallback_function):
         """check_cache
@@ -194,21 +195,18 @@ class SimpleNvimGoogleCal():
         for old_cache_file in old_cache_files:
             remove(old_cache_file)
 
-    def update_calendar(self, markdown_events):
-        """update_calendar
+    def upload_to_calendar(self, markdown_events):
+        """upload_to_calendar
 
         Given a set of events that are missing from Google calendar, will upload
         them to the calendar that is specified in the users options.
         """
 
-        todays_events = convert_events(self.todays_events)
+        todays_events = convert_events(self.todays_events, ISO_FORMAT)
 
         missing_events = [
             event for event in markdown_events if event not in todays_events
         ]
-
-        # TODO: Remove this debug command.
-        self.set_cache(missing_events, 'missing_events')
 
         target_calendar = self.get_calendar_id()
 

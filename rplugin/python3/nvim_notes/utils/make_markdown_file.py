@@ -4,12 +4,15 @@ from os import makedirs, path
 
 from dateutil import parser
 
-from .helpers import (DATETIME_FORMAT, get_buffer_contents,
-                      get_schedule_section_line, open_file,
-                      set_buffer_contents, sort_events)
-from .make_schedule import format_events_lines, produce_schedule_markdown
+from .helpers import (ISO_FORMAT, TIME_FORMAT, convert_events, format_event,
+                      get_buffer_contents, get_schedule_section_line,
+                      open_file, set_buffer_contents, set_line_content,
+                      sort_events)
+from .make_schedule import (format_events_lines, produce_schedule_markdown,
+                            set_schedule_from_events_list)
 
-DATE_REGEX = r"[0-9]{1,2}\/[0-9]{1,2}\/[0-9]{4} [0-9]{1,2}:[0-9]{1,2}"
+DATETIME_REGEX = r"[0-9]{1,2}\/[0-9]{1,2}\/[0-9]{4} [0-9]{1,2}:[0-9]{1,2}"
+TIME_REGEX = r"[0-9]{1,2}:[0-9]{1,2}"
 EVENT_REGEX = r"(?<=: ).*$"
 
 
@@ -69,7 +72,7 @@ def generate_markdown_metadata():
     return metadata
 
 
-def parse_buffer_events(events):
+def parse_buffer_events(events, format_string):
     """parse_buffer_events
 
     Given a list of events, parse the buffer lines and create event objects.
@@ -83,10 +86,20 @@ def parse_buffer_events(events):
 
         # TODO: Regex is probably going to be a giant pain here,
         # and won't work if the string pattern changes.
-        parsed_line = re.findall(DATE_REGEX, event)
+        matches_date_time = re.findall(DATETIME_REGEX, event)
 
-        start_date = parser.parse(parsed_line[0]).strftime(DATETIME_FORMAT)
-        end_date = parser.parse(parsed_line[1]).strftime(DATETIME_FORMAT)
+        if len(matches_date_time) == 0:
+            matches_time = re.findall(TIME_REGEX, event)
+            start_date = parser.parse(matches_time[0]) \
+                               .strftime(format_string)
+            end_date = parser.parse(matches_time[1]) \
+                             .strftime(format_string)
+        else:
+            start_date = parser.parse(matches_date_time[0]) \
+                               .strftime(format_string)
+            end_date = parser.parse(matches_date_time[1]) \
+                             .strftime(format_string)
+
         event_details = re.search(EVENT_REGEX, event)[0]
 
         event_dict = {
@@ -107,33 +120,38 @@ def sort_markdown_events(nvim):
     in the file and then update them in place.
     """
 
-    unsorted_events = parse_markdown_file_for_events(nvim)
+    unsorted_events = parse_markdown_file_for_events(nvim, TIME_FORMAT)
     sorted_events = sort_events(unsorted_events)
 
     # If its already sorted, return to stop any API calls.
     if sorted_events == unsorted_events:
         return
 
-    event_lines = format_events_lines(sorted_events)
-
-    buffer_number = nvim.current.buffer.number
-    current_buffer = get_buffer_contents(nvim)
-
-    # We want the line after, as this gives the line of the heading.
-    # Then add one to the end to replace the newline, as we add one.
-    old_events_start_line = get_schedule_section_line(current_buffer) + 1
-    old_events_end_line = old_events_start_line + len(sorted_events) + 1
-
-    nvim.api.buf_set_lines(
-        buffer_number,
-        old_events_start_line,
-        old_events_end_line,
-        True,
-        event_lines
-    )
+    set_schedule_from_events_list(nvim, sorted_events, True)
 
 
-def parse_markdown_file_for_events(nvim):
+def remove_events_not_from_today(nvim):
+    """remove_events_not_from_today
+
+    Remove events from the file if they are not for the correct date.
+    """
+
+    current_events = parse_markdown_file_for_events(nvim, ISO_FORMAT)
+    date_today = date.today()
+    schedule_index = get_schedule_section_line(get_buffer_contents(nvim)) + 1
+
+    for index, event in enumerate(current_events):
+        event_date = parser.parse(event['start_time']).date()
+
+        if date_today == event_date:
+            continue
+
+        event_index = schedule_index + index + 1
+
+        set_line_content(nvim, [""], event_index)
+
+
+def parse_markdown_file_for_events(nvim, format_string):
     """parse_markdown_file_for_events
 
     Gets the contents of the current NeoVim buffer,
@@ -144,6 +162,28 @@ def parse_markdown_file_for_events(nvim):
 
     buffer_events_index = get_schedule_section_line(current_buffer)
     events = current_buffer[buffer_events_index:]
-    formatted_events = parse_buffer_events(events)
+    formatted_events = parse_buffer_events(events, format_string)
 
     return formatted_events
+
+
+def combine_markdown_and_calendar_events(nvim,
+                                         markdown_events,
+                                         google_events):
+    buffer_events = [
+        format_event(event, ISO_FORMAT) for event in markdown_events
+    ]
+
+    formatted_calendar = convert_events(google_events, ISO_FORMAT)
+    calendar_events = [
+        format_event(event, ISO_FORMAT) for event in formatted_calendar
+    ]
+
+    combined_events = buffer_events
+    combined_events.extend(
+        event for event in calendar_events if event not in buffer_events
+    )
+
+    return [
+        format_event(event, TIME_FORMAT) for event in combined_events
+    ]

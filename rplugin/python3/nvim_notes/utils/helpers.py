@@ -4,7 +4,8 @@ from os import path
 from dateutil import parser
 
 DATETIME_FORMAT = "%d/%m/%Y %H:%M"
-
+TIME_FORMAT = "%H:%M"
+ISO_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"
 
 def get_time(time_dict):
     """get_time
@@ -24,7 +25,7 @@ def get_time(time_dict):
     return datetime_obj
 
 
-def convert_events(events):
+def convert_events(events, format_string):
     """convert_events
 
     Given a list of events, convert the time objects to a human readable
@@ -35,8 +36,8 @@ def convert_events(events):
 
     for event in events:
         # TODO: Make the format strings here into a config option.
-        start_time = get_time(event['start_time']).strftime(DATETIME_FORMAT)
-        end_time = get_time(event['end_time']).strftime(DATETIME_FORMAT)
+        start_time = get_time(event['start_time']).strftime(format_string)
+        end_time = get_time(event['end_time']).strftime(format_string)
         event_name = event['event_name']
 
         formatted_events.append({
@@ -48,8 +49,8 @@ def convert_events(events):
     return formatted_events
 
 
-def format_events(events_list):
-    """format_events
+def format_google_events(events_list):
+    """format_google_events
 
     Formats a list of GCal events down to the event name, and the
     start and end date of the event.
@@ -104,6 +105,23 @@ def sort_events(events):
     )
 
 
+def format_event(event, format_string):
+    """format_event
+
+    Simple helper function to format an event to a given format.
+    """
+
+    start_time = parser.parse(event['start_time']).strftime(format_string)
+    end_time = parser.parse(event['end_time']).strftime(format_string)
+    event_name = event['event_name']
+
+    return {
+        'event_name': event_name,
+        'start_time': start_time,
+        'end_time': end_time
+    }
+
+
 def get_schedule_section_line(buffer_contents):
     """get_schedule_section_line
 
@@ -121,6 +139,7 @@ def get_schedule_section_line(buffer_contents):
 
     return buffer_events_index
 
+
 def get_buffer_contents(nvim):
     """get_buffer_contents
 
@@ -136,6 +155,7 @@ def get_buffer_contents(nvim):
         True
     )
 
+
 def set_buffer_contents(nvim, data):
     """set_buffer_contents
 
@@ -150,6 +170,7 @@ def set_buffer_contents(nvim, data):
         True,
         data
     )
+
 
 def get_line_content(nvim):
     """get_line_content
@@ -167,18 +188,24 @@ def get_line_content(nvim):
         True
     )[0]
 
-def set_line_content(nvim, data):
+
+def set_line_content(
+                     nvim,
+                     data,
+                     line_index = None):
     """set_line_content
 
     Set the contents of the current line.
     """
     buffer_number = nvim.current.buffer.number
-    cursor_line = nvim.current.window.cursor[0]
+
+    if line_index == None:
+        line_index = nvim.current.window.cursor[0]
 
     nvim.api.buf_set_lines(
         buffer_number,
-        cursor_line - 1,
-        cursor_line,
+        line_index - 1,
+        line_index,
         True,
         data
     )
