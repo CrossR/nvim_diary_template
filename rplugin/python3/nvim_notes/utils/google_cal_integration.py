@@ -202,8 +202,10 @@ class SimpleNvimGoogleCal():
         them to the calendar that is specified in the users options.
         """
 
+        todays_events = convert_events(self.todays_events, ISO_FORMAT)
+
         missing_events = [
-            event for event in markdown_events if event not in self.todays_events
+            event for event in markdown_events if event not in todays_events
         ]
 
         target_calendar = self.get_calendar_id()

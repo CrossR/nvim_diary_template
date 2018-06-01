@@ -71,7 +71,7 @@ class NotesPlugin(object):
     def upload_to_calendar(self):
         markdown_events = parse_markdown_file_for_events(
             self._nvim,
-            DATETIME_FORMAT
+            ISO_FORMAT
         )
 
         self._gcal_service.upload_to_calendar(markdown_events)
