@@ -7,6 +7,7 @@ DATETIME_FORMAT = "%d/%m/%Y %H:%M"
 TIME_FORMAT = "%H:%M"
 ISO_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"
 
+
 def get_time(time_dict):
     """get_time
 
@@ -190,9 +191,9 @@ def get_line_content(nvim):
 
 
 def set_line_content(
-                     nvim,
-                     data,
-                     line_index = None):
+        nvim,
+        data,
+        line_index=None):
     """set_line_content
 
     Set the contents of the current line.
@@ -209,3 +210,15 @@ def set_line_content(
         True,
         data
     )
+
+
+def get_start_of_line(line):
+    """get_start_of_line
+
+    Return the start of a given line.
+    """
+
+    first_non_space = len(line) - len(line.strip())
+    start_of_line = line[:first_non_space + 1]
+
+    return start_of_line

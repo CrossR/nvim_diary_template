@@ -5,7 +5,7 @@ import neovim
 from nvim_notes.utils.google_cal_integration import SimpleNvimGoogleCal
 from nvim_notes.utils.helpers import (DATETIME_FORMAT, ISO_FORMAT,
                                       get_line_content, set_line_content)
-from nvim_notes.utils.keybind_actions import strikeout_line
+from nvim_notes.utils.keybind_actions import strikeout_line, toggle_todo
 from nvim_notes.utils.make_markdown_file import (combine_markdown_and_calendar_events,
                                                  open_markdown_file,
                                                  parse_markdown_file_for_events,
@@ -76,7 +76,7 @@ class NotesPlugin(object):
         )
 
         self._gcal_service.upload_to_calendar(markdown_events)
-        remove_events_not_from_today(self._nvim) 
+        remove_events_not_from_today(self._nvim)
 
     @neovim.command('GrabCalendar')
     def grab_from_calendar(self):
@@ -107,3 +107,8 @@ class NotesPlugin(object):
     def strikeout(self):
         current_line = get_line_content(self._nvim)
         set_line_content(self._nvim, strikeout_line(current_line))
+
+    @neovim.command('ToggleTodo')
+    def toggle_todo_line(self):
+        current_line = get_line_content(self._nvim)
+        set_line_content(self._nvim, toggle_todo(current_line))
