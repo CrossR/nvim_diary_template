@@ -3,7 +3,7 @@ from functools import wraps
 import neovim
 
 from nvim_notes.utils.google_cal_integration import SimpleNvimGoogleCal
-from nvim_notes.utils.helpers import get_line_content, set_line_content
+from nvim_notes.utils.helpers import get_line_content, set_line_content, ISO_FORMAT
 from nvim_notes.utils.keybind_actions import strikeout_line
 from nvim_notes.utils.make_markdown_file import (combine_markdown_and_calendar_events,
                                                  open_markdown_file,
@@ -68,21 +68,27 @@ class NotesPlugin(object):
 
     @neovim.command('UploadCalendar')
     def upload_to_calendar(self):
-        markdown_events = parse_markdown_file_for_events(self._nvim)
+        markdown_events = parse_markdown_file_for_events(
+            self._nvim,
+            ISO_FORMAT
+        )
+
         self._gcal_service.upload_to_calendar(markdown_events)
 
     @neovim.command('GrabCalendar')
     def grab_from_calendar(self):
-        markdown_events = parse_markdown_file_for_events(self._nvim)
+        markdown_events = parse_markdown_file_for_events(
+            self._nvim,
+            ISO_FORMAT
+        )
         cal_events = self._gcal_service.get_events_for_today()
+
         combined_events = combine_markdown_and_calendar_events(
             self._nvim,
             markdown_events,
             cal_events
         )
         set_schedule_from_events_list(self._nvim, combined_events, False)
-
-
 
     @neovim.command('UpdateCalendar')
     def update_calendar(self):

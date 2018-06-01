@@ -4,16 +4,11 @@ from os import makedirs, path
 
 from dateutil import parser
 
-from .helpers import (DATETIME_FORMAT,
-                      convert_events,
-                      format_event,
-                      get_buffer_contents,
-                      get_schedule_section_line,
-                      open_file,
-                      set_buffer_contents,
-                      sort_events)
-from .make_schedule import (format_events_lines,
-                            produce_schedule_markdown,
+from .helpers import (DATETIME_FORMAT, TIME_FORMAT, convert_events,
+                      format_event, get_buffer_contents,
+                      get_schedule_section_line, open_file,
+                      set_buffer_contents, sort_events)
+from .make_schedule import (format_events_lines, produce_schedule_markdown,
                             set_schedule_from_events_list)
 
 DATETIME_REGEX = r"[0-9]{1,2}\/[0-9]{1,2}\/[0-9]{4} [0-9]{1,2}:[0-9]{1,2}"
@@ -77,7 +72,7 @@ def generate_markdown_metadata():
     return metadata
 
 
-def parse_buffer_events(events):
+def parse_buffer_events(events, format_string):
     """parse_buffer_events
 
     Given a list of events, parse the buffer lines and create event objects.
@@ -96,14 +91,14 @@ def parse_buffer_events(events):
         if len(matches_date_time) == 0:
             matches_time = re.findall(TIME_REGEX, event)
             start_date = parser.parse(matches_time[0]) \
-                               .isoformat()
+                               .strftime(format_string)
             end_date = parser.parse(matches_time[1]) \
-                             .isoformat()
+                             .strftime(format_string)
         else:
             start_date = parser.parse(matches_date_time[0]) \
-                               .isoformat()
+                               .strftime(format_string)
             end_date = parser.parse(matches_date_time[1]) \
-                             .isoformat()
+                             .strftime(format_string)
 
         event_details = re.search(EVENT_REGEX, event)[0]
 
@@ -125,7 +120,7 @@ def sort_markdown_events(nvim):
     in the file and then update them in place.
     """
 
-    unsorted_events = parse_markdown_file_for_events(nvim)
+    unsorted_events = parse_markdown_file_for_events(nvim, TIME_FORMAT)
     sorted_events = sort_events(unsorted_events)
 
     # If its already sorted, return to stop any API calls.
@@ -135,7 +130,7 @@ def sort_markdown_events(nvim):
     set_schedule_from_events_list(nvim, sorted_events, True)
 
 
-def parse_markdown_file_for_events(nvim):
+def parse_markdown_file_for_events(nvim, format_string):
     """parse_markdown_file_for_events
 
     Gets the contents of the current NeoVim buffer,
@@ -146,7 +141,7 @@ def parse_markdown_file_for_events(nvim):
 
     buffer_events_index = get_schedule_section_line(current_buffer)
     events = current_buffer[buffer_events_index:]
-    formatted_events = parse_buffer_events(events)
+    formatted_events = parse_buffer_events(events, format_string)
 
     return formatted_events
 
