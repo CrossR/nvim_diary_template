@@ -1,6 +1,6 @@
 from nvim_notes.helpers.google_calendar_helpers import convert_events
-from nvim_notes.helpers.markdown_helpers import get_section_line
-from nvim_notes.helpers.neovim_helpers import get_buffer_contents
+from nvim_notes.helpers.neovim_helpers import (get_buffer_contents,
+                                               get_section_line)
 from nvim_notes.utils.constants import SCHEDULE_HEADING, TIME_FORMAT
 
 

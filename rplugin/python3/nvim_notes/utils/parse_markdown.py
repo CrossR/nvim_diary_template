@@ -6,8 +6,8 @@ from dateutil import parser
 
 from nvim_notes.helpers.event_helpers import format_event, sort_events
 from nvim_notes.helpers.google_calendar_helpers import convert_events
-from nvim_notes.helpers.markdown_helpers import get_section_line
-from nvim_notes.helpers.neovim_helpers import (get_buffer_contents, open_file,
+from nvim_notes.helpers.neovim_helpers import (get_buffer_contents,
+                                               get_section_line, open_file,
                                                set_buffer_contents,
                                                set_line_content)
 from nvim_notes.utils.constants import (DATETIME_REGEX, EVENT_REGEX, FILE_TYPE,
