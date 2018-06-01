@@ -1,7 +1,7 @@
-from .constants import SCHEDULE_HEADING, TIME_FORMAT
-from .google_calendar_helpers import convert_events
-from .markdown_helpers import get_section_line
-from .neovim_helpers import get_buffer_contents
+from nvim_notes.helpers.google_calendar_helpers import convert_events
+from nvim_notes.helpers.markdown_helpers import get_section_line
+from nvim_notes.helpers.neovim_helpers import get_buffer_contents
+from nvim_notes.utils.constants import SCHEDULE_HEADING, TIME_FORMAT
 
 
 def format_events_lines(events):

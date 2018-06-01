@@ -1,9 +1,9 @@
 from dateutil import parser
 
-from .constants import TIME_FORMAT
-from .event_helpers import sort_events
-from .make_markdown_file import (parse_markdown_file_for_events,
-                                 set_schedule_from_events_list)
+from nvim_notes.helpers.event_helpers import sort_events
+from nvim_notes.utils.constants import TIME_FORMAT
+from nvim_notes.utils.make_markdown_file import (parse_markdown_file_for_events,
+                                                 set_schedule_from_events_list)
 
 
 def get_section_line(buffer_contents, section_line):

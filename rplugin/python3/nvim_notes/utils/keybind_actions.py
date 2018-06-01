@@ -1,5 +1,5 @@
-from .constants import CHECKED_TODO, EMPTY_TODO, PADDING
-from .markdown_helpers import get_start_of_line
+from nvim_notes.helpers.markdown_helpers import get_start_of_line
+from nvim_notes.utils.constants import CHECKED_TODO, EMPTY_TODO, PADDING
 
 
 def strikeout_line(line):

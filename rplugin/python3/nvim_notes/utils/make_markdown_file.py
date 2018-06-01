@@ -4,15 +4,18 @@ from os import makedirs, path
 
 from dateutil import parser
 
-from .constants import (DATETIME_REGEX, EVENT_REGEX, FILE_TYPE, ISO_FORMAT,
-                        SCHEDULE_HEADING, TIME_FORMAT, TIME_REGEX)
-from .event_helpers import format_event, sort_events
-from .google_calendar_helpers import convert_events
-from .make_schedule import (format_events_lines, produce_schedule_markdown,
-                            set_schedule_from_events_list)
-from .markdown_helpers import get_section_line
-from .neovim_helpers import (get_buffer_contents, open_file,
-                             set_buffer_contents, set_line_content)
+from nvim_notes.helpers.event_helpers import format_event, sort_events
+from nvim_notes.helpers.google_calendar_helpers import convert_events
+from nvim_notes.helpers.markdown_helpers import get_section_line
+from nvim_notes.helpers.neovim_helpers import (get_buffer_contents, open_file,
+                                               set_buffer_contents,
+                                               set_line_content)
+from nvim_notes.utils.constants import (DATETIME_REGEX, EVENT_REGEX, FILE_TYPE,
+                                        ISO_FORMAT, SCHEDULE_HEADING,
+                                        TIME_FORMAT, TIME_REGEX)
+from nvim_notes.utils.make_schedule import (format_events_lines,
+                                            produce_schedule_markdown,
+                                            set_schedule_from_events_list)
 
 
 def open_markdown_file(nvim, options, gcal_service):
