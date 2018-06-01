@@ -12,7 +12,7 @@ from nvim_notes.utils.make_markdown_file import (combine_markdown_and_calendar_e
                                                  remove_events_not_from_today,
                                                  sort_markdown_events)
 from nvim_notes.utils.make_schedule import set_schedule_from_events_list
-from nvim_notes.utils.plugin_options import PluginOptions
+from nvim_notes.utils.PluginOptions import PluginOptions
 
 
 def if_active(function):
