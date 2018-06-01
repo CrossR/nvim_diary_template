@@ -1,9 +1,5 @@
+from .constants import CHECKED_TODO, EMPTY_TODO, PADDING
 from .helpers import get_start_of_line
-
-
-PADDING = "   "
-EMPTY_TODO = "[ ]"
-CHECKED_TODO = "[X]"
 
 
 def strikeout_line(line):
@@ -27,4 +23,3 @@ def toggle_todo(line):
         return [line.replace(EMPTY_TODO, CHECKED_TODO)]
     elif CHECKED_TODO in line:
         return [line.replace(CHECKED_TODO, EMPTY_TODO)]
-

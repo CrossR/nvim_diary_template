@@ -2,9 +2,9 @@ from functools import wraps
 
 import neovim
 
+from nvim_notes.utils.constants import ISO_FORMAT, FILE_TYPE
 from nvim_notes.utils.google_cal_integration import SimpleNvimGoogleCal
-from nvim_notes.utils.helpers import (DATETIME_FORMAT, ISO_FORMAT,
-                                      get_line_content, set_line_content)
+from nvim_notes.utils.helpers import get_line_content, set_line_content
 from nvim_notes.utils.keybind_actions import strikeout_line, toggle_todo
 from nvim_notes.utils.make_markdown_file import (combine_markdown_and_calendar_events,
                                                  open_markdown_file,
@@ -13,8 +13,6 @@ from nvim_notes.utils.make_markdown_file import (combine_markdown_and_calendar_e
                                                  sort_markdown_events)
 from nvim_notes.utils.make_schedule import set_schedule_from_events_list
 from nvim_notes.utils.plugin_options import PluginOptions
-
-FILE_TYPE = '*.md'
 
 
 def if_active(function):

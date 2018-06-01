@@ -1,8 +1,5 @@
-from .helpers import (TIME_FORMAT, convert_events, get_buffer_contents,
-                      get_section_line)
-
-
-SCHEDULE_HEADING = "# Schedule"
+from .constants import SCHEDULE_HEADING, TIME_FORMAT
+from .helpers import convert_events, get_buffer_contents, get_section_line
 
 
 def format_events_lines(events):

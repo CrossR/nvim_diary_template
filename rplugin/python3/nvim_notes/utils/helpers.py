@@ -3,11 +3,6 @@ from os import path
 
 from dateutil import parser
 
-DATETIME_FORMAT = "%d/%m/%Y %H:%M"
-TIME_FORMAT = "%H:%M"
-ISO_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"
-
-
 def get_time(time_dict):
     """get_time
 
