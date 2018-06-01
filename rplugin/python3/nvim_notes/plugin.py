@@ -3,14 +3,15 @@ from functools import wraps
 import neovim
 
 from nvim_notes.utils.google_cal_integration import SimpleNvimGoogleCal
-from nvim_notes.utils.helpers import get_line_content, set_line_content, ISOZ_FORMAT
+from nvim_notes.utils.helpers import (DATETIME_FORMAT, ISOZ_FORMAT,
+                                      get_line_content, set_line_content)
 from nvim_notes.utils.keybind_actions import strikeout_line
 from nvim_notes.utils.make_markdown_file import (combine_markdown_and_calendar_events,
                                                  open_markdown_file,
                                                  parse_markdown_file_for_events,
                                                  sort_markdown_events)
-from nvim_notes.utils.plugin_options import PluginOptions
 from nvim_notes.utils.make_schedule import set_schedule_from_events_list
+from nvim_notes.utils.plugin_options import PluginOptions
 
 FILE_TYPE = '*.md'
 
@@ -70,7 +71,7 @@ class NotesPlugin(object):
     def upload_to_calendar(self):
         markdown_events = parse_markdown_file_for_events(
             self._nvim,
-            ISOZ_FORMAT
+            DATETIME_FORMAT
         )
 
         self._gcal_service.upload_to_calendar(markdown_events)
