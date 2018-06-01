@@ -3,7 +3,7 @@ from functools import wraps
 import neovim
 
 from nvim_notes.utils.constants import ISO_FORMAT, FILE_TYPE
-from nvim_notes.utils.google_cal_integration import SimpleNvimGoogleCal
+from nvim_notes.utils.SimpleNvimGoogleCal import SimpleNvimGoogleCal
 from nvim_notes.utils.helpers import get_line_content, set_line_content
 from nvim_notes.utils.keybind_actions import strikeout_line, toggle_todo
 from nvim_notes.utils.make_markdown_file import (combine_markdown_and_calendar_events,
