@@ -89,6 +89,7 @@ class NotesPlugin(object):
             cal_events
         )
         set_schedule_from_events_list(self._nvim, combined_events, False)
+        self.sort_calendar()
 
     @neovim.command('UpdateCalendar')
     def update_calendar(self):
