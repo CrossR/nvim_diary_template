@@ -1,6 +1,8 @@
 from .helpers import (TIME_FORMAT, convert_events, get_buffer_contents,
                       get_section_line)
-from .make_markdown_file import SCHEDULE_HEADING
+
+
+SCHEDULE_HEADING = "# Schedule"
 
 
 def format_events_lines(events):
