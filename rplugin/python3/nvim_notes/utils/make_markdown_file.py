@@ -141,7 +141,7 @@ def remove_events_not_from_today(nvim):
     schedule_index = get_schedule_section_line(get_buffer_contents(nvim)) + 1
 
     for index, event in enumerate(current_events):
-        event_date = parser.parse(event['start_date']).date()
+        event_date = parser.parse(event['start_time']).date()
 
         if date_today == event_date:
             continue
