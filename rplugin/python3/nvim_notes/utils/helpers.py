@@ -123,8 +123,8 @@ def format_event(event, format_string):
     }
 
 
-def get_schedule_section_line(buffer_contents):
-    """get_schedule_section_line
+def get_section_line(buffer_contents, section_line):
+    """get_section_line
 
     Given a buffer, get the line that the schedule section starts on.
     """
@@ -133,7 +133,7 @@ def get_schedule_section_line(buffer_contents):
 
     # Do the search in reverse since we know the schedule comes last
     for line_index, line in enumerate(reversed(buffer_contents)):
-        if line == '# Schedule':
+        if line == section_line:
             buffer_events_index = line_index
 
     buffer_events_index = len(buffer_contents) - buffer_events_index
