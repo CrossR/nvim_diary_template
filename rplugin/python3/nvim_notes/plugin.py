@@ -76,7 +76,7 @@ class NotesPlugin(object):
         )
 
         self._gcal_service.upload_to_calendar(markdown_events)
-       remove_events_not_from_today(self._nvim) 
+        remove_events_not_from_today(self._nvim) 
 
     @neovim.command('GrabCalendar')
     def grab_from_calendar(self):
