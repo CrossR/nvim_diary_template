@@ -96,14 +96,14 @@ def parse_buffer_events(events):
         if len(matches_date_time) == 0:
             matches_time = re.findall(TIME_REGEX, event)
             start_date = parser.parse(matches_time[0]) \
-                               .strftime(DATETIME_FORMAT)
+                               .isoformat()
             end_date = parser.parse(matches_time[1]) \
-                             .strftime(DATETIME_FORMAT)
+                             .isoformat()
         else:
             start_date = parser.parse(matches_date_time[0]) \
-                               .strftime(DATETIME_FORMAT)
+                               .isoformat()
             end_date = parser.parse(matches_date_time[1]) \
-                             .strftime(DATETIME_FORMAT)
+                             .isoformat()
 
         event_details = re.search(EVENT_REGEX, event)[0]
 
