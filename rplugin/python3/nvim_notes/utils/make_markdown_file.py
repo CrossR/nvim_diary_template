@@ -6,7 +6,8 @@ from dateutil import parser
 
 from .helpers import (ISO_FORMAT, TIME_FORMAT, convert_events, format_event,
                       get_buffer_contents, get_schedule_section_line,
-                      open_file, set_buffer_contents, sort_events)
+                      open_file, set_buffer_contents, set_line_content,
+                      sort_events)
 from .make_schedule import (format_events_lines, produce_schedule_markdown,
                             set_schedule_from_events_list)
 
@@ -129,6 +130,27 @@ def sort_markdown_events(nvim):
     set_schedule_from_events_list(nvim, sorted_events, True)
 
 
+def remove_events_not_from_today(nvim):
+    """remove_events_not_from_today
+
+    Remove events from the file if they are not for the correct date.
+    """
+
+    current_events = parse_markdown_file_for_events(nvim, ISO_FORMAT)
+    date_today = date.today()
+    schedule_index = get_schedule_section_line(get_buffer_contents(nvim)) + 1
+
+    for index, event in enumerate(current_events):
+        event_date = parser.parse(event['start_date']).date()
+
+        if date_today == event_date:
+            continue
+
+        event_index = schedule_index + index
+
+        set_line_content(nvim, [""], event_index)
+
+
 def parse_markdown_file_for_events(nvim, format_string):
     """parse_markdown_file_for_events
 
@@ -143,6 +165,7 @@ def parse_markdown_file_for_events(nvim, format_string):
     formatted_events = parse_buffer_events(events, format_string)
 
     return formatted_events
+
 
 def combine_markdown_and_calendar_events(nvim,
                                          markdown_events,

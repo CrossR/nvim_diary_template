@@ -9,6 +9,7 @@ from nvim_notes.utils.keybind_actions import strikeout_line
 from nvim_notes.utils.make_markdown_file import (combine_markdown_and_calendar_events,
                                                  open_markdown_file,
                                                  parse_markdown_file_for_events,
+                                                 remove_events_not_from_today,
                                                  sort_markdown_events)
 from nvim_notes.utils.make_schedule import set_schedule_from_events_list
 from nvim_notes.utils.plugin_options import PluginOptions
@@ -75,6 +76,7 @@ class NotesPlugin(object):
         )
 
         self._gcal_service.upload_to_calendar(markdown_events)
+       remove_events_not_from_today(self._nvim) 
 
     @neovim.command('GrabCalendar')
     def grab_from_calendar(self):

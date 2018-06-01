@@ -189,18 +189,23 @@ def get_line_content(nvim):
     )[0]
 
 
-def set_line_content(nvim, data):
+def set_line_content(
+                     nvim,
+                     data,
+                     line_index = None):
     """set_line_content
 
     Set the contents of the current line.
     """
     buffer_number = nvim.current.buffer.number
-    cursor_line = nvim.current.window.cursor[0]
+
+    if line_index == None:
+        line_index = nvim.current.window.cursor[0]
 
     nvim.api.buf_set_lines(
         buffer_number,
-        cursor_line - 1,
-        cursor_line,
+        line_index - 1,
+        line_index,
         True,
         data
     )
