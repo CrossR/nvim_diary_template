@@ -4,6 +4,7 @@ from os import path
 from dateutil import parser
 
 DATETIME_FORMAT = "%d/%m/%Y %H:%M"
+TIME_FORMAT = "%H:%M"
 
 
 def get_time(time_dict):
@@ -35,8 +36,8 @@ def convert_events(events):
 
     for event in events:
         # TODO: Make the format strings here into a config option.
-        start_time = get_time(event['start_time']).strftime(DATETIME_FORMAT)
-        end_time = get_time(event['end_time']).strftime(DATETIME_FORMAT)
+        start_time = get_time(event['start_time']).strftime(TIME_FORMAT)
+        end_time = get_time(event['end_time']).strftime(TIME_FORMAT)
         event_name = event['event_name']
 
         formatted_events.append({
