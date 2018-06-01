@@ -39,7 +39,7 @@ def produce_schedule_markdown(event_list):
 
     # TODO: Should probably swap this to be a config option,
     # something like f"{importance * #}".
-    markdown_lines.append("# Schedule")
+    markdown_lines.append(SCHEDULE_HEADING)
 
     converted_events = convert_events(event_list, TIME_FORMAT)
     schedule_lines = format_events_lines(converted_events)
