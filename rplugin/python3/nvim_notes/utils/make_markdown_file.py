@@ -4,7 +4,7 @@ from os import makedirs, path
 
 from dateutil import parser
 
-from .helpers import (ISO_FORMAT, TIME_FORMAT, convert_events, format_event,
+from .helpers import (ISOZ_FORMAT, TIME_FORMAT, convert_events, format_event,
                       get_buffer_contents, get_schedule_section_line,
                       open_file, set_buffer_contents, sort_events)
 from .make_schedule import (format_events_lines, produce_schedule_markdown,
@@ -148,12 +148,12 @@ def combine_markdown_and_calendar_events(nvim,
                                          markdown_events,
                                          google_events):
     buffer_events = [
-        format_event(event, ISO_FORMAT) for event in markdown_events
+        format_event(event, ISOZ_FORMAT) for event in markdown_events
     ]
 
-    formatted_calendar = convert_events(google_events, ISO_FORMAT)
+    formatted_calendar = convert_events(google_events, ISOZ_FORMAT)
     calendar_events = [
-        format_event(event, ISO_FORMAT) for event in formatted_calendar
+        format_event(event, ISOZ_FORMAT) for event in formatted_calendar
     ]
 
     combined_events = buffer_events
