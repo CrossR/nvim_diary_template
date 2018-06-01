@@ -194,8 +194,8 @@ class SimpleNvimGoogleCal():
         for old_cache_file in old_cache_files:
             remove(old_cache_file)
 
-    def update_calendar(self, markdown_events):
-        """update_calendar
+    def upload_to_calendar(self, markdown_events):
+        """upload_to_calendar
 
         Given a set of events that are missing from Google calendar, will upload
         them to the calendar that is specified in the users options.
