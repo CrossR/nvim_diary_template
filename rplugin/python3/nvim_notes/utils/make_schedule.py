@@ -1,7 +1,8 @@
-from .helpers import (TIME_FORMAT,
-                      convert_events,
-                      get_buffer_contents,
-                      get_schedule_section_line)
+from .helpers import (TIME_FORMAT, convert_events, get_buffer_contents,
+                      get_section_line)
+
+
+SCHEDULE_HEADING = "# Schedule"
 
 
 def format_events_lines(events):
@@ -57,7 +58,11 @@ def set_schedule_from_events_list(nvim, events, strict_indexing):
 
     # We want the line after, as this gives the line of the heading.
     # Then add one to the end to replace the newline, as we add one.
-    old_events_start_line = get_schedule_section_line(current_buffer) + 1
+    old_events_start_line = get_section_line(
+        current_buffer,
+        SCHEDULE_HEADING
+    ) + 1
+
     old_events_end_line = old_events_start_line + len(events) + 1
 
     nvim.api.buf_set_lines(

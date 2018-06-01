@@ -5,7 +5,7 @@ from os import makedirs, path
 from dateutil import parser
 
 from .helpers import (ISO_FORMAT, TIME_FORMAT, convert_events, format_event,
-                      get_buffer_contents, get_schedule_section_line,
+                      get_buffer_contents, get_section_line,
                       open_file, set_buffer_contents, set_line_content,
                       sort_events)
 from .make_schedule import (format_events_lines, produce_schedule_markdown,
@@ -14,6 +14,8 @@ from .make_schedule import (format_events_lines, produce_schedule_markdown,
 DATETIME_REGEX = r"[0-9]{1,2}\/[0-9]{1,2}\/[0-9]{4} [0-9]{1,2}:[0-9]{1,2}"
 TIME_REGEX = r"[0-9]{1,2}:[0-9]{1,2}"
 EVENT_REGEX = r"(?<=: ).*$"
+
+SCHEDULE_HEADING = "# Schedule"
 
 
 def open_markdown_file(nvim, options, gcal_service):
@@ -138,7 +140,10 @@ def remove_events_not_from_today(nvim):
 
     current_events = parse_markdown_file_for_events(nvim, ISO_FORMAT)
     date_today = date.today()
-    schedule_index = get_schedule_section_line(get_buffer_contents(nvim)) + 1
+    schedule_index = get_section_line(
+        get_buffer_contents(nvim),
+        SCHEDULE_HEADING
+    ) + 1
 
     for index, event in enumerate(current_events):
         event_date = parser.parse(event['start_time']).date()
@@ -160,7 +165,7 @@ def parse_markdown_file_for_events(nvim, format_string):
 
     current_buffer = get_buffer_contents(nvim)
 
-    buffer_events_index = get_schedule_section_line(current_buffer)
+    buffer_events_index = get_section_line(current_buffer, SCHEDULE_HEADING)
     events = current_buffer[buffer_events_index:]
     formatted_events = parse_buffer_events(events, format_string)
 
