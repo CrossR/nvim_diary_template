@@ -146,7 +146,7 @@ def remove_events_not_from_today(nvim):
         if date_today == event_date:
             continue
 
-        event_index = schedule_index + index
+        event_index = schedule_index + index + 1
 
         set_line_content(nvim, [""], event_index)
 
