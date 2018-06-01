@@ -1,5 +1,7 @@
 from .constants import SCHEDULE_HEADING, TIME_FORMAT
-from .helpers import convert_events, get_buffer_contents, get_section_line
+from .google_calendar_helpers import convert_events
+from .markdown_helpers import get_section_line
+from .neovim_helpers import get_buffer_contents
 
 
 def format_events_lines(events):

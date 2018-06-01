@@ -93,7 +93,8 @@ class SimpleNvimGoogleCal():
             return
 
         page_token = None
-        calendar_list = self.service.calendarList().list(pageToken=page_token).execute()
+        calendar_list = self.service.calendarList() \
+            .list(pageToken=page_token).execute()
 
         all_calendars = {}
 

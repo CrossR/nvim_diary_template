@@ -1,5 +1,5 @@
 from .constants import CHECKED_TODO, EMPTY_TODO, PADDING
-from .helpers import get_start_of_line
+from .markdown_helpers import get_start_of_line
 
 
 def strikeout_line(line):
