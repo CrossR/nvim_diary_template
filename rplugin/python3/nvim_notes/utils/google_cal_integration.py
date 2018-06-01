@@ -208,7 +208,7 @@ class SimpleNvimGoogleCal():
         with open("E:\\markdown.json", 'w') as md:
             json.dump(markdown_events, md)
 
-        with open("C:\\todays_events.json", 'w') as te:
+        with open("E:\\todays_events.json", 'w') as te:
             json.dump(todays_events, te)
 
         missing_events = [
