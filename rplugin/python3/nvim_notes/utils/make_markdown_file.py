@@ -93,7 +93,7 @@ def parse_buffer_events(events):
         # and won't work if the string pattern changes.
         matches_date_time = re.findall(DATETIME_REGEX, event)
 
-        if len(matches_date_time) > 0:
+        if len(matches_date_time) == 0:
             matches_time = re.findall(TIME_REGEX, event)
             start_date = parser.parse(matches_time[0]) \
                                .strftime(DATETIME_FORMAT)
