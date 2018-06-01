@@ -132,7 +132,7 @@ def sort_markdown_events(nvim):
     if sorted_events == unsorted_events:
         return
 
-    set_schedule_from_events_list(nvim, sorted_events)
+    set_schedule_from_events_list(nvim, sorted_events, True)
 
 
 def parse_markdown_file_for_events(nvim):

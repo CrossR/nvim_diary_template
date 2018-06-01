@@ -48,7 +48,7 @@ def produce_schedule_markdown(event_list):
     return markdown_lines
 
 
-def set_schedule_from_events_list(nvim, events):
+def set_schedule_from_events_list(nvim, events, strict_indexing):
 
     event_lines = format_events_lines(events)
 
@@ -64,6 +64,6 @@ def set_schedule_from_events_list(nvim, events):
         buffer_number,
         old_events_start_line,
         old_events_end_line,
-        True,
+        strict_indexing,
         event_lines
     )

@@ -80,7 +80,7 @@ class NotesPlugin(object):
             markdown_events,
             cal_events
         )
-        set_schedule_from_events_list(self._nvim, combined_events)
+        set_schedule_from_events_list(self._nvim, combined_events, False)
 
 
 
