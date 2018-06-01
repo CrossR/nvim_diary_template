@@ -204,6 +204,13 @@ class SimpleNvimGoogleCal():
 
         todays_events = convert_events(self.todays_events, ISO_FORMAT)
 
+        #TODO: Remove debugging.
+        with open("E:\\markdown.json", 'w') as md:
+            json.dump(markdown_events, md)
+
+        with open("C:\\todays_events.json", 'w') as te:
+            json.dump(todays_events, te)
+
         missing_events = [
             event for event in markdown_events if event not in todays_events
         ]
