@@ -11,7 +11,8 @@ from oauth2client import client, file, tools
 
 from .constants import (CACHE_EPOCH_REGEX, CALENDAR_CACHE_DURATION,
                         EVENT_CACHE_DURATION, ISO_FORMAT)
-from .helpers import convert_events, create_google_event, format_google_events
+from .google_calendar_helpers import (convert_events, create_google_event,
+                                      format_google_events)
 
 
 class SimpleNvimGoogleCal():
