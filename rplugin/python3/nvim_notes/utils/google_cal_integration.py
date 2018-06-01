@@ -9,7 +9,7 @@ from apiclient.discovery import build
 from httplib2 import Http
 from oauth2client import client, file, tools
 
-from .helpers import convert_events, create_google_event, format_events
+from .helpers import convert_events, create_google_event, format_google_events
 
 CACHE_EPOCH_REGEX = '([0-9])+'
 CALENDAR_CACHE_DURATION = timedelta(days=31)
@@ -137,7 +137,7 @@ class SimpleNvimGoogleCal():
             if not page_token:
                 break
 
-        return format_events(events_in_timeframe)
+        return format_google_events(events_in_timeframe)
 
     def check_cache(self, data_name, data_age, fallback_function):
         """check_cache

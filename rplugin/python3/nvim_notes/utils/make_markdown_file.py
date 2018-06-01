@@ -4,10 +4,11 @@ from os import makedirs, path
 
 from dateutil import parser
 
-from .helpers import (DATETIME_FORMAT, get_buffer_contents,
+from .helpers import (DATETIME_FORMAT, format_event, get_buffer_contents,
                       get_schedule_section_line, open_file,
                       set_buffer_contents, sort_events)
-from .make_schedule import format_events_lines, produce_schedule_markdown
+from .make_schedule import (format_events_lines, produce_schedule_markdown,
+                            set_schedule_from_events_list)
 
 DATETIME_REGEX = r"[0-9]{1,2}\/[0-9]{1,2}\/[0-9]{4} [0-9]{1,2}:[0-9]{1,2}"
 TIME_REGEX = r"[0-9]{1,2}:[0-9]{1,2}"
@@ -125,23 +126,7 @@ def sort_markdown_events(nvim):
     if sorted_events == unsorted_events:
         return
 
-    event_lines = format_events_lines(sorted_events)
-
-    buffer_number = nvim.current.buffer.number
-    current_buffer = get_buffer_contents(nvim)
-
-    # We want the line after, as this gives the line of the heading.
-    # Then add one to the end to replace the newline, as we add one.
-    old_events_start_line = get_schedule_section_line(current_buffer) + 1
-    old_events_end_line = old_events_start_line + len(sorted_events) + 1
-
-    nvim.api.buf_set_lines(
-        buffer_number,
-        old_events_start_line,
-        old_events_end_line,
-        True,
-        event_lines
-    )
+    set_schedule_from_events_list(nvim, sorted_events)
 
 
 def parse_markdown_file_for_events(nvim):
@@ -158,3 +143,21 @@ def parse_markdown_file_for_events(nvim):
     formatted_events = parse_buffer_events(events)
 
     return formatted_events
+
+def combine_markdown_and_calendar_events(nvim,
+                                         markdown_events,
+                                         google_events):
+    buffer_events = [
+        format_event(event, DATETIME_FORMAT) for event in markdown_events
+    ]
+
+    calendar_events = [
+        format_event(event, DATETIME_FORMAT) for event in google_events
+    ]
+
+    combined_events = buffer_events
+    combined_events.extend(
+        event for event in calendar_events if event not in buffer_events
+    )
+
+    return combined_events

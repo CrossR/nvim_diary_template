@@ -5,10 +5,12 @@ import neovim
 from nvim_notes.utils.google_cal_integration import SimpleNvimGoogleCal
 from nvim_notes.utils.helpers import get_line_content, set_line_content
 from nvim_notes.utils.keybind_actions import strikeout_line
-from nvim_notes.utils.make_markdown_file import (open_markdown_file,
+from nvim_notes.utils.make_markdown_file import (combine_markdown_and_calendar_events,
+                                                 open_markdown_file,
                                                  parse_markdown_file_for_events,
                                                  sort_markdown_events)
 from nvim_notes.utils.plugin_options import PluginOptions
+from nvim_notes.utils.make_schedule import set_schedule_from_events_list
 
 FILE_TYPE = '*.md'
 
@@ -68,6 +70,24 @@ class NotesPlugin(object):
     def upload_to_calendar(self):
         markdown_events = parse_markdown_file_for_events(self._nvim)
         self._gcal_service.upload_to_calendar(markdown_events)
+
+    @neovim.command('GrabCalendar')
+    def grab_from_calendar(self):
+        markdown_events = parse_markdown_file_for_events(self._nvim)
+        cal_events = self._gcal_service.get_events_for_today()
+        combined_events = combine_markdown_and_calendar_events(
+            self._nvim,
+            markdown_events,
+            cal_events
+        )
+        set_schedule_from_events_list(self._nvim, combined_events)
+
+
+
+    @neovim.command('UpdateCalendar')
+    def update_calendar(self):
+        self.upload_to_calendar()
+        self.grab_from_calendar()
 
     @neovim.command('SortCalendar')
     def sort_calendar(self):

@@ -49,8 +49,8 @@ def convert_events(events):
     return formatted_events
 
 
-def format_events(events_list):
-    """format_events
+def format_google_events(events_list):
+    """format_google_events
 
     Formats a list of GCal events down to the event name, and the
     start and end date of the event.
@@ -105,6 +105,23 @@ def sort_events(events):
     )
 
 
+def format_event(event, format_string):
+    """format_event
+
+    Simple helper function to format an event to a given format.
+    """
+
+    start_time = parser.parse(event['start_time']).strftime(format_string)
+    end_time = parser.parse(event['end_time']).strftime(format_string)
+    event_name = event['event_name']
+
+    return {
+        'event_name': event_name,
+        'start_time': start_time,
+        'end_time': end_time
+    }
+
+
 def get_schedule_section_line(buffer_contents):
     """get_schedule_section_line
 
@@ -122,6 +139,7 @@ def get_schedule_section_line(buffer_contents):
 
     return buffer_events_index
 
+
 def get_buffer_contents(nvim):
     """get_buffer_contents
 
@@ -136,6 +154,7 @@ def get_buffer_contents(nvim):
         -1,
         True
     )
+
 
 def set_buffer_contents(nvim, data):
     """set_buffer_contents
@@ -152,6 +171,7 @@ def set_buffer_contents(nvim, data):
         data
     )
 
+
 def get_line_content(nvim):
     """get_line_content
 
@@ -167,6 +187,7 @@ def get_line_content(nvim):
         cursor_line,
         True
     )[0]
+
 
 def set_line_content(nvim, data):
     """set_line_content
