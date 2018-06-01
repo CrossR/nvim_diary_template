@@ -9,7 +9,8 @@ from .helpers import (DATETIME_FORMAT, get_buffer_contents,
                       set_buffer_contents, sort_events)
 from .make_schedule import format_events_lines, produce_schedule_markdown
 
-DATE_REGEX = r"[0-9]{1,2}\/[0-9]{1,2}\/[0-9]{4} [0-9]{1,2}:[0-9]{1,2}"
+DATETIME_REGEX = r"[0-9]{1,2}\/[0-9]{1,2}\/[0-9]{4} [0-9]{1,2}:[0-9]{1,2}"
+TIME_REGEX = r"[0-9]{1,2}:[0-9]{1,2}"
 EVENT_REGEX = r"(?<=: ).*$"
 
 
@@ -83,10 +84,20 @@ def parse_buffer_events(events):
 
         # TODO: Regex is probably going to be a giant pain here,
         # and won't work if the string pattern changes.
-        parsed_line = re.findall(DATE_REGEX, event)
+        matches_date_time = re.findall(DATETIME_REGEX, event)
 
-        start_date = parser.parse(parsed_line[0]).strftime(DATETIME_FORMAT)
-        end_date = parser.parse(parsed_line[1]).strftime(DATETIME_FORMAT)
+        if len(matches_date_time) > 0:
+            matches_time = re.findall(TIME_REGEX, event)
+            start_date = parser.parse(matches_time[0]) \
+                               .strftime(DATETIME_FORMAT)
+            end_date = parser.parse(matches_time[1]) \
+                             .strftime(DATETIME_FORMAT)
+        else:
+            start_date = parser.parse(matches_date_time[0]) \
+                               .strftime(DATETIME_FORMAT)
+            end_date = parser.parse(matches_date_time[1]) \
+                             .strftime(DATETIME_FORMAT)
+
         event_details = re.search(EVENT_REGEX, event)[0]
 
         event_dict = {
