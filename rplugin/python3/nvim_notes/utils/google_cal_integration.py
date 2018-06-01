@@ -9,7 +9,10 @@ from apiclient.discovery import build
 from httplib2 import Http
 from oauth2client import client, file, tools
 
-from .helpers import convert_events, create_google_event, format_google_events
+from .helpers import (DATETIME_FORMAT,
+                      convert_events,
+                      create_google_event,
+                      format_google_events)
 
 CACHE_EPOCH_REGEX = '([0-9])+'
 CALENDAR_CACHE_DURATION = timedelta(days=31)
@@ -201,7 +204,7 @@ class SimpleNvimGoogleCal():
         them to the calendar that is specified in the users options.
         """
 
-        todays_events = convert_events(self.todays_events)
+        todays_events = convert_events(self.todays_events, DATETIME_FORMAT)
 
         missing_events = [
             event for event in markdown_events if event not in todays_events

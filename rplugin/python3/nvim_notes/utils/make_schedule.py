@@ -1,4 +1,7 @@
-from .helpers import convert_events, get_schedule_section_line, get_buffer_contents
+from .helpers import (TIME_FORMAT,
+                      convert_events,
+                      get_buffer_contents,
+                      get_schedule_section_line)
 
 
 def format_events_lines(events):
@@ -38,7 +41,7 @@ def produce_schedule_markdown(event_list):
     # something like f"{importance * #}".
     markdown_lines.append("# Schedule")
 
-    converted_events = convert_events(event_list)
+    converted_events = convert_events(event_list, TIME_FORMAT)
     schedule_lines = format_events_lines(converted_events)
     markdown_lines.extend(schedule_lines)
 

@@ -25,7 +25,7 @@ def get_time(time_dict):
     return datetime_obj
 
 
-def convert_events(events):
+def convert_events(events, format_string):
     """convert_events
 
     Given a list of events, convert the time objects to a human readable
@@ -36,8 +36,8 @@ def convert_events(events):
 
     for event in events:
         # TODO: Make the format strings here into a config option.
-        start_time = get_time(event['start_time']).strftime(TIME_FORMAT)
-        end_time = get_time(event['end_time']).strftime(TIME_FORMAT)
+        start_time = get_time(event['start_time']).strftime(format_string)
+        end_time = get_time(event['end_time']).strftime(format_string)
         event_name = event['event_name']
 
         formatted_events.append({
