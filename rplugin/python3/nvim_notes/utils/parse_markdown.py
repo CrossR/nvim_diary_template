@@ -155,9 +155,17 @@ def parse_markdown_file_for_events(nvim, format_string):
     return formatted_events
 
 
-def combine_markdown_and_calendar_events(nvim,
-                                         markdown_events,
-                                         google_events):
+def combine_events(nvim,
+                    markdown_events,
+                    google_events):
+    """combine_events
+
+    Takes both markdown and google events and combines them into a single list,
+    with no duplicates.
+
+    The markdown is taken to be the ground truth, as there is no online copy.
+    """
+
     buffer_events = [
         format_event(event, ISO_FORMAT) for event in markdown_events
     ]
