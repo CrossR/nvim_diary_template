@@ -3,7 +3,7 @@ from functools import wraps
 import neovim
 
 from nvim_notes.utils.google_cal_integration import SimpleNvimGoogleCal
-from nvim_notes.utils.helpers import (DATETIME_FORMAT, ISOZ_FORMAT,
+from nvim_notes.utils.helpers import (DATETIME_FORMAT, ISO_FORMAT,
                                       get_line_content, set_line_content)
 from nvim_notes.utils.keybind_actions import strikeout_line
 from nvim_notes.utils.make_markdown_file import (combine_markdown_and_calendar_events,
@@ -80,7 +80,7 @@ class NotesPlugin(object):
     def grab_from_calendar(self):
         markdown_events = parse_markdown_file_for_events(
             self._nvim,
-            ISOZ_FORMAT
+            ISO_FORMAT
         )
         cal_events = self._gcal_service.get_events_for_today()
 

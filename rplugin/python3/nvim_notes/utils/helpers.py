@@ -5,8 +5,7 @@ from dateutil import parser
 
 DATETIME_FORMAT = "%d/%m/%Y %H:%M"
 TIME_FORMAT = "%H:%M"
-ISO_FORMAT = "%Y-%m-%dT%H:%M:%S"
-ISOZ_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+ISO_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 
 def get_time(time_dict):
