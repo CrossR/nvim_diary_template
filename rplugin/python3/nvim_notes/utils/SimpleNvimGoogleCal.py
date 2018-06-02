@@ -18,6 +18,10 @@ from nvim_notes.utils.constants import (CACHE_EPOCH_REGEX,
 
 
 class SimpleNvimGoogleCal():
+    """SimpleNvimGoogleCal
+
+    A class to deal with the simple interactions with the Google Cal API.
+    """
 
     def __init__(self, nvim, options):
         self.nvim = nvim
@@ -68,7 +72,11 @@ class SimpleNvimGoogleCal():
 
         return service
 
-    def service_is_not_up(self):
+    def service_is_not_ready(self):
+        """service_is_not_ready
+
+        Check if the Google API service is ready.
+        """
         if self.service is None:
             return True
 
@@ -92,7 +100,7 @@ class SimpleNvimGoogleCal():
         are in the exclude list.
         """
 
-        if self.service_is_not_up():
+        if self.service_is_not_ready():
             return
 
         page_token = None
@@ -115,7 +123,7 @@ class SimpleNvimGoogleCal():
         last day.
         """
 
-        if self.service_is_not_up():
+        if self.service_is_not_ready():
             return
 
         date_today = date.today()
