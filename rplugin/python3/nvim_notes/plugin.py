@@ -11,6 +11,7 @@ from nvim_notes.utils.make_schedule import set_schedule_from_events_list
 from nvim_notes.utils.parse_markdown import (combine_events,
                                              open_markdown_file,
                                              parse_markdown_file_for_events,
+                                             parse_markdown_file_for_todos,
                                              remove_events_not_from_today)
 from nvim_notes.utils.PluginOptions import PluginOptions
 from nvim_notes.utils.SimpleNvimGoogleCal import SimpleNvimGoogleCal
@@ -106,6 +107,10 @@ class NotesPlugin(object):
     def strikeout(self):
         current_line = get_line_content(self._nvim)
         set_line_content(self._nvim, strikeout_line(current_line))
+
+    @neovim.command('ParseTodos')
+    def parse_todos(self):
+        parse_markdown_file_for_todos(self._nvim)
 
     @neovim.command('ToggleTodo')
     def toggle_todo_line(self):
