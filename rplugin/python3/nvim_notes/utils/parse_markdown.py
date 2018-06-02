@@ -1,5 +1,4 @@
 import re
-import json
 from datetime import date
 from os import makedirs, path
 
@@ -228,8 +227,5 @@ def parse_markdown_file_for_todos(nvim):
     todo_end = get_section_line(current_buffer, SCHEDULE_HEADING) - 1
     todos = current_buffer[todo_start:todo_end]
     formatted_todos = parse_buffer_todos(todos)
-
-    with open("F:\\todos.json", 'w') as todo_file:
-        json.dump(formatted_todos, todo_file)
 
     return formatted_todos
