@@ -17,4 +17,7 @@ def get_ongoing_todos(nvim, options):
 
     files = glob.glob(event_files)
 
-    return files[:days_to_check]
+    if len(files) < days_to_check:
+        return files
+    else:
+        return files[:days_to_check]
