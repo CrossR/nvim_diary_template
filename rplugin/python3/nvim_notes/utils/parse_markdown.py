@@ -12,7 +12,10 @@ from nvim_notes.helpers.neovim_helpers import (get_buffer_contents,
                                                set_line_content)
 from nvim_notes.utils.constants import (DATETIME_REGEX, EVENT_REGEX, FILE_TYPE,
                                         ISO_FORMAT, SCHEDULE_HEADING,
-                                        TIME_FORMAT, TIME_REGEX)
+                                        START_OF_LINE, TIME_FORMAT, TIME_REGEX,
+                                        TODO_HEADING, TODO_IS_CHECKED,
+                                        TODO_NOT_CHECKED, TODO_ONGOING_REGEX,
+                                        TODO_REGEX)
 from nvim_notes.utils.make_schedule import (format_events_lines,
                                             produce_schedule_markdown,
                                             set_schedule_from_events_list)
@@ -115,6 +118,31 @@ def parse_buffer_events(events, format_string):
     return formatted_events
 
 
+def parse_buffer_todos(todos):
+    """parse_buffer_todos
+
+    Given a list of ToDos, parse the buffer lines and format to ToDos.
+    """
+
+    formatted_todos = []
+
+    for todo in todos:
+        if todo == '':
+            continue
+
+        # TODO: Regex is probably going to be a giant pain here,
+        # and won't work if the string pattern changes.
+        todo_started = re.findall(TODO_REGEX, todo)
+        todo_carrying_on = re.findall(TODO_ONGOING_REGEX, todo)
+
+        if len(todo_started) > 0:
+            formatted_todos.append(todo_started)
+        elif len(todo_carrying_on) > 0:
+            formatted_todos[-1] = f"{formatted_todos[-1]} {todo_carrying_on}"
+
+    return formatted_todos
+
+
 def remove_events_not_from_today(nvim):
     """remove_events_not_from_today
 
@@ -156,8 +184,8 @@ def parse_markdown_file_for_events(nvim, format_string):
 
 
 def combine_events(nvim,
-                    markdown_events,
-                    google_events):
+                   markdown_events,
+                   google_events):
     """combine_events
 
     Takes both markdown and google events and combines them into a single list,
@@ -183,3 +211,20 @@ def combine_events(nvim,
     return [
         format_event(event, TIME_FORMAT) for event in combined_events
     ]
+
+
+def parse_markdown_file_for_todos(nvim):
+    """parse_markdown_file_for_todos
+
+    Gets the contents of the current NeoVim buffer,
+    and parses the todo section.
+    """
+
+    current_buffer = get_buffer_contents(nvim)
+
+    todo_start = get_section_line(current_buffer, TODO_HEADING)
+    todo_end = get_section_line(current_buffer, SCHEDULE_HEADING) - 1
+    todos = current_buffer[todo_start:todo_end]
+    formatted_todos = parse_buffer_todos(todos)
+
+    return formatted_todos
