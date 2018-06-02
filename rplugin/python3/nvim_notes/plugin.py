@@ -5,7 +5,7 @@ import neovim
 from nvim_notes.helpers.markdown_helpers import sort_markdown_events
 from nvim_notes.helpers.neovim_helpers import (get_line_content,
                                                set_line_content)
-from nvim_notes.utils.constants import FILE_TYPE, ISO_FORMAT
+from nvim_notes.utils.constants import FILE_TYPE_WILDCARD, ISO_FORMAT
 from nvim_notes.utils.keybind_actions import strikeout_line, toggle_todo
 from nvim_notes.utils.make_schedule import set_schedule_from_events_list
 from nvim_notes.utils.parse_markdown import (combine_events,
@@ -40,7 +40,7 @@ class NotesPlugin(object):
         self._options = None
         self._gcal_service = None
 
-    @neovim.autocmd('BufEnter', pattern=FILE_TYPE, sync=True)
+    @neovim.autocmd('BufEnter', pattern=FILE_TYPE_WILDCARD, sync=True)
     def event_buf_enter(self):
         if self._options is None:
             self._options = PluginOptions(self._nvim)
