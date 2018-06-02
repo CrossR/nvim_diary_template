@@ -34,6 +34,8 @@ class SimpleNvimGoogleCal():
         self.filter_list = options.calendar_filter_list
         self.filtered_calendars = self.filter_calendars()
 
+        self.set_cache(self.filter_calendars, 'filtered')
+
         self._events = self.check_cache(
             'events',
             EVENT_CACHE_DURATION,
