@@ -1,11 +1,38 @@
 
-def open_file(nvim, path, open_method):
+def open_file(nvim, path, open_method=None):
     """open_file
 
-    Opens the file in the specified way.
+    Opens the file in the specified way, if one is passed.
+    Otherwise, open in the current buffer if it is empty
+    and not modified, and in a new tab if not.
     """
 
-    nvim.command(f":{open_method} {path}")
+    if open_method == None:
+        if not buf_is_modified(nvim) and \
+           not buf_file_open(nvim):
+            nvim.command(f":e {path}")
+        else:
+            nvim.command(f":tabnew {path}")
+    else:
+        nvim.command(f":{open_method} {path}")
+
+
+def buf_is_modified(nvim):
+    """buf_is_modified
+
+    Return true if the buffer is modified.
+    """
+
+    return int(nvim.command_output('echo &modified'))
+
+
+def buf_file_open(nvim):
+    """buf_file_open
+
+    Return true if a file is open in the current buffer.
+    """
+
+    return nvim.current.buffer.name != ''
 
 
 def get_buffer_contents(nvim):
