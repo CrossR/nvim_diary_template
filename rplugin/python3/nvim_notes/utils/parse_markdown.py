@@ -137,9 +137,9 @@ def parse_buffer_todos(todos):
         todo_carrying_on = re.findall(TODO_ONGOING_REGEX, todo)
 
         if len(todo_started) > 0:
-            formatted_todos.append(str(todo_started))
+            formatted_todos.append(todo_started[0])
         elif len(todo_carrying_on) > 0:
-            full_todo = formatted_todos[-1] + str(todo_carrying_on)
+            full_todo = formatted_todos[-1] + todo_carrying_on[0]
             formatted_todos[-1] = full_todo
 
     return formatted_todos
