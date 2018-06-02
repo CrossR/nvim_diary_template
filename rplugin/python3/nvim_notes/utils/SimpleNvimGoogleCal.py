@@ -153,8 +153,11 @@ class SimpleNvimGoogleCal():
         is called to generate the data and cache it.
         """
 
-        pattern = f"{self.config_path}/cache/" + \
+        pattern = path.join(
+            self.config_path,
+            "cache",
             f"nvim_notes_{data_name}_cache_*.json"
+        )
 
         try:
             cache_file_name = glob.glob(pattern)[0]
@@ -185,11 +188,17 @@ class SimpleNvimGoogleCal():
         when creting a new one.
         """
 
-        cache_file_name = f"{self.config_path}/cache/" + \
+        cache_file_name = path.join(
+            self.config_path,
+            "cache",
             f"nvim_notes_{data_name}_cache_{int(t.time())}.json"
+        )
 
-        pattern = f"{self.config_path}/cache/" + \
+        pattern = path.join(
+            self.config_path,
+            "cache",
             f"nvim_notes_{data_name}_cache_*.json"
+        )
 
         makedirs(path.dirname(cache_file_name), exist_ok=True)
         old_cache_files = glob.glob(pattern)
