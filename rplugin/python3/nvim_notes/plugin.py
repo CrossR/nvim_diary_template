@@ -2,19 +2,18 @@ from functools import wraps
 
 import neovim
 
-from nvim_notes.utils.google_cal_integration import SimpleNvimGoogleCal
-from nvim_notes.utils.helpers import (DATETIME_FORMAT, ISO_FORMAT,
-                                      get_line_content, set_line_content)
+from nvim_notes.helpers.markdown_helpers import sort_markdown_events
+from nvim_notes.helpers.neovim_helpers import (get_line_content,
+                                               set_line_content)
+from nvim_notes.utils.constants import FILE_TYPE_WILDCARD, ISO_FORMAT
 from nvim_notes.utils.keybind_actions import strikeout_line, toggle_todo
-from nvim_notes.utils.make_markdown_file import (combine_markdown_and_calendar_events,
-                                                 open_markdown_file,
-                                                 parse_markdown_file_for_events,
-                                                 remove_events_not_from_today,
-                                                 sort_markdown_events)
 from nvim_notes.utils.make_schedule import set_schedule_from_events_list
-from nvim_notes.utils.plugin_options import PluginOptions
-
-FILE_TYPE = '*.md'
+from nvim_notes.utils.parse_markdown import (combine_events,
+                                             open_markdown_file,
+                                             parse_markdown_file_for_events,
+                                             remove_events_not_from_today)
+from nvim_notes.utils.PluginOptions import PluginOptions
+from nvim_notes.utils.SimpleNvimGoogleCal import SimpleNvimGoogleCal
 
 
 def if_active(function):
@@ -41,7 +40,7 @@ class NotesPlugin(object):
         self._options = None
         self._gcal_service = None
 
-    @neovim.autocmd('BufEnter', pattern=FILE_TYPE, sync=True)
+    @neovim.autocmd('BufEnter', pattern=FILE_TYPE_WILDCARD, sync=True)
     def event_buf_enter(self):
         if self._options is None:
             self._options = PluginOptions(self._nvim)
@@ -86,7 +85,7 @@ class NotesPlugin(object):
         )
         cal_events = self._gcal_service.get_events_for_today()
 
-        combined_events = combine_markdown_and_calendar_events(
+        combined_events = combine_events(
             self._nvim,
             markdown_events,
             cal_events

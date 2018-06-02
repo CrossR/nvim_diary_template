@@ -4,18 +4,18 @@ from os import makedirs, path
 
 from dateutil import parser
 
-from .helpers import (ISO_FORMAT, TIME_FORMAT, convert_events, format_event,
-                      get_buffer_contents, get_section_line,
-                      open_file, set_buffer_contents, set_line_content,
-                      sort_events)
-from .make_schedule import (format_events_lines, produce_schedule_markdown,
-                            set_schedule_from_events_list)
-
-DATETIME_REGEX = r"[0-9]{1,2}\/[0-9]{1,2}\/[0-9]{4} [0-9]{1,2}:[0-9]{1,2}"
-TIME_REGEX = r"[0-9]{1,2}:[0-9]{1,2}"
-EVENT_REGEX = r"(?<=: ).*$"
-
-SCHEDULE_HEADING = "# Schedule"
+from nvim_notes.helpers.event_helpers import format_event, sort_events
+from nvim_notes.helpers.google_calendar_helpers import convert_events
+from nvim_notes.helpers.neovim_helpers import (get_buffer_contents,
+                                               get_section_line, open_file,
+                                               set_buffer_contents,
+                                               set_line_content)
+from nvim_notes.utils.constants import (DATETIME_REGEX, EVENT_REGEX, FILE_TYPE,
+                                        ISO_FORMAT, SCHEDULE_HEADING,
+                                        TIME_FORMAT, TIME_REGEX)
+from nvim_notes.utils.make_schedule import (format_events_lines,
+                                            produce_schedule_markdown,
+                                            set_schedule_from_events_list)
 
 
 def open_markdown_file(nvim, options, gcal_service):
@@ -30,7 +30,7 @@ def open_markdown_file(nvim, options, gcal_service):
         options.notes_path,
         date.today().strftime("%Y"),
         date.today().strftime("%B"),
-        str(date.today()) + ".md"
+        str(date.today()) + FILE_TYPE
     )
 
     if path.isfile(todays_file):
@@ -115,23 +115,6 @@ def parse_buffer_events(events, format_string):
     return formatted_events
 
 
-def sort_markdown_events(nvim):
-    """sort_markdown_events
-
-    Given the markdown file, will sort the events currently
-    in the file and then update them in place.
-    """
-
-    unsorted_events = parse_markdown_file_for_events(nvim, TIME_FORMAT)
-    sorted_events = sort_events(unsorted_events)
-
-    # If its already sorted, return to stop any API calls.
-    if sorted_events == unsorted_events:
-        return
-
-    set_schedule_from_events_list(nvim, sorted_events, True)
-
-
 def remove_events_not_from_today(nvim):
     """remove_events_not_from_today
 
@@ -172,9 +155,17 @@ def parse_markdown_file_for_events(nvim, format_string):
     return formatted_events
 
 
-def combine_markdown_and_calendar_events(nvim,
-                                         markdown_events,
-                                         google_events):
+def combine_events(nvim,
+                    markdown_events,
+                    google_events):
+    """combine_events
+
+    Takes both markdown and google events and combines them into a single list,
+    with no duplicates.
+
+    The markdown is taken to be the ground truth, as there is no online copy.
+    """
+
     buffer_events = [
         format_event(event, ISO_FORMAT) for event in markdown_events
     ]

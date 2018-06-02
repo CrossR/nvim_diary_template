@@ -1,8 +1,7 @@
-from .helpers import (TIME_FORMAT, convert_events, get_buffer_contents,
-                      get_section_line)
-
-
-SCHEDULE_HEADING = "# Schedule"
+from nvim_notes.helpers.google_calendar_helpers import convert_events
+from nvim_notes.helpers.neovim_helpers import (get_buffer_contents,
+                                               get_section_line)
+from nvim_notes.utils.constants import SCHEDULE_HEADING, TIME_FORMAT
 
 
 def format_events_lines(events):
@@ -40,7 +39,7 @@ def produce_schedule_markdown(event_list):
 
     # TODO: Should probably swap this to be a config option,
     # something like f"{importance * #}".
-    markdown_lines.append("# Schedule")
+    markdown_lines.append(SCHEDULE_HEADING)
 
     converted_events = convert_events(event_list, TIME_FORMAT)
     schedule_lines = format_events_lines(converted_events)

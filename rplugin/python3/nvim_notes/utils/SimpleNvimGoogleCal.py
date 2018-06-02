@@ -2,22 +2,26 @@ import glob
 import json
 import re
 import time as t
-from datetime import date, datetime, time, timedelta
+from datetime import date, datetime, time
 from os import makedirs, path, remove
 
 from apiclient.discovery import build
 from httplib2 import Http
 from oauth2client import client, file, tools
 
-from .helpers import (ISO_FORMAT, convert_events,
-                      create_google_event, format_google_events)
-
-CACHE_EPOCH_REGEX = '([0-9])+'
-CALENDAR_CACHE_DURATION = timedelta(days=31)
-EVENT_CACHE_DURATION = timedelta(minutes=30)
+from nvim_notes.helpers.google_calendar_helpers import (convert_events,
+                                                        create_google_event,
+                                                        format_google_events)
+from nvim_notes.utils.constants import (CACHE_EPOCH_REGEX,
+                                        CALENDAR_CACHE_DURATION,
+                                        EVENT_CACHE_DURATION, ISO_FORMAT)
 
 
 class SimpleNvimGoogleCal():
+    """SimpleNvimGoogleCal
+
+    A class to deal with the simple interactions with the Google Cal API.
+    """
 
     def __init__(self, nvim, options):
         self.nvim = nvim
@@ -68,7 +72,11 @@ class SimpleNvimGoogleCal():
 
         return service
 
-    def service_is_not_up(self):
+    def service_is_not_ready(self):
+        """service_is_not_ready
+
+        Check if the Google API service is ready.
+        """
         if self.service is None:
             return True
 
@@ -92,11 +100,12 @@ class SimpleNvimGoogleCal():
         are in the exclude list.
         """
 
-        if self.service_is_not_up():
+        if self.service_is_not_ready():
             return
 
         page_token = None
-        calendar_list = self.service.calendarList().list(pageToken=page_token).execute()
+        calendar_list = self.service.calendarList() \
+            .list(pageToken=page_token).execute()
 
         all_calendars = {}
 
@@ -114,7 +123,7 @@ class SimpleNvimGoogleCal():
         last day.
         """
 
-        if self.service_is_not_up():
+        if self.service_is_not_ready():
             return
 
         date_today = date.today()
@@ -133,10 +142,6 @@ class SimpleNvimGoogleCal():
             ).execute()
 
             events_in_timeframe.extend(events['items'])
-
-            page_token = events.get('nextPageToken')
-            if not page_token:
-                break
 
         return format_google_events(events_in_timeframe)
 
