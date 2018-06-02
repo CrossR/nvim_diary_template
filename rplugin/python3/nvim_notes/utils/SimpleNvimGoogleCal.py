@@ -137,10 +137,6 @@ class SimpleNvimGoogleCal():
 
             events_in_timeframe.extend(events['items'])
 
-            page_token = events.get('nextPageToken')
-            if not page_token:
-                break
-
         return format_google_events(events_in_timeframe)
 
     def check_cache(self, data_name, data_age, fallback_function):
