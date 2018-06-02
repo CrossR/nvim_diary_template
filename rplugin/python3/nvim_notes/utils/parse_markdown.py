@@ -229,7 +229,7 @@ def parse_markdown_file_for_todos(nvim):
     todos = current_buffer[todo_start:todo_end]
     formatted_todos = parse_buffer_todos(todos)
 
-    with open("F:\\todos.json") as todo_file:
+    with open("F:\\todos.json", 'w') as todo_file:
         json.dump(formatted_todos, todo_file)
 
     return formatted_todos
