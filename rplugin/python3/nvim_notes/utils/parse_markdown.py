@@ -139,7 +139,7 @@ def parse_buffer_todos(todos):
         if len(todo_started) > 0:
             formatted_todos.append(todo_started[0])
         elif len(todo_carrying_on) > 0:
-            full_todo = formatted_todos[-1] + todo_carrying_on[0]
+            full_todo = f"{formatted_todos[-1]} {todo_carrying_on[0]}"
             formatted_todos[-1] = full_todo
 
     return formatted_todos
