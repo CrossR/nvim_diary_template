@@ -82,7 +82,7 @@ def parse_buffer_todos(todos):
                 'todo': todo_started[0],
                 'complete': is_todo_complete(todo)
             })
-        elif not todo_carrying_on)
+        elif not todo_carrying_on:
             full_todo = f"{formatted_todos[-1]['todo']} {todo_carrying_on[0]}"
             formatted_todos[-1]['todo'] = full_todo
 
