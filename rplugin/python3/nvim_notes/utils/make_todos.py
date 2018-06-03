@@ -14,7 +14,7 @@ def get_past_todos(nvim, options):
 
     past_files = get_past_notes(options)
 
-    todo_markdown = [""]
+    todo_markdown = [TODO_HEADING,""]
 
     for past_file in past_files:
         full_file_path = get_note_path(options, past_file)

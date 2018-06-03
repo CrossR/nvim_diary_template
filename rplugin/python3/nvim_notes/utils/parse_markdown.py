@@ -15,6 +15,7 @@ from nvim_notes.utils.constants import (DATETIME_REGEX, EVENT_REGEX, FILE_TYPE,
                                         ISO_FORMAT, SCHEDULE_HEADING,
                                         START_OF_LINE, TIME_FORMAT, TIME_REGEX)
 from nvim_notes.utils.make_schedule import produce_schedule_markdown
+from nvim_notes.utils.make_todos import get_past_todos
 
 
 def open_markdown_file(nvim, options, gcal_service):
@@ -43,6 +44,9 @@ def open_markdown_file(nvim, options, gcal_service):
     for heading in options.headings:
         full_markdown.append(f"# {heading}")
         full_markdown.append("")
+
+    rolled_over_todos = get_past_todos(nvim, options)
+    full_markdown.extend(rolled_over_todos)
 
     todays_events = gcal_service.todays_events
     schedule_markdown = produce_schedule_markdown(todays_events)
