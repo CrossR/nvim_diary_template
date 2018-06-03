@@ -16,7 +16,6 @@ def get_past_notes(options):
         options.notes_path,
         "*",
         "*",
-        "*",
         FILE_TYPE_WILDCARD
     )
 
