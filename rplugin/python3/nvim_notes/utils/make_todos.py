@@ -22,7 +22,7 @@ def get_past_todos(nvim, options):
         todos = parse_markdown_file_for_todos(current_buffer=buffer_content)
 
         uncompleted_todos = [
-            todo for todo in todos if todo['completed'] == False
+            todo for todo in todos if todo['complete'] == False
         ]
 
         for todo in uncompleted_todos:
