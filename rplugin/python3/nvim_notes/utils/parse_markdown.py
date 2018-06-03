@@ -6,6 +6,7 @@ from dateutil import parser
 
 from nvim_notes.helpers.event_helpers import format_event, sort_events
 from nvim_notes.helpers.google_calendar_helpers import convert_events
+from nvim_notes.helpers.todo_helpers import is_todo_complete
 from nvim_notes.helpers.neovim_helpers import (get_buffer_contents,
                                                get_section_line, open_file,
                                                set_buffer_contents,
@@ -13,8 +14,7 @@ from nvim_notes.helpers.neovim_helpers import (get_buffer_contents,
 from nvim_notes.utils.constants import (DATETIME_REGEX, EVENT_REGEX, FILE_TYPE,
                                         ISO_FORMAT, SCHEDULE_HEADING,
                                         START_OF_LINE, TIME_FORMAT, TIME_REGEX,
-                                        TODO_HEADING, TODO_IS_CHECKED,
-                                        TODO_NOT_CHECKED, TODO_ONGOING_REGEX,
+                                        TODO_HEADING, TODO_ONGOING_REGEX,
                                         TODO_REGEX)
 from nvim_notes.utils.make_schedule import (format_events_lines,
                                             produce_schedule_markdown,
@@ -136,10 +136,13 @@ def parse_buffer_todos(todos):
         todo_carrying_on = re.findall(TODO_ONGOING_REGEX, todo)
 
         if len(todo_started) > 0:
-            formatted_todos.append(todo_started[0])
+            formatted_todos.append({
+                'todo': todo_started[0],
+                'complete': is_todo_complete(todo)
+            })
         elif len(todo_carrying_on) > 0:
             full_todo = f"{formatted_todos[-1]} {todo_carrying_on[0]}"
-            formatted_todos[-1] = full_todo
+            formatted_todos[-1]['todo'] = full_todo
 
     return formatted_todos
 
