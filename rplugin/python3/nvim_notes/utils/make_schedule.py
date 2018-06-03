@@ -50,6 +50,10 @@ def produce_schedule_markdown(event_list):
 
 
 def set_schedule_from_events_list(nvim, events, strict_indexing):
+    """set_schedule_from_events_list
+
+    Update the schedule for the current buffer with a new list of events.
+    """
 
     event_lines = format_events_lines(events)
 

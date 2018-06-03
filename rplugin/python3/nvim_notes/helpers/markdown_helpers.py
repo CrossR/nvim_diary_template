@@ -1,7 +1,7 @@
 from nvim_notes.helpers.event_helpers import sort_events
 from nvim_notes.utils.constants import TIME_FORMAT
-from nvim_notes.utils.parse_markdown import (parse_markdown_file_for_events,
-                                             set_schedule_from_events_list)
+from nvim_notes.utils.parse_markdown import parse_markdown_file_for_events
+from nvim_notes.utils.make_schedule import set_schedule_from_events_list
 
 
 def get_start_of_line(line):
