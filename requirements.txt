@@ -1,0 +1,9 @@
+# This file may be used to create an environment using:
+# $ conda create --name <env> --file <this file>
+# platform: win-64
+google-api-python-client=1.6.7=py_0
+neovim=0.2.6=py36_0
+oauth2client=4.1.2=py36_0
+pyflakes=2.0.0=py36_0
+python-dateutil=2.7.3=py36_0
+pylint=1.9.1=py36_0
