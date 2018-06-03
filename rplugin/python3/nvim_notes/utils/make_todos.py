@@ -26,7 +26,7 @@ def get_past_todos(nvim, options):
         ]
 
         for todo in uncompleted_todos:
-            todo_markdown.append(make_todo(todo))
+            todo_markdown.append(make_todo(todo['todo']))
 
     debug_obj = {
         'markdown': todo_markdown,
