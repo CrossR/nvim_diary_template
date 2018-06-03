@@ -35,7 +35,7 @@ def get_note_file_content(file_path):
     """
 
     with open(file_path) as f:
-        return f.read()
+        return f.read().split('\n')
 
 
 def get_note_path(options, note_name):
