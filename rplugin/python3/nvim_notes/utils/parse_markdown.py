@@ -214,14 +214,15 @@ def combine_events(nvim,
     ]
 
 
-def parse_markdown_file_for_todos(nvim):
+def parse_markdown_file_for_todos(nvim = None, current_buffer = None):
     """parse_markdown_file_for_todos
 
     Gets the contents of the current NeoVim buffer,
     and parses the todo section.
     """
 
-    current_buffer = get_buffer_contents(nvim)
+    if current_buffer == None and nvim is not None:
+        current_buffer = get_buffer_contents(nvim)
 
     todo_start = get_section_line(current_buffer, TODO_HEADING)
     todo_end = get_section_line(current_buffer, SCHEDULE_HEADING) - 1
