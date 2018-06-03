@@ -86,7 +86,6 @@ class NotesPlugin(object):
         cal_events = self._gcal_service.get_events_for_today()
 
         combined_events = combine_events(
-            self._nvim,
             markdown_events,
             cal_events
         )
