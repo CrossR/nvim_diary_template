@@ -8,7 +8,7 @@ class PluginOptions:
         'config_path': os.getcwd(),
         'notes_path': os.path.join(str(Path.home()), "nvim_notes"),
         'open_method': None,
-        'headings': ['Notes', 'Issues', 'ToDo'],
+        'headings': ['Notes', 'Issues'],
         'use_google_calendar': True,
         'calendar_filter_list': [],
         'add_to_google_cal': False,
