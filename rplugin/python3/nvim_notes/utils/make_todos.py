@@ -83,7 +83,7 @@ def parse_buffer_todos(todos):
                 'complete': is_todo_complete(todo)
             })
         elif len(todo_carrying_on) > 0:
-            full_todo = f"{formatted_todos[-1]} {todo_carrying_on[0]}"
+            full_todo = f"{formatted_todos[-1]['todo']} {todo_carrying_on[0]}"
             formatted_todos[-1]['todo'] = full_todo
 
     return formatted_todos

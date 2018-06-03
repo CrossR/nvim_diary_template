@@ -1,7 +1,7 @@
 import re
 
-from nvim_notes.utils.constants import (BULLET_POINT, TODO_IS_CHECKED,
-                                        TODO_NOT_CHECKED)
+from nvim_notes.utils.constants import (BULLET_POINT, EMPTY_TODO,
+                                        TODO_IS_CHECKED, TODO_NOT_CHECKED)
 
 
 def is_todo_complete(todo):
@@ -24,4 +24,4 @@ def make_todo(content):
     Return a string for the currently incomplete ToDo.
     """
 
-    return f"{BULLET_POINT}   {TODO_NOT_CHECKED}: {content}"
+    return f"{BULLET_POINT}   {EMPTY_TODO}: {content}"
