@@ -28,7 +28,7 @@ def get_past_todos(nvim, options):
             todo_markdown.append(make_todo(todo))
 
     with open("F:\\old_todos.json", 'w') as old:
-        json.dump(todos, old)
+        json.dump(todo_markdown, old)
 
     return todo_markdown
 
