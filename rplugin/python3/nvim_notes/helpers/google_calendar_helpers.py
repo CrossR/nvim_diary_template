@@ -65,6 +65,11 @@ def format_google_events(events_list):
 
 
 def create_google_event(event, timezone):
+    """create_google_event
+
+    Given an event, create a Google Event with a time zone.
+    """
+
     return {
         "summary": event['event_name'],
         "start": {

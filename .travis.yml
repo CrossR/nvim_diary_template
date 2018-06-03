@@ -8,6 +8,4 @@ cache: pip
 install:
   - pip install -r ci_requirements.txt
 
-script:
-  - pyflakes .
-  - pylint rplugin/python3/nvim_notes 
+script: ci/ci_test.sh

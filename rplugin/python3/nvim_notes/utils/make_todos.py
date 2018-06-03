@@ -11,6 +11,11 @@ from nvim_notes.utils.constants import (SCHEDULE_HEADING, TODO_HEADING,
 
 
 def get_past_todos(options):
+    """get_past_todos
+
+    Gets uncompleted todos from past files, and brings them into the current
+    file.
+    """
 
     past_files = get_past_notes(options)
 
