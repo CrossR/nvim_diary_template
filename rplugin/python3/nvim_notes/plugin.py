@@ -1,3 +1,4 @@
+# pylint: disable=missing-docstring
 from functools import wraps
 
 import neovim
