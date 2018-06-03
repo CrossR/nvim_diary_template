@@ -1,5 +1,3 @@
-from dateutil import parser
-
 from nvim_notes.helpers.event_helpers import sort_events
 from nvim_notes.utils.constants import TIME_FORMAT
 from nvim_notes.utils.parse_markdown import (parse_markdown_file_for_events,

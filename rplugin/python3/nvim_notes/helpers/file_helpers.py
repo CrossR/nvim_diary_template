@@ -49,4 +49,5 @@ def get_note_path(options, note_name):
         "*",
         note_name
     )
+
     return glob.glob(pattern)[0]
