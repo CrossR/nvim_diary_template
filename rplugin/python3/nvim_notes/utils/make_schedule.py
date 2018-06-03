@@ -1,7 +1,7 @@
 from nvim_notes.helpers.google_calendar_helpers import convert_events
 from nvim_notes.helpers.neovim_helpers import (get_buffer_contents,
                                                get_section_line)
-from nvim_notes.utils.constants import SCHEDULE_HEADING, TIME_FORMAT
+from nvim_notes.utils.constants import SCHEDULE_HEADING, TIME_FORMAT, BULLET_POINT
 
 
 def format_events_lines(events):
@@ -14,12 +14,12 @@ def format_events_lines(events):
 
     for event in events:
 
-        start_time = event['start_time']
-        end_time = event['end_time']
-        event_name = event['event_name']
+        start = event['start_time']
+        end = event['end_time']
+        event = event['event_name']
 
         # TODO: Similarly, make this string into a config option.
-        current_line = f"*   {start_time} - {end_time}: {event_name}"
+        current_line = f"{BULLET_POINT}   {start} - {end}: {event}"
 
         events_lines.append(current_line)
 

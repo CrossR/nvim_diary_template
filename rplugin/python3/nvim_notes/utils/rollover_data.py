@@ -12,9 +12,10 @@ def get_past_todos(nvim, options):
     for past_file in past_files:
         full_file_path = get_note_path(options, past_file)
         buffer_content = get_note_file_content(full_file_path)
-        parse_markdown_file_for_todos(current_buffer=buffer_content)
+        todos = parse_markdown_file_for_todos(current_buffer=buffer_content)
 
-        # Update the todo parser to return a dict of if completed/not.
+        uncompleted_todos = [todo for todo in todos if todo['completed'] == False]
+
         # For the uncompleted, add to array.
         # Add schedule like function to make lines of ToDos.
         # Call and add to buffer.
