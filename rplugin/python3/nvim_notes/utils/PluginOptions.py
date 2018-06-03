@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 
+
 class PluginOptions:
 
     _defaults = {

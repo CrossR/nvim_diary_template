@@ -7,7 +7,7 @@ def open_file(nvim, path, open_method=None):
     and not modified, and in a new tab if not.
     """
 
-    if open_method == None:
+    if open_method is None:
         if not buf_is_modified(nvim) and \
            not buf_file_open(nvim):
             nvim.command(f":e {path}")
@@ -94,7 +94,7 @@ def set_line_content(
     """
     buffer_number = nvim.current.buffer.number
 
-    if line_index == None:
+    if line_index is None:
         line_index = nvim.current.window.cursor[0]
 
     nvim.api.buf_set_lines(

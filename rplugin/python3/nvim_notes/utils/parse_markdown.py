@@ -45,7 +45,7 @@ def open_markdown_file(nvim, options, gcal_service):
         full_markdown.append("")
 
     # Bring over old ToDos.
-    rolled_over_todos = get_past_todos(nvim, options)
+    rolled_over_todos = get_past_todos(options)
     full_markdown.extend(rolled_over_todos)
 
     # Add in Todays Calendar Entries
@@ -94,7 +94,7 @@ def parse_buffer_events(events, format_string):
         # and won't work if the string pattern changes.
         matches_date_time = re.findall(DATETIME_REGEX, event)
 
-        if len(matches_date_time) == 0:
+        if not matches_date_time:
             matches_time = re.findall(TIME_REGEX, event)
             start_date = parser.parse(matches_time[0]) \
                                .strftime(format_string)
@@ -159,8 +159,7 @@ def parse_markdown_file_for_events(nvim, format_string):
     return formatted_events
 
 
-def combine_events(nvim,
-                   markdown_events,
+def combine_events(markdown_events,
                    google_events):
     """combine_events
 

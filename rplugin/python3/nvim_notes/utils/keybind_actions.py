@@ -4,7 +4,7 @@ from nvim_notes.utils.constants import CHECKED_TODO, EMPTY_TODO, PADDING
 
 def strikeout_line(line):
     """strikeout_line
-    
+
     Strikeout a given line.
     """
     line_content = line.strip().split()[1:]
@@ -15,7 +15,7 @@ def strikeout_line(line):
 
 def toggle_todo(line):
     """toggle_todo
-    
+
     Given a todo, toggle it off.
     """
 

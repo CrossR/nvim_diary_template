@@ -66,7 +66,7 @@ class SimpleNvimGoogleCal():
             self.nvim.err_write(
                 "Credentials invalid, try re-generating or checking the path.\n"
             )
-            return
+            return None
 
         service = build('calendar', 'v3', http=creds.authorize(Http()))
 
@@ -101,7 +101,7 @@ class SimpleNvimGoogleCal():
         """
 
         if self.service_is_not_ready():
-            return
+            return []
 
         page_token = None
         calendar_list = self.service.calendarList() \
@@ -127,8 +127,8 @@ class SimpleNvimGoogleCal():
             return
 
         date_today = date.today()
-        timeMin = datetime.combine(date_today, time.min).isoformat() + 'Z'
-        timeMax = datetime.combine(date_today, time.max).isoformat() + 'Z'
+        time_min = datetime.combine(date_today, time.min).isoformat() + 'Z'
+        time_max = datetime.combine(date_today, time.max).isoformat() + 'Z'
 
         page_token = None
         events_in_timeframe = []
@@ -137,8 +137,8 @@ class SimpleNvimGoogleCal():
             events = self.service.events().list(
                 calendarId=calendar_id,
                 pageToken=page_token,
-                timeMin=timeMin,
-                timeMax=timeMax
+                timeMin=time_min,
+                timeMax=time_max
             ).execute()
 
             events_in_timeframe.extend(events['items'])
