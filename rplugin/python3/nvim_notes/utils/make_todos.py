@@ -22,13 +22,19 @@ def get_past_todos(nvim, options):
         todos = parse_markdown_file_for_todos(current_buffer=buffer_content)
 
         uncompleted_todos = [
-            todo for todo in todos if todo['completed'] == False]
+            todo for todo in todos if todo['completed'] == False
+        ]
 
         for todo in uncompleted_todos:
             todo_markdown.append(make_todo(todo))
 
+    debug_obj = {
+        'markdown': todo_markdown,
+        'old_files': past_files
+    }
+
     with open("F:\\old_todos.json", 'w') as old:
-        json.dump(todo_markdown, old)
+        json.dump(debug_obj, old)
 
     return todo_markdown
 
