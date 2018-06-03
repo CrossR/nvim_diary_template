@@ -24,8 +24,8 @@ def get_past_notes(options):
 
     if len(file_names) < days_to_check:
         return file_names
-    else:
-        return file_names[:days_to_check]
+
+    return file_names[:days_to_check]
 
 
 def get_note_file_content(file_path):
@@ -34,8 +34,8 @@ def get_note_file_content(file_path):
     Return the content of the passed note file.
     """
 
-    with open(file_path) as f:
-        return f.read().split('\n')
+    with open(file_path) as note_file:
+        return note_file.read().split('\n')
 
 
 def get_note_path(options, note_name):

@@ -10,11 +10,16 @@ from nvim_notes.utils.constants import (SCHEDULE_HEADING, TODO_HEADING,
                                         TODO_ONGOING_REGEX, TODO_REGEX)
 
 
-def get_past_todos(nvim, options):
+def get_past_todos(options):
+    """get_past_todos
+
+    Gets uncompleted todos from past files, and brings them into the current
+    file.
+    """
 
     past_files = get_past_notes(options)
 
-    todo_markdown = [TODO_HEADING,""]
+    todo_markdown = [TODO_HEADING, ""]
 
     for past_file in past_files:
         full_file_path = get_note_path(options, past_file)
@@ -22,7 +27,7 @@ def get_past_todos(nvim, options):
         todos = parse_markdown_file_for_todos(current_buffer=buffer_content)
 
         uncompleted_todos = [
-            todo for todo in todos if todo['complete'] == False
+            todo for todo in todos if todo['complete'] is False
         ]
 
         for todo in uncompleted_todos:
@@ -38,8 +43,8 @@ def get_past_todos(nvim, options):
 
     return todo_markdown
 
-        # Call and add to buffer.
-        # Add to creation of file.
+    # Call and add to buffer.
+    # Add to creation of file.
 
 
 def parse_markdown_file_for_todos(nvim=None, current_buffer=None):
@@ -49,7 +54,7 @@ def parse_markdown_file_for_todos(nvim=None, current_buffer=None):
     and parses the todo section.
     """
 
-    if current_buffer == None and nvim is not None:
+    if current_buffer is None and nvim is not None:
         current_buffer = get_buffer_contents(nvim)
 
     todo_start = get_section_line(current_buffer, TODO_HEADING)
@@ -77,12 +82,12 @@ def parse_buffer_todos(todos):
         todo_started = re.findall(TODO_REGEX, todo)
         todo_carrying_on = re.findall(TODO_ONGOING_REGEX, todo)
 
-        if len(todo_started) > 0:
+        if not todo_started:
             formatted_todos.append({
                 'todo': todo_started[0],
                 'complete': is_todo_complete(todo)
             })
-        elif len(todo_carrying_on) > 0:
+        elif not todo_carrying_on:
             full_todo = f"{formatted_todos[-1]['todo']} {todo_carrying_on[0]}"
             formatted_todos[-1]['todo'] = full_todo
 
