@@ -1,4 +1,3 @@
-import json
 import re
 from datetime import date
 from os import makedirs, path
@@ -13,7 +12,7 @@ from nvim_notes.helpers.neovim_helpers import (get_buffer_contents,
                                                set_line_content)
 from nvim_notes.utils.constants import (DATETIME_REGEX, EVENT_REGEX, FILE_TYPE,
                                         ISO_FORMAT, SCHEDULE_HEADING,
-                                        START_OF_LINE, TIME_FORMAT, TIME_REGEX)
+                                        TIME_FORMAT, TIME_REGEX)
 from nvim_notes.utils.make_schedule import produce_schedule_markdown
 from nvim_notes.utils.make_todos import get_past_todos
 

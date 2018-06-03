@@ -1,10 +1,6 @@
-import argparse
-import sys
 import warnings
 from os import path
 
-from apiclient.discovery import build
-from httplib2 import Http
 from oauth2client import client, file, tools
 
 SCOPES = "https://www.googleapis.com/auth/calendar"

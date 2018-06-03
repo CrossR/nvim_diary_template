@@ -7,7 +7,7 @@ from os import makedirs, path, remove
 
 from apiclient.discovery import build
 from httplib2 import Http
-from oauth2client import client, file, tools
+from oauth2client import file
 
 from nvim_notes.helpers.google_calendar_helpers import (convert_events,
                                                         create_google_event,
