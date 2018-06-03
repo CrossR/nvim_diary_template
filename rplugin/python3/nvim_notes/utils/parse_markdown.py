@@ -1,10 +1,11 @@
+import json
 import re
 from datetime import date
 from os import makedirs, path
 
 from dateutil import parser
 
-from nvim_notes.helpers.event_helpers import format_event, sort_events
+from nvim_notes.helpers.event_helpers import format_event
 from nvim_notes.helpers.google_calendar_helpers import convert_events
 from nvim_notes.helpers.neovim_helpers import (get_buffer_contents,
                                                get_section_line, open_file,
@@ -12,10 +13,9 @@ from nvim_notes.helpers.neovim_helpers import (get_buffer_contents,
                                                set_line_content)
 from nvim_notes.utils.constants import (DATETIME_REGEX, EVENT_REGEX, FILE_TYPE,
                                         ISO_FORMAT, SCHEDULE_HEADING,
-                                        TIME_FORMAT, TIME_REGEX)
-from nvim_notes.utils.make_schedule import (format_events_lines,
-                                            produce_schedule_markdown,
-                                            set_schedule_from_events_list)
+                                        START_OF_LINE, TIME_FORMAT, TIME_REGEX)
+from nvim_notes.utils.make_schedule import produce_schedule_markdown
+from nvim_notes.utils.make_todos import get_past_todos
 
 
 def open_markdown_file(nvim, options, gcal_service):
@@ -45,6 +45,11 @@ def open_markdown_file(nvim, options, gcal_service):
         full_markdown.append(f"# {heading}")
         full_markdown.append("")
 
+    # Bring over old ToDos.
+    rolled_over_todos = get_past_todos(nvim, options)
+    full_markdown.extend(rolled_over_todos)
+
+    # Add in Todays Calendar Entries
     todays_events = gcal_service.todays_events
     schedule_markdown = produce_schedule_markdown(todays_events)
     full_markdown.extend(schedule_markdown)
@@ -156,8 +161,8 @@ def parse_markdown_file_for_events(nvim, format_string):
 
 
 def combine_events(nvim,
-                    markdown_events,
-                    google_events):
+                   markdown_events,
+                   google_events):
     """combine_events
 
     Takes both markdown and google events and combines them into a single list,

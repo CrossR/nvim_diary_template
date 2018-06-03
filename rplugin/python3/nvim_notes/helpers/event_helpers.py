@@ -14,6 +14,7 @@ def sort_events(events):
         key=itemgetter('start_time', 'end_time', 'event_name')
     )
 
+
 def format_event(event, format_string):
     """format_event
 

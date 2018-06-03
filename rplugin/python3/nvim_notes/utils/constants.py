@@ -16,10 +16,19 @@ ISO_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"
 # Regex constants
 DATETIME_REGEX = r"[0-9]{1,2}\/[0-9]{1,2}\/[0-9]{4} [0-9]{1,2}:[0-9]{1,2}"
 TIME_REGEX = r"[0-9]{1,2}:[0-9]{1,2}"
+
+TODO_REGEX = r"(?<=\*   \[[ X]\]: ).*$"
+TODO_ONGOING_REGEX = r"(?<=    ).*$"
+TODO_IS_CHECKED = r"\[X\]"
+TODO_NOT_CHECKED = r"\[ \]"
+
 EVENT_REGEX = r"(?<=: ).*$"
 
 # Markdown Constants
 SCHEDULE_HEADING = "# Schedule"
+TODO_HEADING = "# ToDo"
 PADDING = "   "
+START_OF_LINE = r"    "
 EMPTY_TODO = "[ ]"
 CHECKED_TODO = "[X]"
+BULLET_POINT = "*"
