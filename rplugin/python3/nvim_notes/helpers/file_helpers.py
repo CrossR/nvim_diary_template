@@ -12,14 +12,15 @@ def get_past_notes(options):
 
     days_to_check = options.days_to_roll_over
 
-    event_files = path.join(
+    note_files = path.join(
         options.notes_path,
+        "*",
         "*",
         "*",
         FILE_TYPE_WILDCARD
     )
 
-    files = glob.glob(event_files)
+    files = glob.glob(note_files)
     file_names = sorted([path.basename(x) for x in files])
 
     if len(file_names) < days_to_check:

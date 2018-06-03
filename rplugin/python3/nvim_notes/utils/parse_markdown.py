@@ -45,9 +45,11 @@ def open_markdown_file(nvim, options, gcal_service):
         full_markdown.append(f"# {heading}")
         full_markdown.append("")
 
+    # Bring over old ToDos.
     rolled_over_todos = get_past_todos(nvim, options)
     full_markdown.extend(rolled_over_todos)
 
+    # Add in Todays Calendar Entries
     todays_events = gcal_service.todays_events
     schedule_markdown = produce_schedule_markdown(todays_events)
     full_markdown.extend(schedule_markdown)
