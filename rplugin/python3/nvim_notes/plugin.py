@@ -10,9 +10,9 @@ from nvim_notes.utils.constants import FILE_TYPE_WILDCARD, ISO_FORMAT
 from nvim_notes.utils.keybind_actions import strikeout_line, toggle_todo
 from nvim_notes.utils.make_schedule import set_schedule_from_events_list
 from nvim_notes.utils.parse_markdown import (combine_events,
-                                             open_markdown_file,
                                              parse_markdown_file_for_events,
                                              remove_events_not_from_today)
+from nvim_notes.utils.make_markdown_file import open_markdown_file
 from nvim_notes.utils.PluginOptions import PluginOptions
 from nvim_notes.utils.SimpleNvimGoogleCal import SimpleNvimGoogleCal
 

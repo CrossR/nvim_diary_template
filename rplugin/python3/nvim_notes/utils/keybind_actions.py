@@ -23,3 +23,5 @@ def toggle_todo(line):
         return [line.replace(EMPTY_TODO, CHECKED_TODO)]
     elif CHECKED_TODO in line:
         return [line.replace(CHECKED_TODO, EMPTY_TODO)]
+
+    return [line]
