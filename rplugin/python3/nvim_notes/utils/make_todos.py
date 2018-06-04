@@ -73,12 +73,12 @@ def parse_buffer_todos(todos):
         todo_started = re.findall(TODO_REGEX, todo)
         todo_carrying_on = re.findall(TODO_ONGOING_REGEX, todo)
 
-        if not todo_started:
+        if todo_started:
             formatted_todos.append({
                 'todo': todo_started[0],
                 'complete': is_todo_complete(todo)
             })
-        elif not todo_carrying_on:
+        elif todo_carrying_on:
             full_todo = f"{formatted_todos[-1]['todo']} {todo_carrying_on[0]}"
             formatted_todos[-1]['todo'] = full_todo
 
