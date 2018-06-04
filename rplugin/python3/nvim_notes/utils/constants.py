@@ -22,7 +22,11 @@ TODO_ONGOING_REGEX = r"(?<=    ).*$"
 TODO_IS_CHECKED = r"\[X\]"
 TODO_NOT_CHECKED = r"\[ \]"
 
+STRIKEDOUT = r"~~.*~~$"
+
 EVENT_REGEX = r"(?<=: ).*$"
+
+HEADING_REGEX = r"# .*"
 
 # Markdown Constants
 SCHEDULE_HEADING = "# Schedule"
@@ -32,3 +36,4 @@ START_OF_LINE = r"    "
 EMPTY_TODO = "[ ]"
 CHECKED_TODO = "[X]"
 BULLET_POINT = "*"
+STRIKEOUT = "~~"

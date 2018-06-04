@@ -1,5 +1,9 @@
+import re
+
 from nvim_notes.helpers.markdown_helpers import get_start_of_line
-from nvim_notes.utils.constants import CHECKED_TODO, EMPTY_TODO, PADDING
+from nvim_notes.utils.constants import (CHECKED_TODO, EMPTY_TODO, PADDING,
+                                        STRIKEDOUT, STRIKEOUT)
+
 
 def pick_action(line):
     """pick_action
@@ -9,8 +13,8 @@ def pick_action(line):
 
     if EMPTY_TODO or CHECKED_TODO in line:
         return toggle_todo(line)
-    else:
-        return strikeout_line(line)
+
+    return strikeout_line(line)
 
 
 def strikeout_line(line):
@@ -18,6 +22,12 @@ def strikeout_line(line):
 
     Strikeout a given line.
     """
+
+    line_already_striked_out = re.findall(STRIKEDOUT, line)
+
+    if line_already_striked_out:
+        return [line.replace(STRIKEOUT, '')]
+
     line_content = line.strip().split()[1:]
     start_of_line = get_start_of_line(line)
 
