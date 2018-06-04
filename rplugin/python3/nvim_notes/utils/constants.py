@@ -1,8 +1,8 @@
 from datetime import timedelta
 
 # Global plugin constants
-FILE_TYPE = '.nmd'
-FILE_TYPE_WILDCARD = '*.nmd'
+FILE_TYPE = '.md'
+FILE_TYPE_WILDCARD = '*.md'
 
 # Google Calendar Constants
 CACHE_EPOCH_REGEX = '([0-9])+'
