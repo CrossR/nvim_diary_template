@@ -11,7 +11,7 @@ def pick_action(line):
     Given a line, pick the appropriate toggleable action.
     """
 
-    if EMPTY_TODO or CHECKED_TODO in line:
+    if (EMPTY_TODO or CHECKED_TODO) in line:
         return toggle_todo(line)
 
     return strikeout_line(line)
