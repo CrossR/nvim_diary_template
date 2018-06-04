@@ -9,3 +9,12 @@ augroup nvim_notes_keybinds
     autocmd!
     autocmd FileType markdown nnoremap <buffer> gs :ToggleLine<CR>
 augroup END
+
+" Buffer settings
+
+" TODO: Make these into settings.
+augroup nvim_notes_settings
+    autocmd FileType markdown setlocal spell spelllang=en_gb
+    autocmd FileType markdown setlocal textwidth=80
+augroup END
+
