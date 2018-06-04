@@ -28,6 +28,8 @@ EVENT_REGEX = r"(?<=: ).*$"
 
 HEADING_REGEX = r"# .*"
 
+BULLET_POINT_REGEX = r"[ ]*?\*"
+
 # Markdown Constants
 SCHEDULE_HEADING = "# Schedule"
 TODO_HEADING = "# ToDo"
