@@ -7,7 +7,8 @@ let g:nvim_notes#config_path = get(g:, 'nvim_notes#config_path', '')
 
 augroup nvim_notes_keybinds
     autocmd!
-    autocmd FileType markdown nnoremap <buffer> gs :ToggleLine<CR>
+    autocmd FileType markdown nnoremap <buffer> <leader>s :ToggleLine<CR>
+    autocmd FileType markdown nnoremap <buffer> <leader>w :OpenSchedule<CR>
 augroup END
 
 " Buffer settings
