@@ -20,6 +20,7 @@ def get_past_todos(options):
     past_files = get_past_notes(options)
 
     todo_markdown = [TODO_HEADING, ""]
+    todo_lines = []
 
     for past_file in past_files:
         full_file_path = get_note_path(options, past_file)
@@ -32,8 +33,13 @@ def get_past_todos(options):
 
         for todo in uncompleted_todos:
             current_todo_line = make_todo(todo['todo'])
-            wrapped_todo_line = split_line(current_todo_line)
-            todo_markdown.extend(wrapped_todo_line)
+            todo_lines.append(current_todo_line)
+
+    deduplicated_todos = set(todo_lines)
+
+    for current_todo_line in deduplicated_todos:
+        wrapped_todo_line = split_line(current_todo_line)
+        todo_markdown.extend(wrapped_todo_line)
 
     return todo_markdown
 
