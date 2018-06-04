@@ -7,7 +7,7 @@ from nvim_notes.helpers.markdown_helpers import sort_markdown_events
 from nvim_notes.helpers.neovim_helpers import (get_line_content,
                                                set_line_content)
 from nvim_notes.utils.constants import FILE_TYPE_WILDCARD, ISO_FORMAT
-from nvim_notes.utils.keybind_actions import strikeout_line, toggle_todo
+from nvim_notes.utils.keybind_actions import pick_action
 from nvim_notes.utils.make_schedule import set_schedule_from_events_list
 from nvim_notes.utils.parse_markdown import (combine_events,
                                              parse_markdown_file_for_events,
@@ -102,12 +102,7 @@ class NotesPlugin(object):
     def sort_calendar(self):
         sort_markdown_events(self._nvim)
 
-    @neovim.command('StrikeoutLine')
-    def strikeout(self):
+    @neovim.command('ToggleLine')
+    def toggle_line(self):
         current_line = get_line_content(self._nvim)
-        set_line_content(self._nvim, strikeout_line(current_line))
-
-    @neovim.command('ToggleTodo')
-    def toggle_todo_line(self):
-        current_line = get_line_content(self._nvim)
-        set_line_content(self._nvim, toggle_todo(current_line))
+        set_line_content(self._nvim, pick_action(current_line))

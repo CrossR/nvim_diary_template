@@ -9,6 +9,7 @@ def sort_events(events):
     Given a list of events, sort them by their start time first,
     then end time and finally event name.
     """
+
     return sorted(
         events,
         key=itemgetter('start_time', 'end_time', 'event_name')

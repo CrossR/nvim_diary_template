@@ -1,6 +1,17 @@
 from nvim_notes.helpers.markdown_helpers import get_start_of_line
 from nvim_notes.utils.constants import CHECKED_TODO, EMPTY_TODO, PADDING
 
+def pick_action(line):
+    """pick_action
+
+    Given a line, pick the appropriate toggleable action.
+    """
+
+    if EMPTY_TODO or CHECKED_TODO in line:
+        return toggle_todo(line)
+    else:
+        return strikeout_line(line)
+
 
 def strikeout_line(line):
     """strikeout_line
