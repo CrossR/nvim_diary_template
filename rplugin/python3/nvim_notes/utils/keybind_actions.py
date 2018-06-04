@@ -24,14 +24,14 @@ def strikeout_line(line):
     Strikeout a given line.
     """
 
+    line_contains_bullet_point = re.findall(BULLET_POINT_REGEX, line)
     line_already_striked_out = re.findall(STRIKEDOUT, line)
-    line_not_bullet_point = re.findall(BULLET_POINT_REGEX, line)
+
+    if not line_contains_bullet_point:
+        return [line]
 
     if line_already_striked_out:
         return [line.replace(STRIKEOUT, '')]
-
-    if line_not_bullet_point:
-        return [line]
 
     line_content = line.strip().split()[1:]
     start_of_line = get_start_of_line(line)
