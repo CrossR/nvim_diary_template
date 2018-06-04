@@ -1,7 +1,8 @@
+import nvim_notes.utils.parse_markdown
+import nvim_notes.utils.make_schedule
+
 from nvim_notes.helpers.event_helpers import sort_events
 from nvim_notes.utils.constants import TIME_FORMAT
-from nvim_notes.utils.parse_markdown import parse_markdown_file_for_events
-from nvim_notes.utils.make_schedule import set_schedule_from_events_list
 
 
 def get_start_of_line(line):
@@ -23,14 +24,16 @@ def sort_markdown_events(nvim):
     in the file and then update them in place.
     """
 
-    unsorted_events = parse_markdown_file_for_events(nvim, TIME_FORMAT)
+    unsorted_events = nvim_notes.utils.parse_markdown.parse_markdown_file_for_events(
+        nvim, TIME_FORMAT)
     sorted_events = sort_events(unsorted_events)
 
     # If its already sorted, return to stop any API calls.
     if sorted_events == unsorted_events:
         return
 
-    set_schedule_from_events_list(nvim, sorted_events, True)
+    nvim_notes.utils.make_schedule.set_schedule_from_events_list(
+        nvim, sorted_events, True)
 
 
 def split_line(line):

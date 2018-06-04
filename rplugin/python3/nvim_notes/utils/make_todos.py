@@ -1,4 +1,3 @@
-import json
 import re
 
 from nvim_notes.helpers.file_helpers import (get_note_file_content,
