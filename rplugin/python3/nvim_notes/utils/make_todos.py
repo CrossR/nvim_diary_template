@@ -33,7 +33,7 @@ def get_past_todos(options):
         for todo in uncompleted_todos:
             current_todo_line = make_todo(todo['todo'])
             wrapped_todo_line = split_line(current_todo_line)
-            todo_markdown.append(wrapped_todo_line)
+            todo_markdown.extend(wrapped_todo_line)
 
     return todo_markdown
 
