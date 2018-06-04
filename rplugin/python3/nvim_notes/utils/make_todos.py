@@ -3,6 +3,7 @@ import re
 
 from nvim_notes.helpers.file_helpers import (get_note_file_content,
                                              get_note_path, get_past_notes)
+from nvim_notes.helpers.markdown_helpers import split_line
 from nvim_notes.helpers.neovim_helpers import (get_buffer_contents,
                                                get_section_line)
 from nvim_notes.helpers.todo_helpers import is_todo_complete, make_todo
@@ -31,20 +32,11 @@ def get_past_todos(options):
         ]
 
         for todo in uncompleted_todos:
-            todo_markdown.append(make_todo(todo['todo']))
-
-    debug_obj = {
-        'markdown': todo_markdown,
-        'old_files': past_files
-    }
-
-    with open("F:\\old_todos.json", 'w') as old:
-        json.dump(debug_obj, old)
+            current_todo_line = make_todo(todo['todo'])
+            wrapped_todo_line = split_line(current_todo_line)
+            todo_markdown.append(wrapped_todo_line)
 
     return todo_markdown
-
-    # Call and add to buffer.
-    # Add to creation of file.
 
 
 def parse_markdown_file_for_todos(nvim=None, current_buffer=None):
