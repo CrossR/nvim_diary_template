@@ -1,8 +1,8 @@
-import json
 import re
 
 from nvim_notes.helpers.file_helpers import (get_note_file_content,
                                              get_note_path, get_past_notes)
+from nvim_notes.helpers.markdown_helpers import split_line
 from nvim_notes.helpers.neovim_helpers import (get_buffer_contents,
                                                get_section_line)
 from nvim_notes.helpers.todo_helpers import is_todo_complete, make_todo
@@ -20,6 +20,7 @@ def get_past_todos(options):
     past_files = get_past_notes(options)
 
     todo_markdown = [TODO_HEADING, ""]
+    todo_lines = []
 
     for past_file in past_files:
         full_file_path = get_note_path(options, past_file)
@@ -31,20 +32,16 @@ def get_past_todos(options):
         ]
 
         for todo in uncompleted_todos:
-            todo_markdown.append(make_todo(todo['todo']))
+            current_todo_line = make_todo(todo['todo'])
+            todo_lines.append(current_todo_line)
 
-    debug_obj = {
-        'markdown': todo_markdown,
-        'old_files': past_files
-    }
+    deduplicated_todos = set(todo_lines)
 
-    with open("F:\\old_todos.json", 'w') as old:
-        json.dump(debug_obj, old)
+    for current_todo_line in deduplicated_todos:
+        wrapped_todo_line = split_line(current_todo_line)
+        todo_markdown.extend(wrapped_todo_line)
 
     return todo_markdown
-
-    # Call and add to buffer.
-    # Add to creation of file.
 
 
 def parse_markdown_file_for_todos(nvim=None, current_buffer=None):
@@ -82,12 +79,12 @@ def parse_buffer_todos(todos):
         todo_started = re.findall(TODO_REGEX, todo)
         todo_carrying_on = re.findall(TODO_ONGOING_REGEX, todo)
 
-        if not todo_started:
+        if todo_started:
             formatted_todos.append({
                 'todo': todo_started[0],
                 'complete': is_todo_complete(todo)
             })
-        elif not todo_carrying_on:
+        elif todo_carrying_on:
             full_todo = f"{formatted_todos[-1]['todo']} {todo_carrying_on[0]}"
             formatted_todos[-1]['todo'] = full_todo
 

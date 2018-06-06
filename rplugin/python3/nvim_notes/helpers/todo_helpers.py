@@ -10,9 +10,9 @@ def is_todo_complete(todo):
     Check if the current todo is complete or not.
     """
 
-    if not re.findall(TODO_IS_CHECKED, todo):
+    if re.findall(TODO_IS_CHECKED, todo):
         return True
-    elif not re.findall(TODO_NOT_CHECKED, todo):
+    elif re.findall(TODO_NOT_CHECKED, todo):
         return False
 
     return False
