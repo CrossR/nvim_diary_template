@@ -1,3 +1,8 @@
+"""file_helpers
+
+Simple helpers to help with opening and finding files.
+"""
+
 import glob
 from os import path
 

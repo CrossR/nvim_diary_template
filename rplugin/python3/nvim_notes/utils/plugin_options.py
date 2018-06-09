@@ -1,8 +1,22 @@
+"""plugin_options
+
+Store the plugin options for the nvim_notes class, as
+well as any associated helpers.
+"""
+
 import os
 from pathlib import Path
 
 
 class PluginOptions:
+    """PluginOptions
+
+    Plugin options is a class that stores all the options
+    that the nvim_notes plugin uses.
+
+    The values are set to some default, and then overridden if any
+    value exists in the users' config.
+    """
 
     _defaults = {
         'active': True,

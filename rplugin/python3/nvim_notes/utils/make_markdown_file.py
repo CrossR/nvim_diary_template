@@ -1,3 +1,9 @@
+"""make_markdown_file
+
+Functions to open the markdown files from the filesystem, or make them if
+they don't exist.
+"""
+
 from datetime import date, timedelta
 from os import makedirs, path
 

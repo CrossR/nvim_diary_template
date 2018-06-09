@@ -1,3 +1,8 @@
+"""constants
+
+Constants to be used throughout the whole plugin.
+"""
+
 from datetime import timedelta
 
 # Global plugin constants
@@ -22,7 +27,7 @@ TODO_ONGOING_REGEX = r"(?<=    ).*$"
 TODO_IS_CHECKED = r"\[X\]"
 TODO_NOT_CHECKED = r"\[ \]"
 
-STRIKEDOUT = r"~~.*~~$"
+STRUCK_OUT = r"~~.*~~$"
 
 EVENT_REGEX = r"(?<=: ).*$"
 

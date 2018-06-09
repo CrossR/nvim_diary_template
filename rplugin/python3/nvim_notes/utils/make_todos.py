@@ -1,3 +1,8 @@
+"""make_todos
+
+Functions for the making and parsing of ToDos.
+"""
+
 import re
 
 from nvim_notes.helpers.file_helpers import (get_note_file_content,

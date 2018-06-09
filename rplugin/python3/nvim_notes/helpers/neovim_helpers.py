@@ -1,9 +1,14 @@
+"""neovim_helpers
+
+Simple helpers to help interfacing with NeoVim.
+"""
+
 from os import path
 
 def open_file(nvim, file_path, open_method=None, force_open=False):
     """open_file
 
-    Attempts to open the givwn file in the specified way. First checks the
+    Attempts to open the given file in the specified way. First checks the
     file exists if required, and if it does opens the file in the requested
     way. Otherwise, open in the current buffer if it is empty and not
     modified, and in a new tab if not.

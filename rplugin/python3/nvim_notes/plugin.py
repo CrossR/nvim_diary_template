@@ -14,8 +14,8 @@ from nvim_notes.utils.make_schedule import set_schedule_from_events_list
 from nvim_notes.utils.parse_markdown import (combine_events,
                                              parse_markdown_file_for_events,
                                              remove_events_not_from_today)
-from nvim_notes.utils.PluginOptions import PluginOptions
-from nvim_notes.utils.SimpleNvimGoogleCal import SimpleNvimGoogleCal
+from nvim_notes.utils.plugin_options import PluginOptions
+from nvim_notes.utils.nvim_google_cal_class import SimpleNvimGoogleCal
 
 
 def if_active(function):
