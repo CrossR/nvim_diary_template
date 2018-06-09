@@ -16,11 +16,9 @@ def open_todays_schedule(nvim, options, gcal_service):
         * If not, put the default template in and save.
     """
 
-    todays_file = path.join(
+    todays_file = get_schedule_file_path_for_date(
         options.notes_path,
-        date.today().strftime("%Y"),
-        date.today().strftime("%B"),
-        str(date.today()) + FILE_TYPE
+        date.today()
     )
 
     if not open_file(nvim, todays_file, options.open_method):
@@ -48,6 +46,20 @@ def open_todays_schedule(nvim, options, gcal_service):
 
     set_buffer_contents(nvim, full_markdown)
     nvim.command(":w")
+
+
+def get_schedule_file_path_for_date(notes_path, passed_date):
+    """get_schedule_file_path_for_date
+
+    Gets the file path for the given schedule file.
+    """
+
+    return path.join(
+        notes_path,
+        passed_date.strftime("%Y"),
+        passed_date.strftime("%B"),
+        str(passed_date) + FILE_TYPE
+    )
 
 
 def generate_markdown_metadata():
