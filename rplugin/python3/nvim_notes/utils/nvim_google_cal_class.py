@@ -135,7 +135,7 @@ class SimpleNvimGoogleCal():
         """
 
         if self.service_is_not_ready():
-            return
+            return []
 
         date_today = date.today()
         time_min = datetime.combine(date_today, time.min).isoformat() + 'Z'
