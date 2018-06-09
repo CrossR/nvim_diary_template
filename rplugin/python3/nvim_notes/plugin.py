@@ -73,7 +73,7 @@ class NotesPlugin(object):
             open_schedule_file(
                 self._nvim,
                 self._options,
-                args[0]
+                int(args[0])
             )
 
     @neovim.command('UploadCalendar')
