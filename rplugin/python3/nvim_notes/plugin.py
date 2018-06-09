@@ -8,14 +8,13 @@ from nvim_notes.helpers.neovim_helpers import (get_line_content,
                                                set_line_content)
 from nvim_notes.utils.constants import FILE_TYPE_WILDCARD, ISO_FORMAT
 from nvim_notes.utils.keybind_actions import pick_action
-from nvim_notes.utils.make_markdown_file import (open_schedule_file,
-                                                 open_todays_schedule)
+from nvim_notes.utils.make_markdown_file import open_todays_schedule
 from nvim_notes.utils.make_schedule import set_schedule_from_events_list
+from nvim_notes.utils.nvim_google_cal_class import SimpleNvimGoogleCal
 from nvim_notes.utils.parse_markdown import (combine_events,
                                              parse_markdown_file_for_events,
                                              remove_events_not_from_today)
 from nvim_notes.utils.plugin_options import PluginOptions
-from nvim_notes.utils.nvim_google_cal_class import SimpleNvimGoogleCal
 
 
 def if_active(function):
@@ -51,9 +50,9 @@ class NotesPlugin(object):
                 self._options
             )
 
-    @neovim.command('OpenSchedule', nargs='*')
+    @neovim.command('OpenSchedule')
     # @if_active
-    def open_schedule(self, args):
+    def open_schedule(self):
 
         # TODO: Remove this, since it shouldn't be needed due to the autocmds.
         if self._options is None:
@@ -63,18 +62,11 @@ class NotesPlugin(object):
                 self._options
             )
 
-        if not args:
-            open_todays_schedule(
-                self._nvim,
-                self._options,
-                self._gcal_service
-            )
-        else:
-            open_schedule_file(
-                self._nvim,
-                self._options,
-                int(args[0])
-            )
+        open_todays_schedule(
+            self._nvim,
+            self._options,
+            self._gcal_service
+        )
 
     @neovim.command('UploadCalendar')
     def upload_to_calendar(self):
