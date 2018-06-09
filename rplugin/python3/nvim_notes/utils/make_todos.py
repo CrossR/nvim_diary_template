@@ -87,7 +87,7 @@ def parse_buffer_todos(todos):
         if todo_started:
             formatted_todos.append({
                 'todo': todo_started[0],
-                'complete': is_todo_complete(todo)
+                'completed': is_todo_complete(todo)
             })
         elif todo_carrying_on:
             full_todo = f"{formatted_todos[-1]['todo']} {todo_carrying_on[0]}"
