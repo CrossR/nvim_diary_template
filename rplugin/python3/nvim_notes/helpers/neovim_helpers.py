@@ -1,5 +1,6 @@
+from os import path
 
-def open_file(nvim, path, open_method=None, force_open=False):
+def open_file(nvim, file_path, open_method=None, force_open=False):
     """open_file
 
     Attempts to open the givwn file in the specified way. First checks the
@@ -8,17 +9,17 @@ def open_file(nvim, path, open_method=None, force_open=False):
     modified, and in a new tab if not.
     """
 
-    if not path.isfile(path) and not force_open:
+    if not path.isfile(file_path) and not force_open:
         return False
 
     if open_method is None:
         if not buf_is_modified(nvim) and \
            not buf_file_open(nvim):
-            nvim.command(f":e {path}")
+            nvim.command(f":e {file_path}")
         else:
-            nvim.command(f":tabnew {path}")
+            nvim.command(f":tabnew {file_path}")
     else:
-        nvim.command(f":{open_method} {path}")
+        nvim.command(f":{open_method} {file_path}")
 
     return True
 
