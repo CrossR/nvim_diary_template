@@ -5,17 +5,13 @@ Simple helpers to help interfacing with NeoVim.
 
 from os import path
 
-def open_file(nvim, file_path, open_method=None, force_open=False):
+def open_file(nvim, file_path, open_method=None):
     """open_file
 
-    Attempts to open the given file in the specified way. First checks the
-    file exists if required, and if it does opens the file in the requested
-    way. Otherwise, open in the current buffer if it is empty and not
-    modified, and in a new tab if not.
+    Attempts to open the given file in the specified way. If no method is
+    given, open in the current buffer if it is empty and not modified, and in
+    a new tab if not.
     """
-
-    if not path.isfile(file_path) and not force_open:
-        return False
 
     if open_method is None:
         if not buf_is_modified(nvim) and \
@@ -25,8 +21,6 @@ def open_file(nvim, file_path, open_method=None, force_open=False):
             nvim.command(f":tabnew {file_path}")
     else:
         nvim.command(f":{open_method} {file_path}")
-
-    return True
 
 
 def buf_is_modified(nvim):

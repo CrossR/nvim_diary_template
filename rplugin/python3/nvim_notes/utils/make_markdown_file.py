@@ -27,9 +27,14 @@ def open_todays_schedule(nvim, options, gcal_service):
         date.today()
     )
 
-    # If the file can be opened, then it much already exist so we don't need to
-    # build it up.
-    if open_file(nvim, todays_file, options.open_method):
+    # If the file exists, then it much already exist so we don't need to
+    # build it up. However, we want to open it regardless, so if not, the
+    # new markdown is saved in the correct place, and opened in the correct
+    # way.
+
+    open_file(nvim, todays_file, options.open_method)
+
+    if path.isfile(todays_file):
         return
 
     full_markdown = []
