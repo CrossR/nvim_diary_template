@@ -33,7 +33,7 @@ def get_past_todos(options):
         todos = parse_markdown_file_for_todos(current_buffer=buffer_content)
 
         uncompleted_todos = [
-            todo for todo in todos if todo['complete'] is False
+            todo for todo in todos if todo['completed'] is False
         ]
 
         for todo in uncompleted_todos:
