@@ -1,11 +1,15 @@
 
-def open_file(nvim, path, open_method=None):
+def open_file(nvim, path, open_method=None, force_open=False):
     """open_file
 
-    Opens the file in the specified way, if one is passed.
-    Otherwise, open in the current buffer if it is empty
-    and not modified, and in a new tab if not.
+    Attempts to open the givwn file in the specified way. First checks the
+    file exists if required, and if it does opens the file in the requested
+    way. Otherwise, open in the current buffer if it is empty and not
+    modified, and in a new tab if not.
     """
+
+    if not path.isfile(path) and not force_open:
+        return False
 
     if open_method is None:
         if not buf_is_modified(nvim) and \
@@ -15,6 +19,8 @@ def open_file(nvim, path, open_method=None):
             nvim.command(f":tabnew {path}")
     else:
         nvim.command(f":{open_method} {path}")
+
+    return True
 
 
 def buf_is_modified(nvim):

@@ -12,7 +12,7 @@ from nvim_notes.utils.make_schedule import set_schedule_from_events_list
 from nvim_notes.utils.parse_markdown import (combine_events,
                                              parse_markdown_file_for_events,
                                              remove_events_not_from_today)
-from nvim_notes.utils.make_markdown_file import open_markdown_file
+from nvim_notes.utils.make_markdown_file import open_todays_schedule
 from nvim_notes.utils.PluginOptions import PluginOptions
 from nvim_notes.utils.SimpleNvimGoogleCal import SimpleNvimGoogleCal
 
@@ -62,7 +62,7 @@ class NotesPlugin(object):
                 self._options
             )
 
-        open_markdown_file(
+        open_todays_schedule(
             self._nvim,
             self._options,
             self._gcal_service

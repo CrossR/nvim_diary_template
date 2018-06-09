@@ -7,14 +7,15 @@ from nvim_notes.utils.make_schedule import produce_schedule_markdown
 from nvim_notes.utils.make_todos import get_past_todos
 
 
-def open_markdown_file(nvim, options, gcal_service):
-    """open_markdown_file
+def open_todays_schedule(nvim, options, gcal_service):
+    """open_todays_schedule
 
-    Open the actual markdown file.
+    Open the actual schedule markdown file.
     This includes the following steps:
         * Open the file if it already exists.
         * If not, put the default template in and save.
     """
+
     todays_file = path.join(
         options.notes_path,
         date.today().strftime("%Y"),
@@ -22,8 +23,7 @@ def open_markdown_file(nvim, options, gcal_service):
         str(date.today()) + FILE_TYPE
     )
 
-    if path.isfile(todays_file):
-        open_file(nvim, todays_file, options.open_method)
+    if not open_file(nvim, todays_file, options.open_method):
         return
 
     full_markdown = []
