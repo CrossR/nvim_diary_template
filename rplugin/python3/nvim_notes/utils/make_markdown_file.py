@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, timedelta
 from os import makedirs, path
 
 from nvim_notes.helpers.neovim_helpers import open_file, set_buffer_contents
@@ -78,3 +78,24 @@ def generate_markdown_metadata():
     metadata.append("")
 
     return metadata
+
+
+def open_schedule_file(nvim, options, day_delta):
+    """open_schedule_file
+
+    Open a given schedule file with a day delta.
+    That is, a day_delta of -1 would open the schedule
+    from yesterday, 0 would be today, and +1 tomorrow.
+    """
+
+    specified_date = date.today() + timedelta(days=day_delta)
+
+    schedule_file_name = get_schedule_file_path_for_date(
+        options.notes_path,
+        specified_date
+    )
+
+    if not open_file(nvim, schedule_file_name):
+        nvim.err_write(
+            f"No schedule file exists for {specified_date}."
+        )
