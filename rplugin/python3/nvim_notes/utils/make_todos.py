@@ -5,8 +5,8 @@ Functions for the making and parsing of ToDos.
 
 import re
 
-from nvim_notes.helpers.file_helpers import (get_note_file_content,
-                                             get_note_path, get_past_notes)
+from nvim_notes.helpers.file_helpers import (get_file_content,
+                                             get_schedule_path, get_past_schedules)
 from nvim_notes.helpers.markdown_helpers import split_line
 from nvim_notes.helpers.neovim_helpers import (get_buffer_contents,
                                                get_section_line)
@@ -22,14 +22,14 @@ def get_past_todos(options):
     file.
     """
 
-    past_files = get_past_notes(options)
+    past_files = get_past_schedules(options)
 
     todo_markdown = [TODO_HEADING, ""]
     todo_lines = []
 
     for past_file in past_files:
-        full_file_path = get_note_path(options, past_file)
-        buffer_content = get_note_file_content(full_file_path)
+        full_file_path = get_schedule_path(options, past_file)
+        buffer_content = get_file_content(full_file_path)
         todos = parse_markdown_file_for_todos(current_buffer=buffer_content)
 
         uncompleted_todos = [

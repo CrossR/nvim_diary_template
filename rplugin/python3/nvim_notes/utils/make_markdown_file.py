@@ -8,7 +8,7 @@ from datetime import date, timedelta
 from os import makedirs, path
 
 from nvim_notes.helpers.neovim_helpers import open_file, set_buffer_contents
-from nvim_notes.utils.constants import FILE_TYPE
+from nvim_notes.utils.constants import FILE_TYPE, NOTE_FOLDER, SCHEDULE_FOLDER
 from nvim_notes.utils.make_schedule import produce_schedule_markdown
 from nvim_notes.utils.make_todos import get_past_todos
 
@@ -64,6 +64,7 @@ def get_schedule_file_path_for_date(notes_path, passed_date):
 
     return path.join(
         notes_path,
+        SCHEDULE_FOLDER,
         passed_date.strftime("%Y"),
         passed_date.strftime("%B"),
         str(passed_date) + FILE_TYPE

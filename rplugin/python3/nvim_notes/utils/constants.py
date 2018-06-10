@@ -8,6 +8,8 @@ from datetime import timedelta
 # Global plugin constants
 FILE_TYPE = '.md'
 FILE_TYPE_WILDCARD = '*.md'
+NOTE_FOLDER = "Notes"
+SCHEDULE_FOLDER = "Daily"
 
 # Google Calendar Constants
 CACHE_EPOCH_REGEX = '([0-9])+'
