@@ -34,9 +34,13 @@ def open_todays_schedule(nvim, options, gcal_service):
 
     full_markdown = []
 
-    full_markdown.extend(generate_markdown_metadata())
+    schedule_metadata = {
+        "Date": str(date.today())
+    }
 
-    for heading in options.headings:
+    full_markdown.extend(generate_markdown_metadata(schedule_metadata))
+
+    for heading in options.daily_headings:
         full_markdown.append(f"# {heading}")
         full_markdown.append("")
 
@@ -71,17 +75,35 @@ def get_schedule_file_path_for_date(notes_path, passed_date):
     )
 
 
-def generate_markdown_metadata():
+def get_note_file_path_for_topic(notes_path, passed_topic):
+    """get_note_file_path_for_topic
+
+    Gets the file path for the given note file.
+    """
+
+    return path.join(
+        notes_path,
+        NOTE_FOLDER,
+        str(passed_topic) + FILE_TYPE
+    )
+
+
+def generate_markdown_metadata(metadata_obj):
     """generate_markdown_metadata
 
-    Add some basic metadata to the stop of the file
+    Add some basic metadata to the top of the file
     in HTML tags.
     """
 
     metadata = []
 
     metadata.append("<!---")
-    metadata.append(f"    Date: {date.today()}")
+
+    passed_metadata = [
+        f"    {key}: {value}" for key, value in metadata_obj.items()
+    ]
+
+    metadata.extend(passed_metadata)
     metadata.append(f"    Tags:")
     metadata.append("--->")
     metadata.append("")
@@ -108,3 +130,41 @@ def open_schedule_file(nvim, options, day_delta):
         nvim.err_write(
             f"No schedule file exists for {specified_date}."
         )
+
+
+def open_note_for_topic(nvim, options, note_topic):
+    """open_note_for_topic
+
+    Open the specified note markdown file.
+    This includes the following steps:
+        * Open the file if it already exists.
+        * If not, put the default note template in and save.
+    """
+
+    note_file = get_note_file_path_for_topic(
+        options.notes_path,
+        note_topic
+    )
+
+    # If the file exists, open it and return.
+    if path.isfile(note_file):
+        open_file(nvim, note_file, options.open_method)
+        return
+
+    full_markdown = []
+
+    note_metadata = {
+        "Topic": note_topic
+    }
+
+    full_markdown.extend(generate_markdown_metadata(note_metadata))
+
+    for heading in options.note_headings:
+        full_markdown.append(f"# {heading}")
+        full_markdown.append("")
+
+    makedirs(path.dirname(note_file), exist_ok=True)
+    open_file(nvim, note_file, options.open_method)
+
+    set_buffer_contents(nvim, full_markdown)
+    nvim.command(":w")
