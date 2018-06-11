@@ -9,6 +9,7 @@ augroup nvim_notes_keybinds
     autocmd!
     autocmd FileType markdown nnoremap <buffer> <leader>s :ToggleLine<CR>
     autocmd FileType markdown nnoremap <buffer> <leader>w :OpenSchedule<CR>
+    autocmd FileType markdown nnoremap <buffer> <leader>n :OpenNote<CR>
 augroup END
 
 " Buffer settings
