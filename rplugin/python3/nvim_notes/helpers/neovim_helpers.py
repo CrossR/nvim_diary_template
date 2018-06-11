@@ -17,7 +17,7 @@ def open_file(nvim, file_path, open_method=None):
            not buf_file_open(nvim):
             nvim.command(f":e {file_path}")
         else:
-            nvim.command(f":tabnew {file_path}")
+            nvim.command(f":tab drop {file_path}")
     else:
         nvim.command(f":{open_method} {file_path}")
 
