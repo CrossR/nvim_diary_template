@@ -89,7 +89,7 @@ class NotesPlugin(object):
         open_note_for_topic(
             self._nvim,
             self._options,
-            str(note_topic[0])
+            note_topic
         )
 
 
