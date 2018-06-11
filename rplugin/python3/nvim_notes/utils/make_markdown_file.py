@@ -171,4 +171,3 @@ def open_note_for_topic(nvim, options, note_topic):
     open_popup_file(nvim, note_file, options.pop_up_method)
 
     set_buffer_contents(nvim, full_markdown)
-    nvim.command(":w")
