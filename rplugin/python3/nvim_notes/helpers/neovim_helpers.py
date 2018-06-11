@@ -15,11 +15,11 @@ def open_file(nvim, file_path, open_method=None):
     if open_method is None:
         if not buf_is_modified(nvim) and \
            not buf_file_open(nvim):
-            nvim.command(f':e "{file_path}"')
+            nvim.command(f":e {file_path}")
         else:
-            nvim.command(f':tab drop "{file_path}"')
+            nvim.command(f":tabnew {file_path}")
     else:
-        nvim.command(f':{open_method} "{file_path}"')
+        nvim.command(f":{open_method} {file_path}")
 
 
 def open_popup_file(nvim, file_path, open_method=None):
@@ -38,7 +38,7 @@ def open_popup_file(nvim, file_path, open_method=None):
         open_method = "botright 15new"
 
     nvim.command(f":{open_method}")
-    nvim.command(f':e "{file_path}"')
+    nvim.command(f":e {file_path}")
 
 
 def buf_is_modified(nvim):
