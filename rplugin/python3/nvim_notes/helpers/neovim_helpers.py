@@ -3,8 +3,6 @@
 Simple helpers to help interfacing with NeoVim.
 """
 
-from os import path
-
 def open_file(nvim, file_path, open_method=None):
     """open_file
 
@@ -30,6 +28,14 @@ def buf_is_modified(nvim):
     """
 
     return int(nvim.command_output('echo &modified'))
+
+def get_current_word(nvim):
+    """get_current_word
+
+    Get the word the cursor is currently over.
+    """
+
+    return str(nvim.command_output('echo(expand("<cword>"))'))
 
 
 def buf_file_open(nvim):
