@@ -144,7 +144,7 @@ def open_note_for_topic(nvim, options, note_topic):
 
     note_file = get_note_file_path_for_topic(
         options.notes_path,
-        note_topic
+        note_topic.lower().strip()
     )
 
     # If the file exists, open it and return.
