@@ -164,9 +164,9 @@ def open_note_for_topic(nvim, options, note_topic):
         full_markdown.append(f"# {heading}")
         full_markdown.append("")
 
-    #TODO: Swap this open in pop somehow, I want both open in a new buffer and
-    #also in a pop up one. Also need to add swapping to the note if its
-    #already open, similarly for the schedules.
+    # TODO: Swap this open in pop somehow, I want both open in a new buffer and
+    # also in a pop up one. Also need to add swapping to the note if its
+    # already open, similarly for the schedules.
     makedirs(path.dirname(note_file), exist_ok=True)
     open_popup_file(nvim, note_file, options.pop_up_method)
 
