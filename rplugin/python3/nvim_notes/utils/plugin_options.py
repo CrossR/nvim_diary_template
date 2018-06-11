@@ -23,6 +23,7 @@ class PluginOptions:
         'config_path': os.getcwd(),
         'notes_path': os.path.join(str(Path.home()), "nvim_notes"),
         'open_method': None,
+        'pop_up_method': None,
         'daily_headings': ['Notes', 'Issues'],
         'note_headings': ['General', 'Links', 'Related Tags'],
         'use_google_calendar': True,

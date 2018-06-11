@@ -22,6 +22,25 @@ def open_file(nvim, file_path, open_method=None):
         nvim.command(f":{open_method} {file_path}")
 
 
+def open_popup_file(nvim, file_path, open_method=None):
+    """open_popup_file
+
+    Opens the given file in a small pop-out split. That is depending on the
+    user config, open a small split on the bottom or side of the current
+    window.
+
+    The default open method is `botright 15new`, ie a split 15 lines tall on
+    the bottom right. `80vs` would achieve a vertical split of 80 columns.
+    `:help opening-window` for more examples.
+    """
+
+    if open_method is None:
+        open_method = "botright 15new"
+
+    nvim.command(f":{open_method}")
+    nvim.command(f":e {file_path}")
+
+
 def buf_is_modified(nvim):
     """buf_is_modified
 
