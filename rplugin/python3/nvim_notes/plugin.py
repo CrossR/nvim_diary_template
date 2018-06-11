@@ -83,11 +83,13 @@ class NotesPlugin(object):
 
         if not note_topic:
             note_topic = get_current_word(self._nvim)
+        else:
+            note_topic = ' '.join(note_topic)
 
         open_note_for_topic(
             self._nvim,
             self._options,
-            note_topic
+            str(note_topic[0])
         )
 
 
