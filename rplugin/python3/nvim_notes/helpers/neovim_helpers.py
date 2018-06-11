@@ -32,12 +32,16 @@ def open_popup_file(nvim, file_path, open_method=None):
     The default open method is `botright 15split`, ie a split 15 lines tall
     on the bottom right. `80vs` would achieve a vertical split of 80 columns.
     `:help opening-window` for more examples.
+
+    Returns the new splits buffer number for later usage.
     """
 
     if open_method is None:
         open_method = "botright 15split"
 
     nvim.command(f":{open_method} {file_path}")
+
+    return nvim.current.buffer.number
 
 
 def buf_is_modified(nvim):
