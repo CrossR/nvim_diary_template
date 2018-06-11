@@ -4,11 +4,13 @@ from functools import wraps
 import neovim
 
 from nvim_notes.helpers.markdown_helpers import sort_markdown_events
-from nvim_notes.helpers.neovim_helpers import (get_line_content,
+from nvim_notes.helpers.neovim_helpers import (get_current_word,
+                                               get_line_content,
                                                set_line_content)
 from nvim_notes.utils.constants import FILE_TYPE_WILDCARD, ISO_FORMAT
 from nvim_notes.utils.keybind_actions import pick_action
-from nvim_notes.utils.make_markdown_file import open_todays_schedule
+from nvim_notes.utils.make_markdown_file import (open_note_for_topic,
+                                                 open_todays_schedule)
 from nvim_notes.utils.make_schedule import set_schedule_from_events_list
 from nvim_notes.utils.nvim_google_cal_class import SimpleNvimGoogleCal
 from nvim_notes.utils.parse_markdown import (combine_events,
@@ -67,6 +69,28 @@ class NotesPlugin(object):
             self._options,
             self._gcal_service
         )
+
+    @neovim.command('OpenNote', nargs='*')
+    # @if_active
+    def open_note(self, note_topic):
+        # TODO: Remove this, since it shouldn't be needed due to the autocmds.
+        if self._options is None:
+            self._options = PluginOptions(self._nvim)
+            self._gcal_service = SimpleNvimGoogleCal(
+                self._nvim,
+                self._options
+            )
+
+        if not note_topic:
+            note_topic = get_current_word(self._nvim)
+
+        open_note_for_topic(
+            self._nvim,
+            self._options,
+            note_topic
+        )
+
+
 
     @neovim.command('UploadCalendar')
     def upload_to_calendar(self):

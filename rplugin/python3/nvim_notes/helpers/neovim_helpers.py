@@ -3,6 +3,7 @@
 Simple helpers to help interfacing with NeoVim.
 """
 
+
 def open_file(nvim, file_path, open_method=None):
     """open_file
 
@@ -28,6 +29,7 @@ def buf_is_modified(nvim):
     """
 
     return int(nvim.command_output('echo &modified'))
+
 
 def get_current_word(nvim):
     """get_current_word
