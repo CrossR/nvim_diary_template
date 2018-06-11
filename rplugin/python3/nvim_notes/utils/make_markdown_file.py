@@ -149,7 +149,7 @@ def open_note_for_topic(nvim, options, note_topic):
 
     # If the file exists, open it and return.
     if path.isfile(note_file):
-        open_file(nvim, note_file, options.open_method)
+        open_popup_file(nvim, note_file, options.open_method)
         return
 
     full_markdown = []
