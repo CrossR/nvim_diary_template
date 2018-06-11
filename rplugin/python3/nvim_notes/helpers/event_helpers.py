@@ -1,3 +1,8 @@
+"""event_helpers
+
+Simple helpers to deal with parsed events.
+"""
+
 from operator import itemgetter
 
 from dateutil import parser

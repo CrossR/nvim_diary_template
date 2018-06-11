@@ -1,20 +1,47 @@
+"""neovim_helpers
 
-def open_file(nvim, path, open_method=None):
+Simple helpers to help interfacing with NeoVim.
+"""
+
+
+def open_file(nvim, file_path, open_method=None):
     """open_file
 
-    Opens the file in the specified way, if one is passed.
-    Otherwise, open in the current buffer if it is empty
-    and not modified, and in a new tab if not.
+    Attempts to open the given file in the specified way. If no method is
+    given, open in the current buffer if it is empty and not modified, and in
+    a new tab if not.
     """
 
     if open_method is None:
         if not buf_is_modified(nvim) and \
            not buf_file_open(nvim):
-            nvim.command(f":e {path}")
+            nvim.command(f":e {file_path}")
         else:
-            nvim.command(f":tabnew {path}")
+            nvim.command(f":tabnew {file_path}")
     else:
-        nvim.command(f":{open_method} {path}")
+        nvim.command(f":{open_method} {file_path}")
+
+
+def open_popup_file(nvim, file_path, open_method=None):
+    """open_popup_file
+
+    Opens the given file in a small pop-out split. That is depending on the
+    user config, open a small split on the bottom or side of the current
+    window.
+
+    The default open method is `botright 15split`, ie a split 15 lines tall
+    on the bottom right. `80vs` would achieve a vertical split of 80 columns.
+    `:help opening-window` for more examples.
+
+    Returns the new splits buffer number for later usage.
+    """
+
+    if open_method is None:
+        open_method = "botright 15split"
+
+    nvim.command(f":{open_method} {file_path}")
+
+    return nvim.current.buffer.number
 
 
 def buf_is_modified(nvim):
@@ -24,6 +51,15 @@ def buf_is_modified(nvim):
     """
 
     return int(nvim.command_output('echo &modified'))
+
+
+def get_current_word(nvim):
+    """get_current_word
+
+    Get the word the cursor is currently over.
+    """
+
+    return str(nvim.command_output('echo(expand("<cword>"))'))
 
 
 def buf_file_open(nvim):

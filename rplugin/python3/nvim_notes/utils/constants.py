@@ -1,8 +1,15 @@
+"""constants
+
+Constants to be used throughout the whole plugin.
+"""
+
 from datetime import timedelta
 
 # Global plugin constants
 FILE_TYPE = '.md'
 FILE_TYPE_WILDCARD = '*.md'
+NOTE_FOLDER = "Notes"
+SCHEDULE_FOLDER = "Daily"
 
 # Google Calendar Constants
 CACHE_EPOCH_REGEX = '([0-9])+'
@@ -17,18 +24,18 @@ ISO_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"
 DATETIME_REGEX = r"[0-9]{1,2}\/[0-9]{1,2}\/[0-9]{4} [0-9]{1,2}:[0-9]{1,2}"
 TIME_REGEX = r"[0-9]{1,2}:[0-9]{1,2}"
 
-TODO_REGEX = r"(?<=\*   \[[ X]\]: ).*$"
+TODO_REGEX = r"(?<=-   \[[ X]\]: ).*$"
 TODO_ONGOING_REGEX = r"(?<=    ).*$"
 TODO_IS_CHECKED = r"\[X\]"
 TODO_NOT_CHECKED = r"\[ \]"
 
-STRIKEDOUT = r"~~.*~~$"
+STRUCK_OUT = r"~~.*~~$"
 
 EVENT_REGEX = r"(?<=: ).*$"
 
 HEADING_REGEX = r"# .*"
 
-BULLET_POINT_REGEX = r"[ ]*?\*"
+BULLET_POINT_REGEX = r"[ ]*?-"
 
 # Markdown Constants
 SCHEDULE_HEADING = "# Schedule"
@@ -37,5 +44,5 @@ PADDING = "   "
 START_OF_LINE = r"    "
 EMPTY_TODO = "[ ]"
 CHECKED_TODO = "[X]"
-BULLET_POINT = "*"
+BULLET_POINT = "-"
 STRIKEOUT = "~~"

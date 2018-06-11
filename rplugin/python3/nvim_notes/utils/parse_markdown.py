@@ -1,4 +1,10 @@
+"""parse_markdown
+
+Functions for the parsing of the document markdown.
+"""
+
 import re
+
 from datetime import date
 
 from dateutil import parser

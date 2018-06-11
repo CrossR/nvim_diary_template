@@ -1,3 +1,8 @@
+"""todo_helpers
+
+Simple helpers for the markdown ToDos.
+"""
+
 import re
 
 from nvim_notes.utils.constants import (BULLET_POINT, EMPTY_TODO,

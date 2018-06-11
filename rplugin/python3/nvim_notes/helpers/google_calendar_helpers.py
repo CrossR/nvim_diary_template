@@ -1,3 +1,8 @@
+"""google_calendar_helpers
+
+Simple helpers to deal with Google calendar, and the replies it sends.
+"""
+
 from dateutil import parser
 
 

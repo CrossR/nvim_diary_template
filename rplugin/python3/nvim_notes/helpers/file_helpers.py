@@ -1,19 +1,25 @@
+"""file_helpers
+
+Simple helpers to help with opening and finding files.
+"""
+
 import glob
 from os import path
 
-from nvim_notes.utils.constants import FILE_TYPE_WILDCARD
+from nvim_notes.utils.constants import FILE_TYPE_WILDCARD, SCHEDULE_FOLDER
 
 
-def get_past_notes(options):
-    """get_past_notes
+def get_past_schedules(options):
+    """get_past_schedules
 
-    Get the past notes file, and return the specified amount.
+    Get past schedules files, and return the specified amount.
     """
 
     days_to_check = options.days_to_roll_over
 
     note_files = path.join(
         options.notes_path,
+        SCHEDULE_FOLDER,
         "*",
         "*",
         FILE_TYPE_WILDCARD
@@ -28,8 +34,8 @@ def get_past_notes(options):
     return file_names[:days_to_check]
 
 
-def get_note_file_content(file_path):
-    """get_note_file_content
+def get_file_content(file_path):
+    """get_file_content
 
     Return the content of the passed note file.
     """
@@ -38,13 +44,14 @@ def get_note_file_content(file_path):
         return note_file.read().split('\n')
 
 
-def get_note_path(options, note_name):
-    """get_note_path
+def get_schedule_path(options, note_name):
+    """get_schedule_path
 
-    Gives a full path, given just a note name.
+    Gives a full path, given just a schedule name.
     """
     pattern = path.join(
         options.notes_path,
+        SCHEDULE_FOLDER,
         "*",
         "*",
         note_name

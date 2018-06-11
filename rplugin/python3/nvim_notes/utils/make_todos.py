@@ -1,7 +1,12 @@
+"""make_todos
+
+Functions for the making and parsing of ToDos.
+"""
+
 import re
 
-from nvim_notes.helpers.file_helpers import (get_note_file_content,
-                                             get_note_path, get_past_notes)
+from nvim_notes.helpers.file_helpers import (get_file_content,
+                                             get_schedule_path, get_past_schedules)
 from nvim_notes.helpers.markdown_helpers import split_line
 from nvim_notes.helpers.neovim_helpers import (get_buffer_contents,
                                                get_section_line)
@@ -17,18 +22,18 @@ def get_past_todos(options):
     file.
     """
 
-    past_files = get_past_notes(options)
+    past_files = get_past_schedules(options)
 
     todo_markdown = [TODO_HEADING, ""]
     todo_lines = []
 
     for past_file in past_files:
-        full_file_path = get_note_path(options, past_file)
-        buffer_content = get_note_file_content(full_file_path)
+        full_file_path = get_schedule_path(options, past_file)
+        buffer_content = get_file_content(full_file_path)
         todos = parse_markdown_file_for_todos(current_buffer=buffer_content)
 
         uncompleted_todos = [
-            todo for todo in todos if todo['complete'] is False
+            todo for todo in todos if todo['completed'] is False
         ]
 
         for todo in uncompleted_todos:
@@ -82,7 +87,7 @@ def parse_buffer_todos(todos):
         if todo_started:
             formatted_todos.append({
                 'todo': todo_started[0],
-                'complete': is_todo_complete(todo)
+                'completed': is_todo_complete(todo)
             })
         elif todo_carrying_on:
             full_todo = f"{formatted_todos[-1]['todo']} {todo_carrying_on[0]}"

@@ -1,3 +1,9 @@
+"""nvim_google_cal_class
+
+The google calendar class, with Neovim options to log information
+back to the user.
+"""
+
 import glob
 import json
 import re
@@ -46,6 +52,11 @@ class SimpleNvimGoogleCal():
 
     @property
     def todays_events(self):
+        """todays_events
+
+        Return todays events from the cache.
+        """
+
         return self.check_cache(
             "events",
             EVENT_CACHE_DURATION,
@@ -60,15 +71,15 @@ class SimpleNvimGoogleCal():
         """
 
         store = file.Storage(path.join(self.config_path, "credentials.json"))
-        creds = store.get()
+        credentials = store.get()
 
-        if not creds or creds.invalid:
+        if not credentials or credentials.invalid:
             self.nvim.err_write(
                 "Credentials invalid, try re-generating or checking the path.\n"
             )
             return None
 
-        service = build('calendar', 'v3', http=creds.authorize(Http()))
+        service = build('calendar', 'v3', http=credentials.authorize(Http()))
 
         return service
 
@@ -124,7 +135,7 @@ class SimpleNvimGoogleCal():
         """
 
         if self.service_is_not_ready():
-            return
+            return []
 
         date_today = date.today()
         time_min = datetime.combine(date_today, time.min).isoformat() + 'Z'
@@ -185,7 +196,7 @@ class SimpleNvimGoogleCal():
 
         Given some data and a name, creates a cache file
         in the config folder. Cleans up any existing cache files
-        when creting a new one.
+        when creating a new one.
         """
 
         cache_file_name = path.join(

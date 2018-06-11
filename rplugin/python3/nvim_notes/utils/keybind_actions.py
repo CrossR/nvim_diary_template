@@ -1,8 +1,13 @@
+"""keybind_actions
+
+Functions for Neovim keybind actions and picking between them.
+"""
+
 import re
 
 from nvim_notes.helpers.markdown_helpers import get_start_of_line
 from nvim_notes.utils.constants import (BULLET_POINT_REGEX, CHECKED_TODO,
-                                        EMPTY_TODO, PADDING, STRIKEDOUT,
+                                        EMPTY_TODO, PADDING, STRUCK_OUT,
                                         STRIKEOUT)
 
 
@@ -25,12 +30,12 @@ def strikeout_line(line):
     """
 
     line_contains_bullet_point = re.findall(BULLET_POINT_REGEX, line)
-    line_already_striked_out = re.findall(STRIKEDOUT, line)
+    line_already_struck_out = re.findall(STRUCK_OUT, line)
 
     if not line_contains_bullet_point:
         return [line]
 
-    if line_already_striked_out:
+    if line_already_struck_out:
         return [line.replace(STRIKEOUT, '')]
 
     line_content = line.strip().split()[1:]
