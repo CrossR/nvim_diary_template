@@ -139,8 +139,9 @@ def get_multi_line_bullet(nvim):
     line_offset = 1
     next_line = get_line_content(nvim, line_offset)
 
-    # Keep getting the lines beneath until the next bullet point is found.
-    while not re.findall(BULLET_POINT_REGEX, next_line):
+    # Keep getting the lines beneath until the next bullet point is found, Or
+    # the line is empty.
+    while next_line and not re.findall(BULLET_POINT_REGEX, next_line):
         line_offset += 1
 
         current_lines.append(next_line)

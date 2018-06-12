@@ -63,11 +63,14 @@ def strikeout_lines(lines):
 
     replacement_lines.append(new_line)
 
-    # For the rest, the new line will look a little different.
+    # For the rest, the new line will look a little different. Since there is
+    # now no bullet, we use the full line rather than [1:] On the other hand,
+    # get_start_of_line will now return the spaces and the first character of
+    # the sentence, so we must skip this character.
     for line in lines[1:]:
         line_content = line.strip().split()
         start_of_line = get_start_of_line(line)
-        new_line = f"{start_of_line}~~{' '.join(line_content)}~~"
+        new_line = f"{start_of_line[1:]}~~{' '.join(line_content)}~~"
         replacement_lines.append(new_line)
 
     return replacement_lines
