@@ -56,11 +56,18 @@ def strikeout_lines(lines):
 
     replacement_lines = []
 
-    for line in lines:
-        line_content = line.strip().split()[1:]
+    # The first line includes the bullet point, so we need this.
+    line_content = lines[0].strip().split()[1:]
+    start_of_line = get_start_of_line(lines[0])
+    new_line = f"{start_of_line}{PADDING}~~{' '.join(line_content)}~~"
+
+    replacement_lines.append(new_line)
+
+    # For the rest, the new line will look a little different.
+    for line in lines[1:]:
+        line_content = line.strip().split()
         start_of_line = get_start_of_line(line)
-        new_line = f"{start_of_line}{PADDING}~~{' '.join(line_content)}~~"
-        replacement_lines.append(new_line)
+        new_line = f"{start_of_line}~~{' '.join(line_content)}~~"
 
     return replacement_lines
 
