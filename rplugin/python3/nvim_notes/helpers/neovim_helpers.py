@@ -140,9 +140,10 @@ def get_multi_line_content(nvim):
     next_line = get_line_content(nvim, line_offset)
 
     while re.findall(BULLET_POINT_REGEX, next_line):
+        line_offset += 1
+
         current_lines.append(next_line)
         next_line = get_line_content(nvim, line_offset)
-        line_offset += 1
 
     return current_lines
 
