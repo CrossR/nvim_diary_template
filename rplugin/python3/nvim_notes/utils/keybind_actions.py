@@ -26,30 +26,32 @@ def pick_action(nvim):
         updated_lines = toggle_todo(line)
     else:
         lines = get_multi_line_content(nvim)
-        updated_lines = strikeout_line(lines)
+        updated_lines = strikeout_lines(lines)
 
     set_line_content(nvim, updated_lines)
 
 
-def strikeout_line(line):
-    """strikeout_line
+def strikeout_lines(lines):
+    """strikeout_lines
 
-    Strikeout a given line.
+    Strikeout some given lines.
     """
 
-    line_contains_bullet_point = re.findall(BULLET_POINT_REGEX, line)
-    line_already_struck_out = re.findall(STRUCK_OUT, line)
+    line_contains_bullet_point = re.findall(BULLET_POINT_REGEX, lines)
+    line_already_struck_out = re.findall(STRUCK_OUT, lines)
 
     if not line_contains_bullet_point:
-        return [line]
+        return lines
 
     if line_already_struck_out:
-        return [line.replace(STRIKEOUT, '')]
+        return [lines.replace(STRIKEOUT, '')]
 
-    line_content = line.strip().split()[1:]
-    start_of_line = get_start_of_line(line)
+    for line in lines:
+        line_content = line.strip().split()[1:]
+        start_of_line = get_start_of_line(line)
+        line = f"{start_of_line}{PADDING}~~{' '.join(line_content)}~~"
 
-    return [f"{start_of_line}{PADDING}~~{' '.join(line_content)}~~"]
+    return lines
 
 
 def toggle_todo(line):
