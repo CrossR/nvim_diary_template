@@ -168,7 +168,7 @@ def set_line_content(
     nvim.api.buf_set_lines(
         buffer_number,
         line_index - 1,
-        line_index + line_offset,
+        line_index + line_offset - 1,
         True,
         data
     )
