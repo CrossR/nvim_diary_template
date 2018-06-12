@@ -6,21 +6,29 @@ Functions for Neovim keybind actions and picking between them.
 import re
 
 from nvim_notes.helpers.markdown_helpers import get_start_of_line
+from nvim_notes.helpers.neovim_helpers import (get_line_content,
+                                               get_multi_line_content,
+                                               set_line_content)
 from nvim_notes.utils.constants import (BULLET_POINT_REGEX, CHECKED_TODO,
-                                        EMPTY_TODO, PADDING, STRUCK_OUT,
-                                        STRIKEOUT)
+                                        EMPTY_TODO, PADDING, STRIKEOUT,
+                                        STRUCK_OUT)
 
 
-def pick_action(line):
+def pick_action(nvim):
     """pick_action
 
     Given a line, pick the appropriate toggleable action.
     """
 
-    if EMPTY_TODO in line or CHECKED_TODO in line:
-        return toggle_todo(line)
+    line = get_line_content(nvim)
 
-    return strikeout_line(line)
+    if EMPTY_TODO in line or CHECKED_TODO in line:
+        updated_lines = toggle_todo(line)
+    else:
+        lines = get_multi_line_content(nvim)
+        updated_lines = strikeout_line(lines)
+
+    set_line_content(nvim, updated_lines)
 
 
 def strikeout_line(line):

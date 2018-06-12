@@ -130,5 +130,4 @@ class NotesPlugin(object):
 
     @neovim.command('ToggleLine')
     def toggle_line(self):
-        current_line = get_line_content(self._nvim)
-        set_line_content(self._nvim, pick_action(current_line))
+        pick_action(self._nvim)
