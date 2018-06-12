@@ -37,8 +37,10 @@ def strikeout_lines(lines):
     Strikeout some given lines.
     """
 
-    line_contains_bullet_point = re.findall(BULLET_POINT_REGEX, lines)
-    line_already_struck_out = re.findall(STRUCK_OUT, lines)
+    # TODO: Check this logic. Currently, only the first line is checked, when
+    # the remaining lines could be different.
+    line_contains_bullet_point = re.findall(BULLET_POINT_REGEX, lines[0])
+    line_already_struck_out = re.findall(STRUCK_OUT, lines[0])
 
     if not line_contains_bullet_point:
         return lines
