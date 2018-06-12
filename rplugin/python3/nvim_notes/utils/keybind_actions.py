@@ -46,14 +46,19 @@ def strikeout_lines(lines):
         return lines
 
     if line_already_struck_out:
-        return [lines.replace(STRIKEOUT, '')]
+        return [
+            line.replace(STRIKEOUT, '') for line in lines
+        ]
+
+    replacement_lines = []
 
     for line in lines:
         line_content = line.strip().split()[1:]
         start_of_line = get_start_of_line(line)
-        line = f"{start_of_line}{PADDING}~~{' '.join(line_content)}~~"
+        new_line = f"{start_of_line}{PADDING}~~{' '.join(line_content)}~~"
+        replacement_lines.append(new_line)
 
-    return lines
+    return replacement_lines
 
 
 def toggle_todo(line):
