@@ -151,7 +151,8 @@ def get_multi_line_content(nvim):
 def set_line_content(
         nvim,
         data,
-        line_index=None):
+        line_index=None,
+        line_offset=None):
     """set_line_content
 
     Set the contents of the current line.
@@ -161,10 +162,13 @@ def set_line_content(
     if line_index is None:
         line_index = nvim.current.window.cursor[0]
 
+    if line_offset is None:
+        line_offset = 0
+
     nvim.api.buf_set_lines(
         buffer_number,
         line_index - 1,
-        line_index,
+        line_index + line_offset,
         True,
         data
     )

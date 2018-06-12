@@ -28,7 +28,11 @@ def pick_action(nvim):
         lines = get_multi_line_content(nvim)
         updated_lines = strikeout_lines(lines)
 
-    set_line_content(nvim, updated_lines)
+    set_line_content(
+        nvim,
+        updated_lines,
+        line_offset=len(updated_lines)
+    )
 
 
 def strikeout_lines(lines):
