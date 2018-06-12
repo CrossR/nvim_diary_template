@@ -68,6 +68,7 @@ def strikeout_lines(lines):
         line_content = line.strip().split()
         start_of_line = get_start_of_line(line)
         new_line = f"{start_of_line}~~{' '.join(line_content)}~~"
+        replacement_lines.append(new_line)
 
     return replacement_lines
 
