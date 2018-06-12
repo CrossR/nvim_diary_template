@@ -7,7 +7,7 @@ import re
 
 from nvim_notes.helpers.markdown_helpers import get_start_of_line
 from nvim_notes.helpers.neovim_helpers import (get_line_content,
-                                               get_multi_line_content,
+                                               get_multi_line_bullet,
                                                set_line_content)
 from nvim_notes.utils.constants import (BULLET_POINT_REGEX, CHECKED_TODO,
                                         EMPTY_TODO, PADDING, STRIKEOUT,
@@ -25,7 +25,7 @@ def pick_action(nvim):
     if EMPTY_TODO in line or CHECKED_TODO in line:
         updated_lines = toggle_todo(line)
     else:
-        lines = get_multi_line_content(nvim)
+        lines = get_multi_line_bullet(nvim)
         updated_lines = strikeout_lines(lines)
 
     set_line_content(

@@ -127,8 +127,8 @@ def get_line_content(nvim, line_offset=None):
     )[0]
 
 
-def get_multi_line_content(nvim):
-    """get_multi_line_content
+def get_multi_line_bullet(nvim):
+    """get_multi_line_bullet
 
     Gets the entire instance of a line.
     That is, for a multi-line bullet point, get every part of the line.
@@ -139,7 +139,8 @@ def get_multi_line_content(nvim):
     line_offset = 1
     next_line = get_line_content(nvim, line_offset)
 
-    while re.findall(BULLET_POINT_REGEX, next_line):
+    # Keep getting the lines beneath until the next bullet point is found.
+    while not re.findall(BULLET_POINT_REGEX, next_line):
         line_offset += 1
 
         current_lines.append(next_line)
