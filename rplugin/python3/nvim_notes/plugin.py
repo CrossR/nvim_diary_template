@@ -4,9 +4,7 @@ from functools import wraps
 import neovim
 
 from nvim_notes.helpers.markdown_helpers import sort_markdown_events
-from nvim_notes.helpers.neovim_helpers import (get_current_word,
-                                               get_line_content,
-                                               set_line_content)
+from nvim_notes.helpers.neovim_helpers import get_current_word
 from nvim_notes.utils.constants import FILE_TYPE_WILDCARD, ISO_FORMAT
 from nvim_notes.utils.keybind_actions import pick_action
 from nvim_notes.utils.make_markdown_file import (open_note_for_topic,
@@ -91,8 +89,6 @@ class NotesPlugin(object):
             self._options,
             note_topic
         )
-
-
 
     @neovim.command('UploadCalendar')
     def upload_to_calendar(self):
