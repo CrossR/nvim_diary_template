@@ -22,16 +22,20 @@ def pick_action(nvim):
 
     line = get_line_content(nvim)
 
+    line_index = nvim.current.window.cursor[0]
+    line_index_offset = 0
+
     if EMPTY_TODO in line or CHECKED_TODO in line:
         updated_lines = toggle_todo(line)
     else:
-        lines = get_multi_line_bullet(nvim)
+        line_index_offset, lines = get_multi_line_bullet(nvim)
         updated_lines = strikeout_lines(lines)
 
     set_line_content(
         nvim,
         updated_lines,
-        line_offset=len(updated_lines)
+        line_offset=len(updated_lines),
+        line_index=line_index + line_index_offset
     )
 
 

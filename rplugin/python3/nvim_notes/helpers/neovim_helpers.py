@@ -130,8 +130,11 @@ def get_line_content(nvim, line_offset=None):
 def get_multi_line_bullet(nvim):
     """get_multi_line_bullet
 
-    Gets the entire instance of a line.
-    That is, for a multi-line bullet point, get every part of the line.
+    Gets the entire instance of a bullet point.
+    That is, for a multi-line bullet point, get every part of the bullet point.
+
+    Returns both the full bullet point, but also the offset if any for the bullet
+    points start.
     """
 
     current_line = [get_line_content(nvim)]
@@ -160,7 +163,9 @@ def get_multi_line_bullet(nvim):
         lines_above.append(next_line)
         next_line = get_line_content(nvim, line_offset)
 
-    return lines_above + current_line + lines_below
+    final_offset = line_offset + 1
+
+    return final_offset, lines_above + current_line + lines_below
 
 
 def set_line_content(
