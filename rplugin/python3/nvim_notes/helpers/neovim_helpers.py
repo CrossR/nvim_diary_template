@@ -152,6 +152,10 @@ def get_multi_line_bullet(nvim):
         lines_below.append(next_line)
         next_line = get_line_content(nvim, line_offset)
 
+    # If we started on a bullet, we can return now.
+    if re.findall(BULLET_POINT_REGEX, current_line):
+        return current_line + lines_below
+
     line_offset = -1
     next_line = get_line_content(nvim, line_offset)
 
@@ -162,6 +166,11 @@ def get_multi_line_bullet(nvim):
 
         lines_above.append(next_line)
         next_line = get_line_content(nvim, line_offset)
+
+    # Since we broke when we found a bullet, we still need that line adding.
+    # And then we need to reverse the list to get the lines in the correct order.
+    lines_above.append(next_line)
+    lines_above = lines_above.reverse()
 
     final_offset = line_offset + 1
 
