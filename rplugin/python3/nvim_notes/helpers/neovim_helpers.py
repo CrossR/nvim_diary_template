@@ -3,6 +3,10 @@
 Simple helpers to help interfacing with NeoVim.
 """
 
+import re
+
+from nvim_notes.utils.constants import BULLET_POINT_REGEX
+
 
 def open_file(nvim, file_path, open_method=None):
     """open_file
@@ -103,7 +107,7 @@ def set_buffer_contents(nvim, data):
     )
 
 
-def get_line_content(nvim):
+def get_line_content(nvim, line_offset=None):
     """get_line_content
 
     Get the contents of the current line.
@@ -111,6 +115,9 @@ def get_line_content(nvim):
 
     buffer_number = nvim.current.buffer.number
     cursor_line = nvim.current.window.cursor[0]
+
+    if line_offset:
+        cursor_line += line_offset
 
     return nvim.api.buf_get_lines(
         buffer_number,
@@ -120,10 +127,63 @@ def get_line_content(nvim):
     )[0]
 
 
+def get_multi_line_bullet(nvim):
+    """get_multi_line_bullet
+
+    Gets the entire instance of a bullet point.
+    That is, for a multi-line bullet point, get every part of the bullet point.
+
+    Returns both the full bullet point, but also the offset if any for the bullet
+    points start.
+    """
+
+    current_line = [get_line_content(nvim)]
+    lines_below = []
+    lines_above = []
+
+    line_offset = 1
+    next_line = get_line_content(nvim, line_offset)
+
+    # Keep getting the lines beneath until the next bullet point is found, or
+    # the line is empty.
+    while next_line and not re.findall(BULLET_POINT_REGEX, next_line):
+        line_offset += 1
+
+        lines_below.append(next_line)
+        next_line = get_line_content(nvim, line_offset)
+
+    current_bullet = current_line + lines_below
+
+    # If we started on a bullet, we can return now.
+    if re.findall(BULLET_POINT_REGEX, current_line[0]):
+        return 0, current_bullet
+
+    line_offset = -1
+    next_line = get_line_content(nvim, line_offset)
+
+    # Keep getting the lines above until the start of the bullet point is
+    # found, or the line is empty.
+    while next_line and not re.findall(BULLET_POINT_REGEX, next_line):
+        line_offset -= 1
+
+        lines_above.append(next_line)
+        next_line = get_line_content(nvim, line_offset)
+
+    # Since we broke when we found a bullet, we still need that line adding.
+    # And then we need to reverse the list to get the lines in the correct order.
+    lines_above.append(next_line)
+    current_bullet = lines_above[::-1] + current_bullet
+
+    final_offset = line_offset
+
+    return final_offset, current_bullet
+
+
 def set_line_content(
         nvim,
         data,
-        line_index=None):
+        line_index=None,
+        line_offset=None):
     """set_line_content
 
     Set the contents of the current line.
@@ -133,10 +193,13 @@ def set_line_content(
     if line_index is None:
         line_index = nvim.current.window.cursor[0]
 
+    if line_offset is None:
+        line_offset = 0
+
     nvim.api.buf_set_lines(
         buffer_number,
         line_index - 1,
-        line_index,
+        line_index + line_offset - 1,
         True,
         data
     )
