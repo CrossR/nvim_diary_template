@@ -31,7 +31,7 @@ def if_active(function):
 
 
 @neovim.plugin
-class NotesPlugin(object):
+class DiaryTemplatePlugin(object):
 
     def __init__(self, nvim):
         self._nvim = nvim
