@@ -28,7 +28,7 @@ class PluginOptions:
         'add_to_google_cal': False,
         'google_cal_name': 'primary',
         'timezone': 'Europe/London',
-        'days_to_roll_over': 7,
+        'files_to_roll_over': 7,
     }
 
     def __init__(self, nvim):

@@ -15,7 +15,7 @@ def get_past_diary_entries(options):
     Get past diary files, and return the specified amount.
     """
 
-    days_to_check = options.days_to_roll_over
+    files_to_check = options.files_to_roll_over
 
     note_files = path.join(
         options.notes_path,
@@ -28,10 +28,10 @@ def get_past_diary_entries(options):
     files = glob.glob(note_files)
     file_names = sorted([path.basename(x) for x in files])
 
-    if len(file_names) < days_to_check:
+    if len(file_names) < files_to_check:
         return file_names
 
-    return file_names[:days_to_check]
+    return file_names[:files_to_check]
 
 
 def get_file_content(file_path):
