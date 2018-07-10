@@ -22,7 +22,7 @@ ISO_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"
 DATETIME_REGEX = r"[0-9]{1,2}\/[0-9]{1,2}\/[0-9]{4} [0-9]{1,2}:[0-9]{1,2}"
 TIME_REGEX = r"[0-9]{1,2}:[0-9]{1,2}"
 
-TODO_REGEX = r"(?<=- +\[[ [ .oOX]\]: ).*$"
+TODO_REGEX = r"(?<=- +\[[ .oOX]\]: ).*$"
 TODO_ONGOING_REGEX = r"(?<=    ).*$"
 TODO_IS_CHECKED = r"\[X\]"
 TODO_NOT_CHECKED = r"\[[ .oO]\]"
