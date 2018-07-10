@@ -29,4 +29,4 @@ def make_todo(content):
     Return a string for the currently incomplete ToDo.
     """
 
-    return f"{BULLET_POINT}   {EMPTY_TODO}: {content}"
+    return f"{BULLET_POINT} {EMPTY_TODO}: {content}"
