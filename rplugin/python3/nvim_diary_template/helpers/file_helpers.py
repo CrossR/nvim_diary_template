@@ -20,8 +20,6 @@ def get_past_diary_entries(options):
     note_files = path.join(
         options.notes_path,
         DIARY_FOLDER,
-        "*",
-        "*",
         FILE_TYPE_WILDCARD
     )
 
@@ -52,8 +50,6 @@ def get_diary_path(options, note_name):
     pattern = path.join(
         options.notes_path,
         DIARY_FOLDER,
-        "*",
-        "*",
         note_name
     )
 

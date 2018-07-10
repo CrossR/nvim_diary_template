@@ -7,7 +7,7 @@ from datetime import timedelta
 
 # Global plugin constants
 FILE_TYPE_WILDCARD = '*.md'
-DIARY_FOLDER = "Diary"
+DIARY_FOLDER = "diary"
 
 # Google Calendar Constants
 CACHE_EPOCH_REGEX = '([0-9])+'
