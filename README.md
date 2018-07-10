@@ -1,5 +1,20 @@
-# nvim_notes
+# nvim_diary_template
 
-Test repo for a notes plugin for Nvim.
+Test repo for a plugin to generate a suitable template for VimWiki (for me).
+This was mainly made to let me mess with the NeoVim API with Python, there is a
+million and ones simpler ways to achieve this.
 
-This repo aims to be a test area for me to get to grips with the NeoVim plugin API in Python.
+Features:
+    - Google Calendar Integration:
+        - Make a Diary entry, and have it auto-populated with todays events
+          from GCal.
+        - Any new events that are added, can be synced to GCal.
+        - TODO: Add rename and remove syntax, such that events can be removed
+          or edited.
+    - ToDo roll-overs:
+        - That is, for every uncompleted todo in the past N files, add them to
+          the current diary entry.
+        - TODO: Update to support `.` and `o` syntax, as currently it is just
+          blank or checked.
+    - Diary outline generation:
+        - Builds a diary file with metadata in and the defined headings.
