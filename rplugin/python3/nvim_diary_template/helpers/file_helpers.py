@@ -6,7 +6,7 @@ Simple helpers to help with opening and finding files.
 import glob
 from os import path
 
-from nvim_notes.utils.constants import FILE_TYPE_WILDCARD, DIARY_FOLDER
+from nvim_diary_template.utils.constants import FILE_TYPE_WILDCARD, DIARY_FOLDER
 
 
 def get_past_diary_entries(options):

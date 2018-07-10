@@ -5,14 +5,14 @@ Functions for the making and parsing of ToDos.
 
 import re
 
-from nvim_notes.helpers.file_helpers import (get_file_content,
-                                             get_diary_path, get_past_diary_entries)
-from nvim_notes.helpers.markdown_helpers import split_line
-from nvim_notes.helpers.neovim_helpers import (get_buffer_contents,
-                                               get_section_line)
-from nvim_notes.helpers.todo_helpers import is_todo_complete, make_todo
-from nvim_notes.utils.constants import (SCHEDULE_HEADING, TODO_HEADING,
-                                        TODO_ONGOING_REGEX, TODO_REGEX)
+from nvim_diary_template.helpers.file_helpers import (get_file_content,
+                                                      get_diary_path, get_past_diary_entries)
+from nvim_diary_template.helpers.markdown_helpers import split_line
+from nvim_diary_template.helpers.neovim_helpers import (get_buffer_contents,
+                                                        get_section_line)
+from nvim_diary_template.helpers.todo_helpers import is_todo_complete, make_todo
+from nvim_diary_template.utils.constants import (SCHEDULE_HEADING, TODO_HEADING,
+                                                 TODO_ONGOING_REGEX, TODO_REGEX)
 
 
 def get_past_todos(options):

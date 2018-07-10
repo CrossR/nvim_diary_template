@@ -9,14 +9,14 @@ from datetime import date
 
 from dateutil import parser
 
-from nvim_notes.helpers.event_helpers import format_event
-from nvim_notes.helpers.google_calendar_helpers import convert_events
-from nvim_notes.helpers.neovim_helpers import (get_buffer_contents,
-                                               get_section_line,
-                                               set_line_content)
-from nvim_notes.utils.constants import (DATETIME_REGEX, EVENT_REGEX,
-                                        ISO_FORMAT, SCHEDULE_HEADING,
-                                        TIME_FORMAT, TIME_REGEX)
+from nvim_diary_template.helpers.event_helpers import format_event
+from nvim_diary_template.helpers.google_calendar_helpers import convert_events
+from nvim_diary_template.helpers.neovim_helpers import (get_buffer_contents,
+                                                        get_section_line,
+                                                        set_line_content)
+from nvim_diary_template.utils.constants import (DATETIME_REGEX, EVENT_REGEX,
+                                                 ISO_FORMAT, SCHEDULE_HEADING,
+                                                 TIME_FORMAT, TIME_REGEX)
 
 
 def parse_buffer_events(events, format_string):

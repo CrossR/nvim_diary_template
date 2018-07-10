@@ -3,22 +3,22 @@ from functools import wraps
 
 import neovim
 
-from nvim_notes.helpers.markdown_helpers import sort_markdown_events
-from nvim_notes.utils.constants import FILE_TYPE_WILDCARD, ISO_FORMAT
-from nvim_notes.utils.make_markdown_file import make_todays_diary
-from nvim_notes.utils.make_schedule import set_schedule_from_events_list
-from nvim_notes.utils.nvim_google_cal_class import SimpleNvimGoogleCal
-from nvim_notes.utils.parse_markdown import (combine_events,
-                                             parse_markdown_file_for_events,
-                                             remove_events_not_from_today)
-from nvim_notes.utils.plugin_options import PluginOptions
+from nvim_diary_template.helpers.markdown_helpers import sort_markdown_events
+from nvim_diary_template.utils.constants import FILE_TYPE_WILDCARD, ISO_FORMAT
+from nvim_diary_template.utils.make_markdown_file import make_todays_diary
+from nvim_diary_template.utils.make_schedule import set_schedule_from_events_list
+from nvim_diary_template.utils.nvim_google_cal_class import SimpleNvimGoogleCal
+from nvim_diary_template.utils.parse_markdown import (combine_events,
+                                                      parse_markdown_file_for_events,
+                                                      remove_events_not_from_today)
+from nvim_diary_template.utils.plugin_options import PluginOptions
 
 
 def if_active(function):
     """if_active
 
     A decorator for a function, such that it is only run when
-    nvim_notes is ready.
+    nvim_diary_template is ready.
 
     Taken from numirias/semshi
     """

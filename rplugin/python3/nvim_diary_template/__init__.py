@@ -1,2 +1,2 @@
 # pylint: disable=all
-from nvim_notes.plugin import NotesPlugin
+from nvim_diary_template.plugin import NotesPlugin
