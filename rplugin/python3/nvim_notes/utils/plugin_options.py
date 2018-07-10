@@ -20,12 +20,9 @@ class PluginOptions:
 
     _defaults = {
         'active': True,
-        'config_path': os.getcwd(),
-        'notes_path': os.path.join(str(Path.home()), "nvim_notes"),
-        'open_method': None,
-        'pop_up_method': None,
+        'notes_path': os.path.join(str(Path.home()), "vimwiki"),
+        'config_path': "",
         'daily_headings': ['Notes', 'Issues'],
-        'note_headings': ['General', 'Links', 'Related Tags'],
         'use_google_calendar': True,
         'calendar_filter_list': [],
         'add_to_google_cal': False,
@@ -37,6 +34,19 @@ class PluginOptions:
     def __init__(self, nvim):
         for key, default_value in PluginOptions._defaults.items():
             value = nvim.vars.get(f"nvim_notes#{key}", default_value)
+            value = self.get_default_value(key, value)
+
             nvim.vars[f"nvim_notes#{key}"] = value
 
             setattr(self, key, value)
+
+    def get_default_value(self, key, value):
+        """get_default_value
+
+        Override the default, if none is given.
+        """
+
+        if key == "config_path" and value == "":
+            return os.path.join(self.notes_path, "config")
+
+        return value

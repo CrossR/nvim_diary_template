@@ -3,77 +3,6 @@
 Simple helpers to help interfacing with NeoVim.
 """
 
-import re
-
-from nvim_notes.utils.constants import BULLET_POINT_REGEX
-
-
-def open_file(nvim, file_path, open_method=None):
-    """open_file
-
-    Attempts to open the given file in the specified way. If no method is
-    given, open in the current buffer if it is empty and not modified, and in
-    a new tab if not.
-    """
-
-    if open_method is None:
-        if not buf_is_modified(nvim) and \
-           not buf_file_open(nvim):
-            nvim.command(f":e {file_path}")
-        else:
-            nvim.command(f":tabnew {file_path}")
-    else:
-        nvim.command(f":{open_method} {file_path}")
-
-
-def open_popup_file(nvim, file_path, open_method=None):
-    """open_popup_file
-
-    Opens the given file in a small pop-out split. That is depending on the
-    user config, open a small split on the bottom or side of the current
-    window.
-
-    The default open method is `botright 15split`, ie a split 15 lines tall
-    on the bottom right. `80vs` would achieve a vertical split of 80 columns.
-    `:help opening-window` for more examples.
-
-    Returns the new splits buffer number for later usage.
-    """
-
-    if open_method is None:
-        open_method = "botright 15split"
-
-    nvim.command(f":{open_method} {file_path}")
-
-    return nvim.current.buffer.number
-
-
-def buf_is_modified(nvim):
-    """buf_is_modified
-
-    Return true if the buffer is modified.
-    """
-
-    return int(nvim.command_output('echo &modified'))
-
-
-def get_current_word(nvim):
-    """get_current_word
-
-    Get the word the cursor is currently over.
-    """
-
-    return str(nvim.command_output('echo(expand("<cword>"))'))
-
-
-def buf_file_open(nvim):
-    """buf_file_open
-
-    Return true if a file is open in the current buffer.
-    """
-
-    return nvim.current.buffer.name != ''
-
 
 def get_buffer_contents(nvim):
     """get_buffer_contents
@@ -125,58 +54,6 @@ def get_line_content(nvim, line_offset=None):
         cursor_line,
         True
     )[0]
-
-
-def get_multi_line_bullet(nvim):
-    """get_multi_line_bullet
-
-    Gets the entire instance of a bullet point.
-    That is, for a multi-line bullet point, get every part of the bullet point.
-
-    Returns both the full bullet point, but also the offset if any for the bullet
-    points start.
-    """
-
-    current_line = [get_line_content(nvim)]
-    lines_below = []
-    lines_above = []
-
-    line_offset = 1
-    next_line = get_line_content(nvim, line_offset)
-
-    # Keep getting the lines beneath until the next bullet point is found, or
-    # the line is empty.
-    while next_line and not re.findall(BULLET_POINT_REGEX, next_line):
-        line_offset += 1
-
-        lines_below.append(next_line)
-        next_line = get_line_content(nvim, line_offset)
-
-    current_bullet = current_line + lines_below
-
-    # If we started on a bullet, we can return now.
-    if re.findall(BULLET_POINT_REGEX, current_line[0]):
-        return 0, current_bullet
-
-    line_offset = -1
-    next_line = get_line_content(nvim, line_offset)
-
-    # Keep getting the lines above until the start of the bullet point is
-    # found, or the line is empty.
-    while next_line and not re.findall(BULLET_POINT_REGEX, next_line):
-        line_offset -= 1
-
-        lines_above.append(next_line)
-        next_line = get_line_content(nvim, line_offset)
-
-    # Since we broke when we found a bullet, we still need that line adding.
-    # And then we need to reverse the list to get the lines in the correct order.
-    lines_above.append(next_line)
-    current_bullet = lines_above[::-1] + current_bullet
-
-    final_offset = line_offset
-
-    return final_offset, current_bullet
 
 
 def set_line_content(
