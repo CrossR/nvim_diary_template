@@ -2,7 +2,7 @@
 
 Test repo for a plugin to generate a suitable template for VimWiki (for me).
 This was mainly made to let me mess with the NeoVim API with Python, there is a
-million and ones simpler ways to achieve this.
+million and one simpler ways to achieve this.
 
 Features:
     - Google Calendar Integration:
