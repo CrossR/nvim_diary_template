@@ -164,9 +164,14 @@ class SimpleNvimGoogleCal():
         is called to generate the data and cache it.
         """
 
-        pattern = path.join(
+        cache_path = path.join(
             self.config_path,
             "cache",
+        )
+        makedirs(cache_path, exist_ok=True)
+
+        pattern = path.join(
+            cache_path,
             f"nvim_notes_{data_name}_cache_*.json"
         )
 

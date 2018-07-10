@@ -5,6 +5,7 @@ they don't exist.
 """
 
 from datetime import date
+import json
 
 from nvim_notes.helpers.neovim_helpers import set_buffer_contents
 from nvim_notes.utils.make_schedule import produce_schedule_markdown
