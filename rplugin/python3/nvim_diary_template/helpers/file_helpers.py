@@ -6,20 +6,20 @@ Simple helpers to help with opening and finding files.
 import glob
 from os import path
 
-from nvim_notes.utils.constants import FILE_TYPE_WILDCARD, SCHEDULE_FOLDER
+from nvim_diary_template.utils.constants import FILE_TYPE_WILDCARD, DIARY_FOLDER
 
 
-def get_past_schedules(options):
-    """get_past_schedules
+def get_past_diary_entries(options):
+    """get_past_diary_entries
 
-    Get past schedules files, and return the specified amount.
+    Get past diary files, and return the specified amount.
     """
 
     days_to_check = options.days_to_roll_over
 
     note_files = path.join(
         options.notes_path,
-        SCHEDULE_FOLDER,
+        DIARY_FOLDER,
         "*",
         "*",
         FILE_TYPE_WILDCARD
@@ -44,14 +44,14 @@ def get_file_content(file_path):
         return note_file.read().split('\n')
 
 
-def get_schedule_path(options, note_name):
-    """get_schedule_path
+def get_diary_path(options, note_name):
+    """get_diary_path
 
-    Gives a full path, given just a schedule name.
+    Gives a full path, given just a diary name.
     """
     pattern = path.join(
         options.notes_path,
-        SCHEDULE_FOLDER,
+        DIARY_FOLDER,
         "*",
         "*",
         note_name

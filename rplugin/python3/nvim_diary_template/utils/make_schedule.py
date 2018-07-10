@@ -3,11 +3,11 @@
 Functions to build and parse the schedule section of the markdown.
 """
 
-from nvim_notes.helpers.google_calendar_helpers import convert_events
-from nvim_notes.helpers.neovim_helpers import (get_buffer_contents,
-                                               get_section_line)
-from nvim_notes.utils.constants import (BULLET_POINT, SCHEDULE_HEADING,
-                                        TIME_FORMAT)
+from nvim_diary_template.helpers.google_calendar_helpers import convert_events
+from nvim_diary_template.helpers.neovim_helpers import (get_buffer_contents,
+                                                        get_section_line)
+from nvim_diary_template.utils.constants import (BULLET_POINT, SCHEDULE_HEADING,
+                                                 TIME_FORMAT)
 
 
 def format_events_lines(events):

@@ -9,7 +9,7 @@ from datetime import timedelta
 FILE_TYPE = '.md'
 FILE_TYPE_WILDCARD = '*.md'
 NOTE_FOLDER = "Notes"
-SCHEDULE_FOLDER = "Daily"
+DIARY_FOLDER = "Diary"
 
 # Google Calendar Constants
 CACHE_EPOCH_REGEX = '([0-9])+'

@@ -5,8 +5,8 @@ Simple helpers for the markdown ToDos.
 
 import re
 
-from nvim_notes.utils.constants import (BULLET_POINT, EMPTY_TODO,
-                                        TODO_IS_CHECKED, TODO_NOT_CHECKED)
+from nvim_diary_template.utils.constants import (BULLET_POINT, EMPTY_TODO,
+                                                 TODO_IS_CHECKED, TODO_NOT_CHECKED)
 
 
 def is_todo_complete(todo):

@@ -1,6 +1,6 @@
 """plugin_options
 
-Store the plugin options for the nvim_notes class, as
+Store the plugin options for the nvim_diary_template class, as
 well as any associated helpers.
 """
 
@@ -12,7 +12,7 @@ class PluginOptions:
     """PluginOptions
 
     Plugin options is a class that stores all the options
-    that the nvim_notes plugin uses.
+    that the nvim_diary_template plugin uses.
 
     The values are set to some default, and then overridden if any
     value exists in the users' config.
@@ -20,12 +20,9 @@ class PluginOptions:
 
     _defaults = {
         'active': True,
-        'config_path': os.getcwd(),
-        'notes_path': os.path.join(str(Path.home()), "nvim_notes"),
-        'open_method': None,
-        'pop_up_method': None,
+        'notes_path': os.path.join(str(Path.home()), "vimwiki"),
+        'config_path': os.path.join(str(Path.home()), "vimwiki", "config"),
         'daily_headings': ['Notes', 'Issues'],
-        'note_headings': ['General', 'Links', 'Related Tags'],
         'use_google_calendar': True,
         'calendar_filter_list': [],
         'add_to_google_cal': False,
@@ -36,7 +33,7 @@ class PluginOptions:
 
     def __init__(self, nvim):
         for key, default_value in PluginOptions._defaults.items():
-            value = nvim.vars.get(f"nvim_notes#{key}", default_value)
-            nvim.vars[f"nvim_notes#{key}"] = value
+            value = nvim.vars.get(f"nvim_diary_template#{key}", default_value)
+            nvim.vars[f"nvim_diary_template#{key}"] = value
 
             setattr(self, key, value)

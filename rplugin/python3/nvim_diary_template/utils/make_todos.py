@@ -5,14 +5,14 @@ Functions for the making and parsing of ToDos.
 
 import re
 
-from nvim_notes.helpers.file_helpers import (get_file_content,
-                                             get_schedule_path, get_past_schedules)
-from nvim_notes.helpers.markdown_helpers import split_line
-from nvim_notes.helpers.neovim_helpers import (get_buffer_contents,
-                                               get_section_line)
-from nvim_notes.helpers.todo_helpers import is_todo_complete, make_todo
-from nvim_notes.utils.constants import (SCHEDULE_HEADING, TODO_HEADING,
-                                        TODO_ONGOING_REGEX, TODO_REGEX)
+from nvim_diary_template.helpers.file_helpers import (get_file_content,
+                                                      get_diary_path, get_past_diary_entries)
+from nvim_diary_template.helpers.markdown_helpers import split_line
+from nvim_diary_template.helpers.neovim_helpers import (get_buffer_contents,
+                                                        get_section_line)
+from nvim_diary_template.helpers.todo_helpers import is_todo_complete, make_todo
+from nvim_diary_template.utils.constants import (SCHEDULE_HEADING, TODO_HEADING,
+                                                 TODO_ONGOING_REGEX, TODO_REGEX)
 
 
 def get_past_todos(options):
@@ -22,13 +22,13 @@ def get_past_todos(options):
     file.
     """
 
-    past_files = get_past_schedules(options)
+    past_files = get_past_diary_entries(options)
 
     todo_markdown = [TODO_HEADING, ""]
     todo_lines = []
 
     for past_file in past_files:
-        full_file_path = get_schedule_path(options, past_file)
+        full_file_path = get_diary_path(options, past_file)
         buffer_content = get_file_content(full_file_path)
         todos = parse_markdown_file_for_todos(current_buffer=buffer_content)
 

@@ -3,25 +3,22 @@ from functools import wraps
 
 import neovim
 
-from nvim_notes.helpers.markdown_helpers import sort_markdown_events
-from nvim_notes.helpers.neovim_helpers import get_current_word
-from nvim_notes.utils.constants import FILE_TYPE_WILDCARD, ISO_FORMAT
-from nvim_notes.utils.keybind_actions import pick_action
-from nvim_notes.utils.make_markdown_file import (open_note_for_topic,
-                                                 open_todays_schedule)
-from nvim_notes.utils.make_schedule import set_schedule_from_events_list
-from nvim_notes.utils.nvim_google_cal_class import SimpleNvimGoogleCal
-from nvim_notes.utils.parse_markdown import (combine_events,
-                                             parse_markdown_file_for_events,
-                                             remove_events_not_from_today)
-from nvim_notes.utils.plugin_options import PluginOptions
+from nvim_diary_template.helpers.markdown_helpers import sort_markdown_events
+from nvim_diary_template.utils.constants import FILE_TYPE_WILDCARD, ISO_FORMAT
+from nvim_diary_template.utils.make_markdown_file import make_todays_diary
+from nvim_diary_template.utils.make_schedule import set_schedule_from_events_list
+from nvim_diary_template.utils.nvim_google_cal_class import SimpleNvimGoogleCal
+from nvim_diary_template.utils.parse_markdown import (combine_events,
+                                                      parse_markdown_file_for_events,
+                                                      remove_events_not_from_today)
+from nvim_diary_template.utils.plugin_options import PluginOptions
 
 
 def if_active(function):
     """if_active
 
     A decorator for a function, such that it is only run when
-    nvim_notes is ready.
+    nvim_diary_template is ready.
 
     Taken from numirias/semshi
     """
@@ -34,7 +31,7 @@ def if_active(function):
 
 
 @neovim.plugin
-class NotesPlugin(object):
+class DiaryTemplatePlugin(object):
 
     def __init__(self, nvim):
         self._nvim = nvim
@@ -50,9 +47,9 @@ class NotesPlugin(object):
                 self._options
             )
 
-    @neovim.command('OpenSchedule')
+    @neovim.command('MakeDiary')
     # @if_active
-    def open_schedule(self):
+    def make_diary(self):
 
         # TODO: Remove this, since it shouldn't be needed due to the autocmds.
         if self._options is None:
@@ -62,32 +59,10 @@ class NotesPlugin(object):
                 self._options
             )
 
-        open_todays_schedule(
+        make_todays_diary(
             self._nvim,
             self._options,
             self._gcal_service
-        )
-
-    @neovim.command('OpenNote', nargs='*')
-    # @if_active
-    def open_note(self, note_topic):
-        # TODO: Remove this, since it shouldn't be needed due to the autocmds.
-        if self._options is None:
-            self._options = PluginOptions(self._nvim)
-            self._gcal_service = SimpleNvimGoogleCal(
-                self._nvim,
-                self._options
-            )
-
-        if not note_topic:
-            note_topic = get_current_word(self._nvim)
-        else:
-            note_topic = ' '.join(note_topic)
-
-        open_note_for_topic(
-            self._nvim,
-            self._options,
-            note_topic
         )
 
     @neovim.command('UploadCalendar')
@@ -123,7 +98,3 @@ class NotesPlugin(object):
     @neovim.command('SortCalendar')
     def sort_calendar(self):
         sort_markdown_events(self._nvim)
-
-    @neovim.command('ToggleLine')
-    def toggle_line(self):
-        pick_action(self._nvim)

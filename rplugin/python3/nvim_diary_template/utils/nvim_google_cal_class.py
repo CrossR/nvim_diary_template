@@ -15,12 +15,12 @@ from apiclient.discovery import build
 from httplib2 import Http
 from oauth2client import file
 
-from nvim_notes.helpers.google_calendar_helpers import (convert_events,
-                                                        create_google_event,
-                                                        format_google_events)
-from nvim_notes.utils.constants import (CACHE_EPOCH_REGEX,
-                                        CALENDAR_CACHE_DURATION,
-                                        EVENT_CACHE_DURATION, ISO_FORMAT)
+from nvim_diary_template.helpers.google_calendar_helpers import (convert_events,
+                                                                 create_google_event,
+                                                                 format_google_events)
+from nvim_diary_template.utils.constants import (CACHE_EPOCH_REGEX,
+                                                 CALENDAR_CACHE_DURATION,
+                                                 EVENT_CACHE_DURATION, ISO_FORMAT)
 
 
 class SimpleNvimGoogleCal():
@@ -164,10 +164,15 @@ class SimpleNvimGoogleCal():
         is called to generate the data and cache it.
         """
 
-        pattern = path.join(
+        cache_path = path.join(
             self.config_path,
             "cache",
-            f"nvim_notes_{data_name}_cache_*.json"
+        )
+        makedirs(cache_path, exist_ok=True)
+
+        pattern = path.join(
+            cache_path,
+            f"nvim_diary_template_{data_name}_cache_*.json"
         )
 
         try:
@@ -202,13 +207,13 @@ class SimpleNvimGoogleCal():
         cache_file_name = path.join(
             self.config_path,
             "cache",
-            f"nvim_notes_{data_name}_cache_{int(t.time())}.json"
+            f"nvim_diary_template_{data_name}_cache_{int(t.time())}.json"
         )
 
         pattern = path.join(
             self.config_path,
             "cache",
-            f"nvim_notes_{data_name}_cache_*.json"
+            f"nvim_diary_template_{data_name}_cache_*.json"
         )
 
         makedirs(path.dirname(cache_file_name), exist_ok=True)
