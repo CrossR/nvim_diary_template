@@ -8,7 +8,6 @@ from datetime import date
 
 from nvim_diary_template.helpers.neovim_helpers import set_buffer_contents
 from nvim_diary_template.utils.make_schedule import produce_schedule_markdown
-from nvim_diary_template.utils.make_todos import get_past_todos
 
 
 def make_todays_diary(nvim, options, gcal_service):
@@ -31,10 +30,6 @@ def make_todays_diary(nvim, options, gcal_service):
     for heading in options.daily_headings:
         full_markdown.append(f"# {heading}")
         full_markdown.append("")
-
-    # Bring over old ToDos.
-    rolled_over_todos = get_past_todos(options)
-    full_markdown.extend(rolled_over_todos)
 
     # Add in Todays Calendar Entries
     todays_events = gcal_service.todays_events
