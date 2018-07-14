@@ -38,7 +38,7 @@ class SimpleNvimGoogleCal():
 
         self.service = self.setup_google_calendar_api()
         self.all_calendars = check_cache(
-            options,
+            self.config_path,
             "calendars",
             CALENDAR_CACHE_DURATION,
             self.get_all_calendars
@@ -48,7 +48,7 @@ class SimpleNvimGoogleCal():
         self.filtered_calendars = self.filter_calendars()
 
         self._events = check_cache(
-            options.config_path,
+            self.config_path,
             'events',
             EVENT_CACHE_DURATION,
             self.get_events_for_today
@@ -62,7 +62,7 @@ class SimpleNvimGoogleCal():
         """
 
         return check_cache(
-            self.options.config_path,
+            self.config_path,
             "events",
             EVENT_CACHE_DURATION,
             self.get_events_for_today
@@ -187,7 +187,7 @@ class SimpleNvimGoogleCal():
 
         # Now that the events have been updated, update the cache.
         updated_events = self.get_events_for_today()
-        set_cache(self.options.config_path, updated_events, 'events')
+        set_cache(self.config_path, updated_events, 'events')
 
         self.nvim.out_write(
             f"Added {len(missing_events)} events to {self.options.google_cal_name} calendar.\n"

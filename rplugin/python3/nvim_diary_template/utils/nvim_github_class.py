@@ -8,7 +8,9 @@ import json
 from os import path
 
 from github import Github
+
 from nvim_diary_template.helpers.file_helpers import check_cache
+from nvim_diary_template.utils.constants import ISSUE_CACHE_DURATION
 
 
 class SimpleNvimGithub():
@@ -20,9 +22,17 @@ class SimpleNvimGithub():
     def __init__(self, nvim, options):
         self.nvim = nvim
         self.config_path = options.config_path
+        self.repo_name = options.repo_name
         self.options = options
 
         self.service = self.setup_github_api()
+
+        self.issues = check_cache(
+            self.config_path,
+            'open_issues',
+            ISSUE_CACHE_DURATION,
+            self.get_all_open_issues
+        )
 
     def setup_github_api(self):
         """setup_github_api
@@ -46,12 +56,15 @@ class SimpleNvimGithub():
 
         return service
 
-    def service_is_not_ready(self):
-        """service_is_not_ready
+    def service_not_valid(self):
+        """service_not_valid
 
         Check if the Github API service is ready.
         """
         if self.service is None:
+            return True
+
+        if self.repo_name == '':
             return True
 
         return False
@@ -63,17 +76,9 @@ class SimpleNvimGithub():
         are in the exclude list.
         """
 
-        if self.service_is_not_ready():
+        if self.service_not_valid():
             return []
 
-        page_token = None
-        calendar_list = self.service.calendarList() \
-            .list(pageToken=page_token).execute()
+        issues = self.service.get_repo(self.repo_name).get_issues(state='open')
 
-        all_calendars = {}
-
-        for calendar_list_entry in calendar_list['items']:
-            all_calendars[calendar_list_entry['summary']] = \
-                calendar_list_entry['id']
-
-        return all_calendars
+        return issues

@@ -2,11 +2,12 @@
 from functools import wraps
 
 import neovim
-
 from nvim_diary_template.helpers.markdown_helpers import sort_markdown_events
 from nvim_diary_template.utils.constants import FILE_TYPE_WILDCARD, ISO_FORMAT
 from nvim_diary_template.utils.make_markdown_file import make_todays_diary
-from nvim_diary_template.utils.make_schedule import set_schedule_from_events_list
+from nvim_diary_template.utils.make_schedule import \
+    set_schedule_from_events_list
+from nvim_diary_template.utils.nvim_github_class import SimpleNvimGithub
 from nvim_diary_template.utils.nvim_google_cal_class import SimpleNvimGoogleCal
 from nvim_diary_template.utils.parse_markdown import (combine_events,
                                                       parse_markdown_file_for_events,
@@ -37,6 +38,7 @@ class DiaryTemplatePlugin(object):
         self._nvim = nvim
         self._options = None
         self._gcal_service = None
+        self._github_service = None
 
     @neovim.autocmd('BufEnter', pattern=FILE_TYPE_WILDCARD, sync=True)
     def event_buf_enter(self):
@@ -46,6 +48,7 @@ class DiaryTemplatePlugin(object):
                 self._nvim,
                 self._options
             )
+            self._github_service = SimpleNvimGithub(self._nvim, self._options)
 
     @neovim.command('MakeDiary')
     # @if_active
@@ -58,6 +61,7 @@ class DiaryTemplatePlugin(object):
                 self._nvim,
                 self._options
             )
+            self._github_service = SimpleNvimGithub(self._nvim, self._options)
 
         make_todays_diary(
             self._nvim,
