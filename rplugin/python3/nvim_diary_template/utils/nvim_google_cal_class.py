@@ -15,12 +15,14 @@ from apiclient.discovery import build
 from httplib2 import Http
 from oauth2client import file
 
+from nvim_diary_template.helpers.file_helpers import check_cache, set_cache
 from nvim_diary_template.helpers.google_calendar_helpers import (convert_events,
                                                                  create_google_event,
                                                                  format_google_events)
 from nvim_diary_template.utils.constants import (CACHE_EPOCH_REGEX,
                                                  CALENDAR_CACHE_DURATION,
-                                                 EVENT_CACHE_DURATION, ISO_FORMAT)
+                                                 EVENT_CACHE_DURATION,
+                                                 ISO_FORMAT)
 
 
 class SimpleNvimGoogleCal():
@@ -35,7 +37,8 @@ class SimpleNvimGoogleCal():
         self.options = options
 
         self.service = self.setup_google_calendar_api()
-        self.all_calendars = self.check_cache(
+        self.all_calendars = check_cache(
+            options,
             "calendars",
             CALENDAR_CACHE_DURATION,
             self.get_all_calendars
@@ -44,7 +47,8 @@ class SimpleNvimGoogleCal():
         self.filter_list = options.calendar_filter_list
         self.filtered_calendars = self.filter_calendars()
 
-        self._events = self.check_cache(
+        self._events = check_cache(
+            options.config_path,
             'events',
             EVENT_CACHE_DURATION,
             self.get_events_for_today
@@ -57,7 +61,8 @@ class SimpleNvimGoogleCal():
         Return todays events from the cache.
         """
 
-        return self.check_cache(
+        return check_cache(
+            self.options.config_path,
             "events",
             EVENT_CACHE_DURATION,
             self.get_events_for_today
@@ -156,75 +161,6 @@ class SimpleNvimGoogleCal():
 
         return format_google_events(events_in_timeframe)
 
-    def check_cache(self, data_name, data_age, fallback_function):
-        """check_cache
-
-        A function to check for valid cache files.
-        If one is found, then it can be used, but otherwise the original function
-        is called to generate the data and cache it.
-        """
-
-        cache_path = path.join(
-            self.config_path,
-            "cache",
-        )
-        makedirs(cache_path, exist_ok=True)
-
-        pattern = path.join(
-            cache_path,
-            f"nvim_diary_template_{data_name}_cache_*.json"
-        )
-
-        try:
-            cache_file_name = glob.glob(pattern)[0]
-
-            epoch = re.search(CACHE_EPOCH_REGEX, cache_file_name)[0]
-
-            cache_file_creation_date = datetime.fromtimestamp(int(epoch))
-            today = datetime.today()
-            difference = today - cache_file_creation_date
-
-            if difference <= data_age:
-                with open(cache_file_name) as cache_file:
-                    data = json.load(cache_file)
-            else:
-                data = fallback_function()
-                self.set_cache(data, data_name)
-        except (IndexError, FileNotFoundError):
-            data = fallback_function()
-            self.set_cache(data, data_name)
-
-        return data
-
-    def set_cache(self, data, data_name):
-        """set_cache
-
-        Given some data and a name, creates a cache file
-        in the config folder. Cleans up any existing cache files
-        when creating a new one.
-        """
-
-        cache_file_name = path.join(
-            self.config_path,
-            "cache",
-            f"nvim_diary_template_{data_name}_cache_{int(t.time())}.json"
-        )
-
-        pattern = path.join(
-            self.config_path,
-            "cache",
-            f"nvim_diary_template_{data_name}_cache_*.json"
-        )
-
-        makedirs(path.dirname(cache_file_name), exist_ok=True)
-        old_cache_files = glob.glob(pattern)
-
-        with open(cache_file_name, 'w') as cache_file:
-            json.dump(data, cache_file)
-
-        for old_cache_file in old_cache_files:
-            remove(old_cache_file)
-
     def upload_to_calendar(self, markdown_events):
         """upload_to_calendar
 
@@ -251,7 +187,7 @@ class SimpleNvimGoogleCal():
 
         # Now that the events have been updated, update the cache.
         updated_events = self.get_events_for_today()
-        self.set_cache(updated_events, 'events')
+        set_cache(self.options.config_path, updated_events, 'events')
 
         self.nvim.out_write(
             f"Added {len(missing_events)} events to {self.options.google_cal_name} calendar.\n"
