@@ -77,6 +77,9 @@ class SimpleNvimGithub():
         """
 
         if self.service_not_valid():
+            self.nvim.err_write(
+                "Github service not currently running...\n"
+            )
             return []
 
         issues = self.service.get_repo(self.repo_name).get_issues(state='open')
