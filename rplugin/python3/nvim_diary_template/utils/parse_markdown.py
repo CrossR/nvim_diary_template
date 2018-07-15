@@ -4,7 +4,6 @@ Functions for the parsing of the document markdown.
 """
 
 import re
-
 from datetime import date
 
 from dateutil import parser
@@ -15,8 +14,9 @@ from nvim_diary_template.helpers.neovim_helpers import (get_buffer_contents,
                                                         get_section_line,
                                                         set_line_content)
 from nvim_diary_template.utils.constants import (DATETIME_REGEX, EVENT_REGEX,
-                                                 ISO_FORMAT, SCHEDULE_HEADING,
-                                                 TIME_FORMAT, TIME_REGEX)
+                                                 ISO_FORMAT, ISSUE_HEADING,
+                                                 SCHEDULE_HEADING, TIME_FORMAT,
+                                                 TIME_REGEX)
 
 
 def parse_buffer_events(events, format_string):
@@ -59,6 +59,23 @@ def parse_buffer_events(events, format_string):
 
     return formatted_events
 
+def parse_buffer_issues(issue_lines):
+    """parse_buffer_issues
+
+    Given a list of issue markdown lines, parse the issue lines and create
+    issue objects.
+    """
+
+    formatted_issues = []
+
+    for line in issue_lines:
+        # If line matches title regex: parse out title, metadata
+        # If not, check if matches comment regex: parse out comment number and metadata
+        # If not, assume it is a line of the ongoing comment, parse out the comment itself.
+        continue
+
+    return issue_lines
+
 
 def remove_events_not_from_today(nvim):
     """remove_events_not_from_today
@@ -98,6 +115,23 @@ def parse_markdown_file_for_events(nvim, format_string):
     formatted_events = parse_buffer_events(events, format_string)
 
     return formatted_events
+
+def parse_markdown_file_for_issues(nvim):
+    """parse_markdown_file_for_issues
+
+    Gets the contents of the current NeoVim buffer,
+    and parses the issues section into issues.
+    """
+
+    current_buffer = get_buffer_contents(nvim)
+
+    buffer_issues_index = get_section_line(current_buffer, ISSUE_HEADING)
+    buffer_events_index = get_section_line(current_buffer, SCHEDULE_HEADING)
+
+    issues = current_buffer[buffer_issues_index:buffer_events_index]
+    formatted_issues = parse_buffer_issues(issues)
+
+    return formatted_issues
 
 
 def combine_events(markdown_events,

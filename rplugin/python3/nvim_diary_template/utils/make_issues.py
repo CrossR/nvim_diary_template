@@ -51,7 +51,7 @@ def format_issue_comments(body, comments):
         header_line = f"{PADDING}{BULLET_POINT} Comment {{{comment_num}}}:"
         formatted_comments.append(header_line)
 
-        for index, line in enumerate(split_comments):
+        for line in split_comments:
             if line == '':
                 formatted_comments.append('')
                 continue
