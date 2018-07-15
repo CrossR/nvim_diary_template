@@ -16,6 +16,7 @@ def convert_issues(github_service, issue_list):
         formatted_issues.append({
             'number': issue['number'],
             'title': issue['title'],
+            'body': issue['body'],
             'comments': comments,
         })
 

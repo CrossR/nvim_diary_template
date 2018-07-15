@@ -13,7 +13,7 @@ DIARY_FOLDER = "diary"
 CACHE_EPOCH_REGEX = '([0-9])+'
 CALENDAR_CACHE_DURATION = timedelta(days=31)
 EVENT_CACHE_DURATION = timedelta(minutes=30)
-ISSUE_CACHE_DURATION = timedelta(minutes=60)
+ISSUE_CACHE_DURATION = timedelta(minutes=30)
 
 # DateTime Formats
 TIME_FORMAT = "%H:%M"
@@ -36,6 +36,7 @@ BULLET_POINT_REGEX = r"[ ]*?-"
 
 # Markdown Constants
 SCHEDULE_HEADING = "# Schedule"
-TODO_HEADING = "# ToDo"
+ISSUE_HEADING = "# Issues"
+PADDING = "    "
 EMPTY_TODO = "[ ]"
 BULLET_POINT = "-"

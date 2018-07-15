@@ -90,6 +90,7 @@ class SimpleNvimGithub():
             issue_list.append({
                 'number': issue.number,
                 'title': issue.title,
+                'body': issue.body
             })
 
         return issue_list
