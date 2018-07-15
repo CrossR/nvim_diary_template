@@ -3,8 +3,8 @@
 Functions to build and parse the issue section of the markdown.
 """
 
-from nvim_diary_template.utils.constants import (BULLET_POINT, EMPTY_TODO, PADDING,
-                                                 TIME_FORMAT, ISSUE_HEADING)
+from nvim_diary_template.utils.constants import (BULLET_POINT, EMPTY_TODO,
+                                                 ISSUE_HEADING, PADDING)
 
 
 def format_issues(issues):
@@ -22,7 +22,6 @@ def format_issues(issues):
         issue_body = issue['body']
 
         # TODO: Similarly, make this string into a config option.
-        # TODO: We are missing the issue body.
         title_line = f"{BULLET_POINT} {EMPTY_TODO} {issue_title}"
 
         formatted_comments = format_issue_comments(issue_body, issue_comments)

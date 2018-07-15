@@ -4,12 +4,8 @@ The google calendar class, with Neovim options to log information
 back to the user.
 """
 
-import glob
-import json
-import re
-import time as t
 from datetime import date, datetime, time
-from os import makedirs, path, remove
+from os import path
 
 from apiclient.discovery import build
 from httplib2 import Http
@@ -19,8 +15,7 @@ from nvim_diary_template.helpers.file_helpers import check_cache, set_cache
 from nvim_diary_template.helpers.google_calendar_helpers import (convert_events,
                                                                  create_google_event,
                                                                  format_google_events)
-from nvim_diary_template.utils.constants import (CACHE_EPOCH_REGEX,
-                                                 CALENDAR_CACHE_DURATION,
+from nvim_diary_template.utils.constants import (CALENDAR_CACHE_DURATION,
                                                  EVENT_CACHE_DURATION,
                                                  ISO_FORMAT)
 
