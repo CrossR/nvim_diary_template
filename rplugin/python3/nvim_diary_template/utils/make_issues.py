@@ -22,7 +22,6 @@ def format_issues(issues):
 
         # TODO: Similarly, make this string into a config option.
         # TODO: We are missing the issue body.
-        # TODO: Add comment number.
         title_line = f"{BULLET_POINT} {EMPTY_TODO} {issue_title}"
 
         formatted_comments = format_issue_comments(issue_comments)
@@ -39,24 +38,27 @@ def format_issue_comments(comments):
     """format_issue_comments
 
     Formats each of the comments for a given issue.
-    This includes adding padding, swapping newlines (as the nvim API does not
-    allow this) and splitting the lines as needed.
+    This includes adding padding and swapping newlines, as the nvim API does
+    not allow this.
     """
 
     formatted_comments = []
 
-    for comment in comments:
+    for comment_num, comment in enumerate(comments):
         split_comments = comment.splitlines()
-        padded_comments = [
-            f"     {comment_body}" if comment_body != ''
-            else ''
-            for comment_body in split_comments[1:]
-        ]
 
-        first_line = f"    {BULLET_POINT} {split_comments[0]}"
+        # TODO: Pass over metadata for this header line. Mainly date/time.
+        header_line = f"    {BULLET_POINT} Comment {{{comment_num + 1}}}:"
+        formatted_comments.append(header_line)
+        formatted_comments.append('')
 
-        formatted_comments.append(first_line)
-        formatted_comments.extend(padded_comments)
+        for index, line in enumerate(split_comments):
+            if line == '':
+                formatted_comments.append('')
+                continue
+
+            current_line = f"    {line}"
+            formatted_comments.append(current_line)
 
     return formatted_comments
 
