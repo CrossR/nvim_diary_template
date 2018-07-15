@@ -84,4 +84,28 @@ class SimpleNvimGithub():
 
         issues = self.service.get_repo(self.repo_name).get_issues(state='open')
 
-        return issues
+        issue_list = []
+
+        for issue in issues:
+            issue_list.append({
+                'number': issue.number,
+                'title': issue.title,
+            })
+
+        return issue_list
+
+    def get_comments_for_issue(self, issue_number):
+        """get_comments_for_issue
+
+        Gets all the comments for a given issue.
+        """
+
+        issue = self.service.get_repo(self.repo_name).get_issue(issue_number)
+        comments = issue.get_comments()
+
+        comment_bodies = []
+
+        for comment in comments:
+            comment_bodies.append(comment.body)
+
+        return comment_bodies

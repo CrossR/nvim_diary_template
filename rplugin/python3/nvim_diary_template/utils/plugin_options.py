@@ -23,7 +23,7 @@ class PluginOptions:
         'active': True,
         'notes_path': os.path.join(str(Path.home()), "vimwiki"),
         'config_path': os.path.join(str(Path.home()), "vimwiki", "config"),
-        'daily_headings': ['Notes', 'Issues'],
+        'daily_headings': ['Notes'],
         'use_google_calendar': True,
         'calendar_filter_list': [],
         'add_to_google_cal': False,

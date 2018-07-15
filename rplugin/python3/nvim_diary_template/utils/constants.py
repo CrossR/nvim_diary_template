@@ -36,4 +36,6 @@ BULLET_POINT_REGEX = r"[ ]*?-"
 
 # Markdown Constants
 SCHEDULE_HEADING = "# Schedule"
+TODO_HEADING = "# ToDo"
+EMPTY_TODO = "[ ]"
 BULLET_POINT = "-"

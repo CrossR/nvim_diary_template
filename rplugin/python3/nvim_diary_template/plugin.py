@@ -66,7 +66,8 @@ class DiaryTemplatePlugin(object):
         make_todays_diary(
             self._nvim,
             self._options,
-            self._gcal_service
+            self._gcal_service,
+            self._github_service
         )
 
     @neovim.command('UploadCalendar')
