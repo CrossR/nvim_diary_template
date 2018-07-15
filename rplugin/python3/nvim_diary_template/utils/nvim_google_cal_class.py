@@ -7,7 +7,7 @@ back to the user.
 from datetime import date, datetime, time
 from os import path
 
-from apiclient.discovery import build
+from googleapiclient import discovery
 from httplib2 import Http
 from oauth2client import file
 
@@ -79,7 +79,7 @@ class SimpleNvimGoogleCal():
             )
             return None
 
-        service = build('calendar', 'v3', http=credentials.authorize(Http()))
+        service = discovery.build('calendar', 'v3', http=credentials.authorize(Http()))
 
         return service
 
