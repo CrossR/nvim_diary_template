@@ -2,6 +2,8 @@
 from functools import wraps
 
 import neovim
+
+from nvim_diary_template.helpers.issue_helpers import insert_new_comment
 from nvim_diary_template.helpers.markdown_helpers import sort_markdown_events
 from nvim_diary_template.utils.constants import FILE_TYPE_WILDCARD, ISO_FORMAT
 from nvim_diary_template.utils.make_markdown_file import make_todays_diary
@@ -11,6 +13,7 @@ from nvim_diary_template.utils.nvim_github_class import SimpleNvimGithub
 from nvim_diary_template.utils.nvim_google_cal_class import SimpleNvimGoogleCal
 from nvim_diary_template.utils.parse_markdown import (combine_events,
                                                       parse_markdown_file_for_events,
+                                                      parse_markdown_file_for_issues,
                                                       remove_events_not_from_today)
 from nvim_diary_template.utils.plugin_options import PluginOptions
 
@@ -50,7 +53,7 @@ class DiaryTemplatePlugin(object):
             )
             self._github_service = SimpleNvimGithub(self._nvim, self._options)
 
-    @neovim.command('MakeDiary')
+    @neovim.command('DiaryMake')
     # @if_active
     def make_diary(self):
 
@@ -70,7 +73,7 @@ class DiaryTemplatePlugin(object):
             self._github_service
         )
 
-    @neovim.command('UploadCalendar')
+    @neovim.command('DiaryUploadCalendar')
     def upload_to_calendar(self):
         markdown_events = parse_markdown_file_for_events(
             self._nvim,
@@ -80,7 +83,7 @@ class DiaryTemplatePlugin(object):
         self._gcal_service.upload_to_calendar(markdown_events)
         remove_events_not_from_today(self._nvim)
 
-    @neovim.command('GrabCalendar')
+    @neovim.command('DiaryGrabCalendar')
     def grab_from_calendar(self):
         markdown_events = parse_markdown_file_for_events(
             self._nvim,
@@ -95,12 +98,12 @@ class DiaryTemplatePlugin(object):
         set_schedule_from_events_list(self._nvim, combined_events, False)
         self.sort_calendar()
 
-    @neovim.command('UpdateCalendar')
+    @neovim.command('DiaryUpdateCalendar')
     def update_calendar(self):
         self.upload_to_calendar()
         self.grab_from_calendar()
 
-    @neovim.command('SortCalendar')
+    @neovim.command('DiarySortCalendar')
     def sort_calendar(self):
         sort_markdown_events(self._nvim)
 
