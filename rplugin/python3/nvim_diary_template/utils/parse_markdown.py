@@ -14,7 +14,9 @@ from nvim_diary_template.helpers.neovim_helpers import (get_buffer_contents,
                                                         get_section_line,
                                                         set_line_content)
 from nvim_diary_template.utils.constants import (DATETIME_REGEX, EVENT_REGEX,
-                                                 ISO_FORMAT, ISSUE_HEADING,
+                                                 ISO_FORMAT, ISSUE_COMMENT,
+                                                 ISSUE_HEADING, ISSUE_TITLE,
+                                                 PADDING_SIZE,
                                                  SCHEDULE_HEADING, TIME_FORMAT,
                                                  TIME_REGEX)
 
@@ -59,6 +61,7 @@ def parse_buffer_events(events, format_string):
 
     return formatted_events
 
+
 def parse_buffer_issues(issue_lines):
     """parse_buffer_issues
 
@@ -67,14 +70,41 @@ def parse_buffer_issues(issue_lines):
     """
 
     formatted_issues = []
+    issue_number = -1
 
     for line in issue_lines:
-        # If line matches title regex: parse out title, metadata
-        # If not, check if matches comment regex: parse out comment number and metadata
-        # If not, assume it is a line of the ongoing comment, parse out the comment itself.
-        continue
+        is_issue_title = re.findall(ISSUE_TITLE, line)
+        is_comment_start = re.findall(ISSUE_COMMENT, line)
 
-    return issue_lines
+        # TODO: This will need to get metadata.
+        if is_issue_title:
+            issue_title = re.sub(ISSUE_TITLE, '', line)
+            issue_number += 1
+
+            formatted_issues.append({
+                'title': issue_title,
+                'all_comments': [],
+            })
+
+            continue
+
+        # TODO: This will need to get metadata.
+        if is_comment_start:
+            comment_number = int(re.findall(r"\d+", line)[0])
+
+            formatted_issues[issue_number]['all_comments'].append({
+                'comment_number': comment_number,
+                'comment_lines': [],
+            })
+
+            continue
+
+        stripped_line = line[PADDING_SIZE * 2:]
+        current_issue = formatted_issues[issue_number]['all_comments']
+        current_comment = current_issue[comment_number]['comment_lines']
+        current_comment.append(stripped_line)
+
+    return formatted_issues
 
 
 def remove_events_not_from_today(nvim):
@@ -116,6 +146,7 @@ def parse_markdown_file_for_events(nvim, format_string):
 
     return formatted_events
 
+
 def parse_markdown_file_for_issues(nvim):
     """parse_markdown_file_for_issues
 
@@ -125,8 +156,13 @@ def parse_markdown_file_for_issues(nvim):
 
     current_buffer = get_buffer_contents(nvim)
 
-    buffer_issues_index = get_section_line(current_buffer, ISSUE_HEADING)
-    buffer_events_index = get_section_line(current_buffer, SCHEDULE_HEADING)
+    # Get the start of each section, to grab the lines between. We plus one to
+    # the issues header, to skip the empty line there. We remove two from the
+    # events header to remove both the Events header itself, as well as the
+    # empty line at the end of the issues section.
+    buffer_issues_index = get_section_line(current_buffer, ISSUE_HEADING) + 1
+    buffer_events_index = get_section_line(
+        current_buffer, SCHEDULE_HEADING) - 2
 
     issues = current_buffer[buffer_issues_index:buffer_events_index]
     formatted_issues = parse_buffer_issues(issues)

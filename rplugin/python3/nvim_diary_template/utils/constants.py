@@ -28,6 +28,10 @@ TODO_ONGOING_REGEX = r"(?<=    ).*$"
 TODO_IS_CHECKED = r"\[X\]"
 TODO_NOT_CHECKED = r"\[[ .oO]\]"
 
+# TODO: Update both of these with metadata checks.
+ISSUE_TITLE = r"^- \[[ X]\] "
+ISSUE_COMMENT = r"- Comment \{[0-9]+\}:"
+
 EVENT_REGEX = r"(?<=: ).*$"
 
 HEADING_REGEX = r"# .*"
@@ -38,5 +42,6 @@ BULLET_POINT_REGEX = r"[ ]*?-"
 SCHEDULE_HEADING = "# Schedule"
 ISSUE_HEADING = "# Issues"
 PADDING = "    "
+PADDING_SIZE = 4
 EMPTY_TODO = "[ ]"
 BULLET_POINT = "-"
