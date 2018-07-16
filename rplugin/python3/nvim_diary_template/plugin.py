@@ -103,3 +103,7 @@ class DiaryTemplatePlugin(object):
     @neovim.command('SortCalendar')
     def sort_calendar(self):
         sort_markdown_events(self._nvim)
+
+    @neovim.command('DiaryIssueComment')
+    def insert_comment(self):
+        insert_new_comment(self._nvim)
