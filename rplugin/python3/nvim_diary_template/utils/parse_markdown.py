@@ -15,8 +15,8 @@ from nvim_diary_template.helpers.neovim_helpers import (get_buffer_contents,
                                                         set_line_content)
 from nvim_diary_template.utils.constants import (DATETIME_REGEX, EVENT_REGEX,
                                                  ISO_FORMAT, ISSUE_COMMENT,
-                                                 ISSUE_HEADING, ISSUE_TITLE,
-                                                 PADDING_SIZE,
+                                                 ISSUE_HEADING, ISSUE_METADATA,
+                                                 ISSUE_TITLE, PADDING_SIZE,
                                                  SCHEDULE_HEADING, TIME_FORMAT,
                                                  TIME_REGEX)
 
@@ -79,10 +79,12 @@ def parse_buffer_issues(issue_lines):
         # TODO: This will need to get metadata.
         if is_issue_title:
             issue_title = re.sub(ISSUE_TITLE, '', line)
+            issue_metadata = re.findall(ISSUE_METADATA, line)
             issue_number += 1
 
             formatted_issues.append({
                 'title': issue_title,
+                'metadata': issue_metadata,
                 'all_comments': [],
             })
 
@@ -91,9 +93,11 @@ def parse_buffer_issues(issue_lines):
         # TODO: This will need to get metadata.
         if is_comment_start:
             comment_number = int(re.findall(r"\d+", line)[0])
+            comment_metadata = re.findall(ISSUE_METADATA, line)
 
             formatted_issues[issue_number]['all_comments'].append({
                 'comment_number': comment_number,
+                'comment_tags': comment_metadata,
                 'comment_lines': [],
             })
 

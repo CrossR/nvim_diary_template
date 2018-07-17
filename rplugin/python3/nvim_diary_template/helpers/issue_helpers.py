@@ -82,4 +82,3 @@ def insert_new_comment(nvim):
     header_line = f"{PADDING}{BULLET_POINT} Comment {{{comment_number + 1}}}: +new"
     new_comment = ['', header_line]
     set_line_content(nvim, new_comment, line_index=new_line_number)
-    nvim.err_write(f"{new_line_number}, {current_line}\n")
