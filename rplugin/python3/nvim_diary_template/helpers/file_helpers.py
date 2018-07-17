@@ -15,29 +15,6 @@ from nvim_diary_template.utils.constants import (CACHE_EPOCH_REGEX,
                                                  FILE_TYPE_WILDCARD)
 
 
-def get_past_diary_entries(options):
-    """get_past_diary_entries
-
-    Get past diary files, and return the specified amount.
-    """
-
-    files_to_check = options.files_to_roll_over
-
-    note_files = path.join(
-        options.notes_path,
-        DIARY_FOLDER,
-        FILE_TYPE_WILDCARD
-    )
-
-    files = glob.glob(note_files)
-    file_names = sorted([path.basename(x) for x in files])
-
-    if len(file_names) < files_to_check:
-        return file_names
-
-    return file_names[:files_to_check]
-
-
 def get_file_content(file_path):
     """get_file_content
 

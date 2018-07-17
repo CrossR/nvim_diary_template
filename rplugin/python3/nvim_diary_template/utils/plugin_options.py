@@ -29,7 +29,6 @@ class PluginOptions:
         'add_to_google_cal': False,
         'google_cal_name': 'primary',
         'timezone': 'Europe/London',
-        'files_to_roll_over': 7,
         'use_github_repo': True,
         'repo_name': '',
     }
