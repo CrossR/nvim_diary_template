@@ -7,8 +7,9 @@ import re
 from nvim_diary_template.helpers.neovim_helpers import (get_buffer_contents,
                                                         get_section_line,
                                                         set_line_content)
-from nvim_diary_template.utils.constants import (BULLET_POINT, ISSUE_COMMENT,
-                                                 ISSUE_HEADING, ISSUE_TITLE,
+from nvim_diary_template.utils.constants import (BULLET_POINT, EMPTY_TODO,
+                                                 ISSUE_COMMENT, ISSUE_HEADING,
+                                                 ISSUE_START, ISSUE_TITLE,
                                                  PADDING, SCHEDULE_HEADING)
 
 
@@ -32,6 +33,41 @@ def convert_issues(github_service, issue_list):
         })
 
     return formatted_issues
+
+def insert_new_issue(nvim):
+    """insert_new_issue
+
+    Find the issue that the cursor is currently inside of, and get the next
+    issue number. Then insert a new issue at the correct place with this
+    number.
+    """
+
+    # Grab the indexes needed to find the issue we are in.
+    current_buffer = get_buffer_contents(nvim)
+    issues_header_index = get_section_line(current_buffer, ISSUE_HEADING)
+    schedule_header_index = get_section_line(
+        current_buffer, SCHEDULE_HEADING) - 1
+
+    relevant_buffer = current_buffer[issues_header_index:schedule_header_index]
+
+    # Search the buffer backwards and find the start of the last issue, to
+    # get its number.
+    for index in range(len(relevant_buffer) - 1, 0, -1):
+        line = relevant_buffer[index]
+        if re.findall(ISSUE_START, line):
+            issue_number = int(re.findall(r"\d+", line)[0])
+
+            break
+
+    # Add new issue lines, and set them.
+    # TODO: Set the cursor position here.
+    new_line_number = schedule_header_index
+
+    issue_start = f"{BULLET_POINT} {EMPTY_TODO} Issue {{{issue_number + 1}}}: +new"
+    title_line = f"{PADDING}{BULLET_POINT} Title: "
+    new_comment = ['', issue_start, title_line, '']
+
+    set_line_content(nvim, new_comment, line_index=new_line_number)
 
 
 def insert_new_comment(nvim):
@@ -59,10 +95,10 @@ def insert_new_comment(nvim):
     relevant_buffer = current_buffer[current_line:schedule_header_index]
     new_line_number = 0
 
-    # Search the buffer forwards and find the start of the next comment, to
+    # Search the buffer forwards and find the start of the next issue, to
     # insert before it. Then, find the last comment number and increment it.
     for index, line in enumerate(relevant_buffer):
-        if re.findall(ISSUE_TITLE, line):
+        if re.findall(ISSUE_START, line):
             new_line_number = index - 1
 
             break

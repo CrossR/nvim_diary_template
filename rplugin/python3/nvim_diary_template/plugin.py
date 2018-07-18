@@ -3,7 +3,8 @@ from functools import wraps
 
 import neovim
 
-from nvim_diary_template.helpers.issue_helpers import insert_new_comment
+from nvim_diary_template.helpers.issue_helpers import (insert_new_comment,
+                                                       insert_new_issue)
 from nvim_diary_template.helpers.markdown_helpers import sort_markdown_events
 from nvim_diary_template.utils.constants import FILE_TYPE_WILDCARD, ISO_FORMAT
 from nvim_diary_template.utils.make_issues import (remove_tag_from_comments,
@@ -108,6 +109,10 @@ class DiaryTemplatePlugin(object):
     @neovim.command('DiarySortCalendar')
     def sort_calendar(self):
         sort_markdown_events(self._nvim)
+
+    @neovim.command('DiaryIssue')
+    def insert_issue(self):
+        insert_new_issue(self._nvim)
 
     @neovim.command('DiaryIssueComment')
     def insert_comment(self):
