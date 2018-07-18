@@ -20,12 +20,15 @@ def format_issues(issues):
         issue_title = issue['title']
         issue_comments = issue['comments']
         issue_body = issue['body']
+        issue_number = issue['number']
 
         # TODO: Similarly, make this string into a config option.
-        title_line = f"{BULLET_POINT} {EMPTY_TODO} {issue_title}"
+        issue_start = f"{BULLET_POINT} {EMPTY_TODO} Issue {{{issue_number}}}:"
+        title_line = f"{PADDING}{BULLET_POINT} Title: {issue_title}"
 
         formatted_comments = format_issue_comments(issue_body, issue_comments)
 
+        issue_lines.append(issue_start)
         issue_lines.append(title_line)
         issue_lines.extend(formatted_comments)
 
