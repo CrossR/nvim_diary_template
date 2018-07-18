@@ -72,15 +72,19 @@ def parse_buffer_issues(issue_lines):
 
     formatted_issues = []
     issue_number = -1
+    comment_number = -1
 
     for line in issue_lines:
         is_issue_start = re.findall(ISSUE_START, line)
         is_issue_title = re.findall(ISSUE_TITLE, line)
         is_comment_start = re.findall(ISSUE_COMMENT, line)
 
+        # If its the start of a new issue, add a new object.
+        # Reset the comment number.
         if is_issue_start:
             github_issue_number = int(re.findall(r"\d+", line)[0])
             issue_number += 1
+            comment_number = -1
 
             formatted_issues.append({
                 'number': github_issue_number,
@@ -91,6 +95,8 @@ def parse_buffer_issues(issue_lines):
 
             continue
 
+        # If its the issue title, then add that to the empty object along with
+        # the tags.
         if is_issue_title:
             issue_title = re.sub(ISSUE_TITLE, '', line).strip()
             issue_metadata = re.findall(ISSUE_METADATA, line)
@@ -105,6 +111,7 @@ def parse_buffer_issues(issue_lines):
 
             continue
 
+        # If this is a comment, start to add it to the existing object.
         if is_comment_start:
             comment_number = int(re.findall(r"\d+", line)[0])
             comment_metadata = re.findall(ISSUE_METADATA, line)
@@ -122,10 +129,13 @@ def parse_buffer_issues(issue_lines):
 
             continue
 
-        stripped_line = line[PADDING_SIZE * 2:]
-        current_issue = formatted_issues[issue_number]['all_comments']
-        current_comment = current_issue[comment_number]['comment_lines']
-        current_comment.append(stripped_line)
+        # Finally, if there is an issue and comment ongoing, we can add to the
+        # current comment.
+        if issue_number != -1 and comment_number != -1:
+            stripped_line = line[PADDING_SIZE * 2:]
+            current_issue = formatted_issues[issue_number]['all_comments']
+            current_comment = current_issue[comment_number]['comment_lines']
+            current_comment.append(stripped_line)
 
     return formatted_issues
 

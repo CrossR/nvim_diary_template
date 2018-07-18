@@ -20,13 +20,15 @@ def convert_issues(github_service, issue_list):
 
     formatted_issues = []
 
+    # For every issue, grab the associated comments and combine. We treat the
+    # issue body as the 0th comment, which is why it is added to the comments
+    # item.
     for issue in issue_list:
         comments = github_service.get_comments_for_issue(issue['number'])
         formatted_issues.append({
             'number': issue['number'],
             'title': issue['title'],
-            'body': issue['body'],
-            'comments': comments,
+            'all_comments': [issue['body']] + comments,
         })
 
     return formatted_issues
@@ -40,6 +42,7 @@ def insert_new_comment(nvim):
     number.
     """
 
+    # Grab the indexes needed to find the issue we are in.
     current_line = nvim.current.window.cursor[0]
     current_buffer = get_buffer_contents(nvim)
     issues_header_index = get_section_line(current_buffer, ISSUE_HEADING)
@@ -65,20 +68,23 @@ def insert_new_comment(nvim):
             break
 
     # If we didn't change the new line number, we must be in the last comment.
-    # Instead, just place above the next heading.
+    # Instead, just place above the next section heading.
     if new_line_number == 0:
         new_line_number = schedule_header_index
 
     relevant_buffer = current_buffer[issues_header_index:new_line_number]
     comment_number = 99
 
-    # Search back to find the latest comment number.
+    # Search back to find the latest comment number, so we can increment it.
     for line in reversed(relevant_buffer):
         if re.findall(ISSUE_COMMENT, line):
             comment_number = int(re.findall(r"\d+", line)[0])
 
             break
 
+    # Add a new issue comment line, and set the line.
+    # TODO: Set the cursor position here.
     header_line = f"{PADDING}{BULLET_POINT} Comment {{{comment_number + 1}}}: +new"
     new_comment = ['', header_line]
+
     set_line_content(nvim, new_comment, line_index=new_line_number)
