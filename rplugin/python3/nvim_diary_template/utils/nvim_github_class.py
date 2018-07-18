@@ -128,10 +128,11 @@ class SimpleNvimGithub():
             self.service.get_repo(self.repo_name) \
                         .create_issue(issue_title, body=issue_body)
 
-    def upload_comments(self, issues, tag):
-        """upload_comments
+    @staticmethod
+    def filter_comments(issues, tag):
+        """filter_comments
 
-        Upload comments with the specific tag to GitHub.
+        Filter comments for uploading, by a specific tag.
         """
 
         comments_to_upload = []
@@ -141,8 +142,19 @@ class SimpleNvimGithub():
                 if tag in comment['comment_tags']:
                     comments_to_upload.append({
                         'issue_number': issue['number'],
+                        'comment_number': comment['comment_number'],
                         'comment': '\r\n'.join(comment['comment_lines'])
                     })
+
+        return comments_to_upload
+
+    def upload_comments(self, issues, tag):
+        """upload_comments
+
+        Upload comments with the specific tag to GitHub.
+        """
+
+        comments_to_upload = self.filter_comments(issues, tag)
 
         for comment in comments_to_upload:
             issue_number = comment['issue_number']
@@ -151,3 +163,33 @@ class SimpleNvimGithub():
             self.service.get_repo(self.repo_name) \
                         .get_issue(issue_number) \
                         .create_comment(comment_body)
+
+    def update_comments(self, issues, tag):
+        """update_comments
+
+        Update existing comments with the specific tag to GitHub.
+        """
+
+        comments_to_upload = self.filter_comments(issues, tag)
+
+        for comment in comments_to_upload:
+            issue_number = comment['issue_number']
+            comment_number = comment['comment_number']
+            comment_body = comment['comment']
+
+
+            # Comment 0 is actually the issue body, not a comment.
+            if comment_number == 0:
+                self.service \
+                    .get_repo(self.repo_name) \
+                    .get_issue(issue_number) \
+                    .edit(body=comment_body)
+
+                continue
+
+            github_comment = self.service \
+                                    .get_repo(self.repo_name) \
+                                    .get_issue(issue_number) \
+                                    .get_comments()[comment_number - 1]
+
+            github_comment.edit(comment_body)
