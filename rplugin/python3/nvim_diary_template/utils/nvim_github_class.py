@@ -110,6 +110,24 @@ class SimpleNvimGithub():
             comment_bodies.append(comment.body)
 
         return comment_bodies
+
+    def upload_new_issues(self, issues):
+        """upload_new_issues
+
+        Upload new issues to GitHub.
+        """
+
+        new_issues = [
+            issue for issue in issues if 'new' in issue['metadata']
+        ]
+
+        for issue in new_issues:
+            issue_title = issue['title']
+            issue_body = issue['all_comments'][0]
+
+            self.service.get_repo(self.repo_name) \
+                        .create_issue(issue_title, body=issue_body)
+
     def upload_new_comments(self, issues):
         """upload_new_comments
 
