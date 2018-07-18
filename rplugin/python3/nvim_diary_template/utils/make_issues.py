@@ -28,6 +28,14 @@ def format_issues(issues):
         issue_start = f"{BULLET_POINT} {EMPTY_TODO} Issue {{{issue_number}}}:"
         title_line = f"{PADDING}{BULLET_POINT} Title: {issue_title}"
 
+        try:
+            tags = issue['metadata']
+
+            for tag in tags:
+                issue_start += f" +{tag}"
+        except KeyError:
+            continue
+
         formatted_comments = format_issue_comments(issue_comments)
 
         issue_lines.append(issue_start)
@@ -51,16 +59,23 @@ def format_issue_comments(comments):
 
     for comment_num, comment in enumerate(comments):
 
+        tags = []
+
         # If we've passed over a dict, for example after parsing the file, we
         # need to access the comments differently, and not apply a new line.
         if isinstance(comment, dict):
             split_comments = comment['comment_lines']
+            tags = comment['comment_tags']
             add_new_line = False
         else:
             split_comments = comment.splitlines()
 
-        # TODO: Pass over metadata for this header line. Mainly date/time.
+        # TODO: Pass over metadata for this header line for the non-dict.
         header_line = f"{PADDING}{BULLET_POINT} Comment {{{comment_num}}}:"
+
+        for tag in tags:
+            header_line += f" +{tag}"
+
         formatted_comments.append(header_line)
 
         for line in split_comments:
