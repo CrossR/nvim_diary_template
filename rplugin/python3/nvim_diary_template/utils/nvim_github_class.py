@@ -110,3 +110,32 @@ class SimpleNvimGithub():
             comment_bodies.append(comment.body)
 
         return comment_bodies
+    def upload_new_comments(self, issues):
+        """upload_new_comments
+
+        Upload new comments to GitHub.
+        """
+
+        with open("E:\\before.json", 'w') as json_test:
+            json.dump(issues, json_test)
+
+        new_comments = []
+
+        for issue in issues:
+            for comment in issue['all_comments']:
+                if 'new' in comment['comment_tags']:
+                    new_comments.append({
+                        'issue_number': issue['number'],
+                        'comment': '\r\n'.join(comment['comment_lines'])
+                    })
+
+        with open("E:\\after.json", 'w') as json_test:
+            json.dump(new_comments, json_test)
+
+        for comment in new_comments:
+            issue_number = comment['issue_number']
+            comment_body = comment['comment']
+
+            self.service.get_repo(self.repo_name) \
+                        .get_issue(issue_number) \
+                        .create_comment(comment_body)

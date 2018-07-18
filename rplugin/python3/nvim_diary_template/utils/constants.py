@@ -29,7 +29,8 @@ TODO_IS_CHECKED = r"\[X\]"
 TODO_NOT_CHECKED = r"\[[ .oO]\]"
 
 # TODO: Update both of these with metadata checks.
-ISSUE_TITLE = r"^- \[[ X]\] "
+ISSUE_START = r"^- \[[ X]\] Issue \{[0-9]+\}:"
+ISSUE_TITLE = r"- Title: "
 ISSUE_COMMENT = r"- Comment \{[0-9]+\}:"
 ISSUE_METADATA = r"\+[a-zA-Z0-9]+"
 
