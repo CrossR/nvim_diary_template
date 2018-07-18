@@ -59,8 +59,7 @@ def insert_new_issue(nvim):
 
             break
 
-    # Add new issue lines, and set them.
-    # TODO: Set the cursor position here.
+    # Add new issue lines, and set them, and move the cursor to the end.
     new_line_number = schedule_header_index
 
     issue_start = f"{BULLET_POINT} {EMPTY_TODO} Issue {{{issue_number + 1}}}: +new"
@@ -68,6 +67,9 @@ def insert_new_issue(nvim):
     new_comment = ['', issue_start, title_line, '']
 
     set_line_content(nvim, new_comment, line_index=new_line_number)
+
+    new_cursor_pos = (new_line_number + 2, len(title_line) - 1)
+    nvim.current.window.cursor = new_cursor_pos
 
 
 def insert_new_comment(nvim):
@@ -118,9 +120,13 @@ def insert_new_comment(nvim):
 
             break
 
-    # Add a new issue comment line, and set the line.
-    # TODO: Set the cursor position here.
+    # Add a new issue comment line, and set the line, before moving the cursor
+    # there.
     header_line = f"{PADDING}{BULLET_POINT} Comment {{{comment_number + 1}}}: +new"
-    new_comment = ['', header_line]
+    indent_line = f"{PADDING * 2}"
+    new_comment = ['', header_line, indent_line]
 
     set_line_content(nvim, new_comment, line_index=new_line_number)
+
+    new_cursor_pos = (new_line_number + 2, len(indent_line) - 1)
+    nvim.current.window.cursor = new_cursor_pos
