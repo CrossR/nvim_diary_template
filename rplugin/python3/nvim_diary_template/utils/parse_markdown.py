@@ -76,11 +76,15 @@ def parse_buffer_issues(issue_lines):
         is_issue_title = re.findall(ISSUE_TITLE, line)
         is_comment_start = re.findall(ISSUE_COMMENT, line)
 
-        # TODO: This will need to get metadata.
         if is_issue_title:
             issue_title = re.sub(ISSUE_TITLE, '', line)
             issue_metadata = re.findall(ISSUE_METADATA, line)
             issue_number += 1
+
+            # Strip the leading '+' from the tags.
+            issue_metadata = [
+                tag[1:] for tag in issue_metadata
+            ]
 
             formatted_issues.append({
                 'title': issue_title,
@@ -90,10 +94,14 @@ def parse_buffer_issues(issue_lines):
 
             continue
 
-        # TODO: This will need to get metadata.
         if is_comment_start:
             comment_number = int(re.findall(r"\d+", line)[0])
             comment_metadata = re.findall(ISSUE_METADATA, line)
+
+            # Strip the leading '+' from the tags.
+            comment_metadata = [
+                tag[1:] for tag in comment_metadata
+            ]
 
             formatted_issues[issue_number]['all_comments'].append({
                 'comment_number': comment_number,
