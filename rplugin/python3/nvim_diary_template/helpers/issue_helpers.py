@@ -9,8 +9,8 @@ from nvim_diary_template.helpers.neovim_helpers import (get_buffer_contents,
                                                         set_line_content)
 from nvim_diary_template.utils.constants import (BULLET_POINT, EMPTY_TODO,
                                                  ISSUE_COMMENT, ISSUE_HEADING,
-                                                 ISSUE_START, ISSUE_TITLE,
-                                                 PADDING, SCHEDULE_HEADING)
+                                                 ISSUE_START, PADDING,
+                                                 SCHEDULE_HEADING)
 
 
 def convert_issues(github_service, issue_list):
@@ -33,6 +33,56 @@ def convert_issues(github_service, issue_list):
         })
 
     return formatted_issues
+
+
+def insert_edit_tag(nvim):
+    """insert_edit_tag
+
+    Insert an edit tag for the current comment, so it can be uploaded.
+    """
+
+    # Grab the indexes needed to find the issue we are in.
+    current_line = nvim.current.window.cursor[0]
+    current_buffer = get_buffer_contents(nvim)
+    issues_header_index = get_section_line(current_buffer, ISSUE_HEADING)
+    schedule_header_index = get_section_line(
+        current_buffer, SCHEDULE_HEADING) - 1
+
+    inside_issues_section = (current_line >= issues_header_index and
+                             current_line <= schedule_header_index)
+
+    # If we are outside the issues section, return.
+    if not inside_issues_section:
+        return
+
+    relevant_buffer = current_buffer[issues_header_index:current_line]
+    line_index = -1
+
+    # Search the buffer backwards and find the start of the current comment, to
+    # get its line index.
+    for index in range(len(relevant_buffer) - 1, 0, -1):
+        line = relevant_buffer[index]
+        if re.findall(ISSUE_COMMENT, line):
+            line_index = index
+
+            break
+
+    # If we found no comment, return since we can't update it.
+    if line_index == -1:
+        return
+
+    # If we did find a line, we want to append +edit to the end, and set it.
+    # We need to update the line index to be relative to the full buffer.
+    comment_line = relevant_buffer[line_index]
+    comment_line += ' +edit'
+
+    insert_index = issues_header_index + line_index + 1
+
+    set_line_content(nvim,
+                     [comment_line],
+                     line_index=insert_index,
+                     line_offset=1)
+
 
 def insert_new_issue(nvim):
     """insert_new_issue

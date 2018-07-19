@@ -63,7 +63,8 @@ def set_line_content(
         line_offset=None):
     """set_line_content
 
-    Set the contents of the current line.
+    Set the contents of the given buffer lines, or the current line if no
+    index is given.
     """
     buffer_number = nvim.current.buffer.number
 

@@ -3,7 +3,8 @@ from functools import wraps
 
 import neovim
 
-from nvim_diary_template.helpers.issue_helpers import (insert_new_comment,
+from nvim_diary_template.helpers.issue_helpers import (insert_edit_tag,
+                                                       insert_new_comment,
                                                        insert_new_issue)
 from nvim_diary_template.helpers.markdown_helpers import sort_markdown_events
 from nvim_diary_template.utils.constants import FILE_TYPE_WILDCARD, ISO_FORMAT
@@ -117,6 +118,10 @@ class DiaryTemplatePlugin(object):
     @neovim.command('DiaryIssueComment')
     def insert_comment(self):
         insert_new_comment(self._nvim)
+
+    @neovim.command('DiaryIssueEdit')
+    def edit_comment(self):
+        insert_edit_tag(self._nvim)
 
     @neovim.command('DiaryUploadNewComments')
     def upload_new_comments(self):
