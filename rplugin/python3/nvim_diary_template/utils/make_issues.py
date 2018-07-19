@@ -34,7 +34,7 @@ def format_issues(issues):
             for tag in tags:
                 issue_start += f" +{tag}"
         except KeyError:
-            continue
+            pass
 
         formatted_comments = format_issue_comments(issue_comments)
 
