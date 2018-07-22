@@ -54,6 +54,11 @@ function! GetDiaryFold(lnum)
     return '0'
   endif
 
+  " If its next to a heading, it shouldn't be folded to maintain the new line.
+  if getline(a:lnum + 1) =~? l:heading
+    return '0'
+  endif
+
   " If its the start of an issue, fold to level 1.
   if l:line =~? l:issue_start
     return '>1'
@@ -73,12 +78,7 @@ function! GetDiaryFold(lnum)
 
   " If its between issues, close the current issue fold so the issues are seperate.
   if getline(a:lnum + 1) =~? l:issue_start && indent_level == 0 && foldlevel(a:lnum - 2) == 2
-    return '1'
-  endif
-
-  " If its the end of the issues section, close the issue fold.
-  if getline(a:lnum + 1) =~? l:heading && indent_level == 0 && foldlevel(a:lnum - 2) == 2
-    return '>1'
+    return '0'
   endif
 
   " If we've gotten here.... return the existing level.
