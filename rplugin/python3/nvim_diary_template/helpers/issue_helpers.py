@@ -114,11 +114,12 @@ def insert_new_issue(nvim):
 
     issue_start = f"{BULLET_POINT} {EMPTY_TODO} Issue {{{issue_number + 1}}}: +new"
     title_line = f"{PADDING}{BULLET_POINT} Title: "
-    new_comment = ['', issue_start, title_line, '']
+    comment_line = f"{PADDING}{BULLET_POINT} Comment {{0}}:"
+    new_comment = ['', issue_start, title_line, '', comment_line]
 
     set_line_content(nvim, new_comment, line_index=new_line_number)
 
-    new_cursor_pos = (new_line_number + 2, len(title_line) - 1)
+    new_cursor_pos = (new_line_number + 3, len(title_line) - 1)
     nvim.current.window.cursor = new_cursor_pos
 
 
