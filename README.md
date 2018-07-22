@@ -17,7 +17,6 @@ million and one simpler ways to achieve this.
       are progressing.
     - Issues you make online and in-diary are synced, along with all
       comments.
-    - **TODO**: Add closing issues, and more tags for projects etc, as well
-      as fold syntax to make it a bit more readable.
+    - **TODO**: Add tags for projects, as well as the associated filtering.
 - Diary outline generation:
     - Builds a diary file with metadata in and the defined headings.

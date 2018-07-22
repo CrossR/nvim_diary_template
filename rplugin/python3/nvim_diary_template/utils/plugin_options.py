@@ -1,3 +1,4 @@
+# pylint: disable=too-few-public-methods
 """plugin_options
 
 Store the plugin options for the nvim_diary_template class, as

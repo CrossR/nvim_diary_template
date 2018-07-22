@@ -73,11 +73,13 @@ def format_issue_comments(comments):
         # TODO: Pass over metadata for this header line for the non-dict.
         header_line = f"{PADDING}{BULLET_POINT} Comment {{{comment_num}}}:"
 
+        # Apply the tags if there are any.
         for tag in tags:
             header_line += f" +{tag}"
 
         formatted_comments.append(header_line)
 
+        # Format the lines of the comments.
         for line in split_comments:
             if line == '':
                 formatted_comments.append('')

@@ -11,8 +11,7 @@ from datetime import datetime
 from os import makedirs, path, remove
 
 from nvim_diary_template.utils.constants import (CACHE_EPOCH_REGEX,
-                                                 DIARY_FOLDER,
-                                                 FILE_TYPE_WILDCARD)
+                                                 DIARY_FOLDER)
 
 
 def get_file_content(file_path):
