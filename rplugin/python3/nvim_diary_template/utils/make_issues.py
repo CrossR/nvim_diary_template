@@ -112,13 +112,17 @@ def produce_issue_markdown(issue_list):
     return markdown_lines
 
 
-def remove_tag_from_comments(issues, tag):
-    """remove_tag_from_comments
+def remove_tag_from_issues(issues, tag):
+    """remove_tag_from_issues
 
-    Removes all of a tag from comments.
+    Removes all of a tag from the given issues.
     """
 
     for issue in issues:
+
+        if tag in issue['metadata']:
+            issue['metadata'].remove(tag)
+
         for comment in issue['all_comments']:
             if tag in comment['comment_tags']:
                 comment['comment_tags'].remove(tag)

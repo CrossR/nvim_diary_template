@@ -83,31 +83,29 @@ def parse_buffer_issues(issue_lines):
         # Reset the comment number.
         if is_issue_start:
             github_issue_number = int(re.findall(r"\d+", line)[0])
+            metadata = re.findall(ISSUE_METADATA, line)
             issue_number += 1
             comment_number = -1
+
+            # Strip the leading '+' from the tags.
+            metadata = [
+                tag[1:] for tag in metadata
+            ]
 
             formatted_issues.append({
                 'number': github_issue_number,
                 'title': '',
-                'metadata': [],
+                'metadata': metadata,
                 'all_comments': [],
             })
 
             continue
 
-        # If its the issue title, then add that to the empty object along with
-        # the tags.
+        # If its the issue title, then add that to the empty object.
         if is_issue_title:
             issue_title = re.sub(ISSUE_TITLE, '', line).strip()
-            issue_metadata = re.findall(ISSUE_METADATA, line)
-
-            # Strip the leading '+' from the tags.
-            issue_metadata = [
-                tag[1:] for tag in issue_metadata
-            ]
 
             formatted_issues[issue_number]['title'] = issue_title
-            formatted_issues[issue_number]['metadata'] = issue_metadata
 
             continue
 
