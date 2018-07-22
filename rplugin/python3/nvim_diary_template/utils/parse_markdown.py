@@ -19,7 +19,7 @@ from nvim_diary_template.utils.constants import (DATETIME_REGEX, EVENT_REGEX,
                                                  ISSUE_START, ISSUE_TITLE,
                                                  PADDING_SIZE,
                                                  SCHEDULE_HEADING, TIME_FORMAT,
-                                                 TIME_REGEX)
+                                                 TIME_REGEX, TODO_IS_CHECKED)
 
 
 def parse_buffer_events(events, format_string):
@@ -82,10 +82,9 @@ def parse_buffer_issues(issue_lines):
         # If its the start of a new issue, add a new object.
         # Reset the comment number.
         if is_issue_start:
-            github_issue_number = int(re.findall(r"\d+", line)[0])
-            metadata = re.findall(ISSUE_METADATA, line)
             issue_number += 1
             comment_number = -1
+            metadata = re.findall(ISSUE_METADATA, line)
 
             # Strip the leading '+' from the tags.
             metadata = [
@@ -93,9 +92,10 @@ def parse_buffer_issues(issue_lines):
             ]
 
             formatted_issues.append({
-                'number': github_issue_number,
+                'number': int(re.findall(r"\d+", line)[0]),
                 'title': '',
                 'metadata': metadata,
+                'complete': re.search(TODO_IS_CHECKED, line) != None,
                 'all_comments': [],
             })
 

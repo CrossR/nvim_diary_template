@@ -138,3 +138,14 @@ class DiaryTemplatePlugin(object):
 
         issues_without_edit_tag = remove_tag_from_issues(issues, 'edit')
         set_issues_from_issues_list(self._nvim, issues_without_edit_tag)
+
+    @neovim.command('DiaryCompleteIssues')
+    def upload_completions(self):
+        issues = parse_markdown_file_for_issues(self._nvim)
+        self._github_service.complete_issues(issues)
+
+    @neovim.command('DiaryUploadIssues')
+    def upload_all_issues(self):
+        self.upload_new_comments()
+        self.upload_edited_comments()
+        self.upload_completions()

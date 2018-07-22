@@ -226,3 +226,21 @@ class SimpleNvimGithub():
                                     .get_comments()[comment_number - 1]
 
             github_comment.edit(comment_body)
+
+    def complete_issues(self, issues):
+        """complete_issues
+
+        Sort the complete status of the issues in the current buffer.
+        We assume the buffer is always correct.
+        """
+
+        for issue in issues:
+            github_issue = self.service.get_repo(self.repo_name) \
+                                       .get_issue(issue['number'])
+
+            if issue['complete'] and github_issue.state == 'open':
+                github_issue.edit(state='closed')
+            elif not issue['complete'] and github_issue.state == 'closed':
+                github_issue.edit(state='open')
+
+        return
