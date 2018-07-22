@@ -148,6 +148,24 @@ class SimpleNvimGithub():
 
         return comments_to_upload
 
+    @staticmethod
+    def filter_issues(issues, tag):
+        """filter_issues
+
+        Filter issues for uploading, by a specific tag.
+        """
+
+        issues_to_upload = []
+
+        for issue in issues:
+            if tag in issue['metadata']:
+                issues_to_upload.append({
+                    'issue_title': issue['title'],
+                    'body': '\r\n'.join(issue['all_comments'][0]['comment_lines'])
+                })
+
+        return issues_to_upload
+
     def upload_comments(self, issues, tag):
         """upload_comments
 
@@ -163,6 +181,21 @@ class SimpleNvimGithub():
             self.service.get_repo(self.repo_name) \
                         .get_issue(issue_number) \
                         .create_comment(comment_body)
+
+    def upload_issues(self, issues, tag):
+        """upload_issues
+
+        Upload issues with the specific tag to GitHub.
+        """
+
+        issues_to_upload = self.filter_issues(issues, tag)
+
+        for issue in issues_to_upload:
+            issue_title = issue['issue_title']
+            issue_body = issue['body']
+
+            self.service.get_repo(self.repo_name) \
+                        .create_issue(title=issue_title, body=issue_body)
 
     def update_comments(self, issues, tag):
         """update_comments

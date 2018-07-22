@@ -8,7 +8,7 @@ from nvim_diary_template.helpers.issue_helpers import (insert_edit_tag,
                                                        insert_new_issue)
 from nvim_diary_template.helpers.markdown_helpers import sort_markdown_events
 from nvim_diary_template.utils.constants import FILE_TYPE_WILDCARD, ISO_FORMAT
-from nvim_diary_template.utils.make_issues import (remove_tag_from_comments,
+from nvim_diary_template.utils.make_issues import (remove_tag_from_issues,
                                                    set_issues_from_issues_list)
 from nvim_diary_template.utils.make_markdown_file import make_todays_diary
 from nvim_diary_template.utils.make_schedule import \
@@ -123,17 +123,18 @@ class DiaryTemplatePlugin(object):
     def edit_comment(self):
         insert_edit_tag(self._nvim)
 
-    @neovim.command('DiaryUploadNewComments')
+    @neovim.command('DiaryUploadNew')
     def upload_new_comments(self):
         issues = parse_markdown_file_for_issues(self._nvim)
+        self._github_service.upload_issues(issues, 'new')
         self._github_service.upload_comments(issues, 'new')
-        issues_without_new_tag = remove_tag_from_comments(issues, 'new')
+        issues_without_new_tag = remove_tag_from_issues(issues, 'new')
         set_issues_from_issues_list(self._nvim, issues_without_new_tag)
 
-    @neovim.command('DiaryUploadCommentEdits')
+    @neovim.command('DiaryUploadEdits')
     def upload_edited_comments(self):
         issues = parse_markdown_file_for_issues(self._nvim)
         self._github_service.update_comments(issues, 'edit')
 
-        issues_without_edit_tag = remove_tag_from_comments(issues, 'edit')
+        issues_without_edit_tag = remove_tag_from_issues(issues, 'edit')
         set_issues_from_issues_list(self._nvim, issues_without_edit_tag)
