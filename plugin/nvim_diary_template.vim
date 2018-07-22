@@ -9,9 +9,10 @@ augroup nvim_diary_template_keybinds
     autocmd FileType vimwiki nnoremap <buffer> <leader>wie :DiaryIssueEdit<CR>
     autocmd FileType vimwiki nnoremap <buffer> <leader>wic :DiaryIssueComment<CR>
     autocmd FileType vimwiki nnoremap <buffer> <leader>wii :DiaryIssue<CR>
+    autocmd FileType vimwiki setlocal foldtext=DiaryFoldText()
+    autocmd FileType vimwiki setlocal foldmethod=expr
+    autocmd FileType vimwiki setlocal foldexpr=GetDiaryFold(v:lnum)
 augroup END
-
-setlocal foldtext=DiaryFoldText()
 
 function! DiaryFoldText()
 
@@ -38,4 +39,52 @@ function! DiaryFoldText()
   else
     return l:start_line
 
+endfunction
+
+function! GetDiaryFold(lnum)
+  let l:line = getline(a:lnum)
+  let l:indent_level = IndentLevel(a:lnum)
+
+  let l:issue_start = '^- \[[ X]\] Issue {\d}:'
+  let l:comment_start = '^    - Comment {\d}:'
+  let l:heading = '^# '
+
+  " If its a heading, it shouldn't be folded.
+  if l:line =~? l:heading
+    return '0'
+  endif
+
+  " If its the start of an issue, fold to level 1.
+  if l:line =~? l:issue_start
+    return '1'
+  endif
+
+  " If its the start of a comment, fold to level 2.
+  " This means it will be folded into the issue fold.
+  if l:line =~? l:comment_start
+    return '2'
+  endif
+
+  " If we are between two comments, we should set the fold level to 1 to
+  " close the previous comment fold.
+  if getline(a:lnum + 1) =~? l:comment_start && indent_level == 0 && foldlevel(a:lnum - 1) != 1
+    return '1'
+  endif
+
+  " If its between issues, close the current issue fold so the issues are seperate.
+  if getline(a:lnum + 1) =~? l:issue_start && indent_level == 0 && foldlevel(a:lnum - 2) == 2
+    return '>1'
+  endif
+
+  " If its the end of the issues section, close the issue fold.
+  if getline(a:lnum + 1) =~? l:heading && indent_level == 0 && foldlevel(a:lnum - 2) == 2
+    return '>1'
+  endif
+
+  " If we've gotten here.... return the existing level.
+  return '='
+endfunction
+
+function! IndentLevel(lnum)
+    return indent(a:lnum) / &shiftwidth
 endfunction
