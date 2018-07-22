@@ -6,6 +6,6 @@ python:
 cache: pip
 
 install:
-  - pip install -r ci_requirements.txt
+  - pip install -r ci/ci_requirements.txt
 
 script: ci/ci_test.sh

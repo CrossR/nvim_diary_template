@@ -3,13 +3,21 @@ from functools import wraps
 
 import neovim
 
+from nvim_diary_template.helpers.issue_helpers import (insert_edit_tag,
+                                                       insert_new_comment,
+                                                       insert_new_issue)
 from nvim_diary_template.helpers.markdown_helpers import sort_markdown_events
 from nvim_diary_template.utils.constants import FILE_TYPE_WILDCARD, ISO_FORMAT
+from nvim_diary_template.utils.make_issues import (remove_tag_from_issues,
+                                                   set_issues_from_issues_list)
 from nvim_diary_template.utils.make_markdown_file import make_todays_diary
-from nvim_diary_template.utils.make_schedule import set_schedule_from_events_list
+from nvim_diary_template.utils.make_schedule import \
+    set_schedule_from_events_list
+from nvim_diary_template.utils.nvim_github_class import SimpleNvimGithub
 from nvim_diary_template.utils.nvim_google_cal_class import SimpleNvimGoogleCal
 from nvim_diary_template.utils.parse_markdown import (combine_events,
                                                       parse_markdown_file_for_events,
+                                                      parse_markdown_file_for_issues,
                                                       remove_events_not_from_today)
 from nvim_diary_template.utils.plugin_options import PluginOptions
 
@@ -37,6 +45,7 @@ class DiaryTemplatePlugin(object):
         self._nvim = nvim
         self._options = None
         self._gcal_service = None
+        self._github_service = None
 
     @neovim.autocmd('BufEnter', pattern=FILE_TYPE_WILDCARD, sync=True)
     def event_buf_enter(self):
@@ -46,8 +55,9 @@ class DiaryTemplatePlugin(object):
                 self._nvim,
                 self._options
             )
+            self._github_service = SimpleNvimGithub(self._nvim, self._options)
 
-    @neovim.command('MakeDiary')
+    @neovim.command('DiaryMake')
     # @if_active
     def make_diary(self):
 
@@ -58,14 +68,16 @@ class DiaryTemplatePlugin(object):
                 self._nvim,
                 self._options
             )
+            self._github_service = SimpleNvimGithub(self._nvim, self._options)
 
         make_todays_diary(
             self._nvim,
             self._options,
-            self._gcal_service
+            self._gcal_service,
+            self._github_service
         )
 
-    @neovim.command('UploadCalendar')
+    @neovim.command('DiaryUploadCalendar')
     def upload_to_calendar(self):
         markdown_events = parse_markdown_file_for_events(
             self._nvim,
@@ -75,7 +87,7 @@ class DiaryTemplatePlugin(object):
         self._gcal_service.upload_to_calendar(markdown_events)
         remove_events_not_from_today(self._nvim)
 
-    @neovim.command('GrabCalendar')
+    @neovim.command('DiaryGrabCalendar')
     def grab_from_calendar(self):
         markdown_events = parse_markdown_file_for_events(
             self._nvim,
@@ -90,11 +102,50 @@ class DiaryTemplatePlugin(object):
         set_schedule_from_events_list(self._nvim, combined_events, False)
         self.sort_calendar()
 
-    @neovim.command('UpdateCalendar')
+    @neovim.command('DiaryUpdateCalendar')
     def update_calendar(self):
         self.upload_to_calendar()
         self.grab_from_calendar()
 
-    @neovim.command('SortCalendar')
+    @neovim.command('DiarySortCalendar')
     def sort_calendar(self):
         sort_markdown_events(self._nvim)
+
+    @neovim.command('DiaryIssue')
+    def insert_issue(self):
+        insert_new_issue(self._nvim)
+
+    @neovim.command('DiaryIssueComment')
+    def insert_comment(self):
+        insert_new_comment(self._nvim)
+
+    @neovim.command('DiaryIssueEdit')
+    def edit_comment(self):
+        insert_edit_tag(self._nvim)
+
+    @neovim.command('DiaryUploadNew')
+    def upload_new_comments(self):
+        issues = parse_markdown_file_for_issues(self._nvim)
+        self._github_service.upload_issues(issues, 'new')
+        self._github_service.upload_comments(issues, 'new')
+        issues_without_new_tag = remove_tag_from_issues(issues, 'new')
+        set_issues_from_issues_list(self._nvim, issues_without_new_tag)
+
+    @neovim.command('DiaryUploadEdits')
+    def upload_edited_comments(self):
+        issues = parse_markdown_file_for_issues(self._nvim)
+        self._github_service.update_comments(issues, 'edit')
+
+        issues_without_edit_tag = remove_tag_from_issues(issues, 'edit')
+        set_issues_from_issues_list(self._nvim, issues_without_edit_tag)
+
+    @neovim.command('DiaryCompleteIssues')
+    def upload_completions(self):
+        issues = parse_markdown_file_for_issues(self._nvim)
+        self._github_service.complete_issues(issues)
+
+    @neovim.command('DiaryUploadIssues')
+    def upload_all_issues(self):
+        self.upload_new_comments()
+        self.upload_edited_comments()
+        self.upload_completions()

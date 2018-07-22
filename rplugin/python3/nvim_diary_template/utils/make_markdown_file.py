@@ -6,12 +6,13 @@ they don't exist.
 
 from datetime import date
 
+from nvim_diary_template.helpers.issue_helpers import convert_issues
 from nvim_diary_template.helpers.neovim_helpers import set_buffer_contents
+from nvim_diary_template.utils.make_issues import produce_issue_markdown
 from nvim_diary_template.utils.make_schedule import produce_schedule_markdown
-from nvim_diary_template.utils.make_todos import get_past_todos
 
 
-def make_todays_diary(nvim, options, gcal_service):
+def make_todays_diary(nvim, options, gcal_service, github_service):
     """make_todays_diary
 
     Make the actual diary markdown file.
@@ -32,9 +33,10 @@ def make_todays_diary(nvim, options, gcal_service):
         full_markdown.append(f"# {heading}")
         full_markdown.append("")
 
-    # Bring over old ToDos.
-    rolled_over_todos = get_past_todos(options)
-    full_markdown.extend(rolled_over_todos)
+    # Add in issues section
+    issues = convert_issues(github_service, github_service.issues)
+    issue_markdown = produce_issue_markdown(issues)
+    full_markdown.extend(issue_markdown)
 
     # Add in Todays Calendar Entries
     todays_events = gcal_service.todays_events

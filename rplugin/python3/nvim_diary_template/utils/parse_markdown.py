@@ -4,7 +4,6 @@ Functions for the parsing of the document markdown.
 """
 
 import re
-
 from datetime import date
 
 from dateutil import parser
@@ -15,8 +14,12 @@ from nvim_diary_template.helpers.neovim_helpers import (get_buffer_contents,
                                                         get_section_line,
                                                         set_line_content)
 from nvim_diary_template.utils.constants import (DATETIME_REGEX, EVENT_REGEX,
-                                                 ISO_FORMAT, SCHEDULE_HEADING,
-                                                 TIME_FORMAT, TIME_REGEX)
+                                                 ISO_FORMAT, ISSUE_COMMENT,
+                                                 ISSUE_HEADING, ISSUE_METADATA,
+                                                 ISSUE_START, ISSUE_TITLE,
+                                                 PADDING_SIZE,
+                                                 SCHEDULE_HEADING, TIME_FORMAT,
+                                                 TIME_REGEX, TODO_IS_CHECKED)
 
 
 def parse_buffer_events(events, format_string):
@@ -60,6 +63,81 @@ def parse_buffer_events(events, format_string):
     return formatted_events
 
 
+def parse_buffer_issues(issue_lines):
+    """parse_buffer_issues
+
+    Given a list of issue markdown lines, parse the issue lines and create
+    issue objects.
+    """
+
+    formatted_issues = []
+    issue_number = -1
+    comment_number = -1
+
+    for line in issue_lines:
+        is_issue_start = re.findall(ISSUE_START, line)
+        is_issue_title = re.findall(ISSUE_TITLE, line)
+        is_comment_start = re.findall(ISSUE_COMMENT, line)
+
+        # If its the start of a new issue, add a new object.
+        # Reset the comment number.
+        if is_issue_start:
+            issue_number += 1
+            comment_number = -1
+            metadata = re.findall(ISSUE_METADATA, line)
+
+            # Strip the leading '+' from the tags.
+            metadata = [
+                tag[1:] for tag in metadata
+            ]
+
+            formatted_issues.append({
+                'number': int(re.findall(r"\d+", line)[0]),
+                'title': '',
+                'metadata': metadata,
+                'complete': re.search(TODO_IS_CHECKED, line) != None,
+                'all_comments': [],
+            })
+
+            continue
+
+        # If its the issue title, then add that to the empty object.
+        if is_issue_title:
+            issue_title = re.sub(ISSUE_TITLE, '', line).strip()
+
+            formatted_issues[issue_number]['title'] = issue_title
+
+            continue
+
+        # If this is a comment, start to add it to the existing object.
+        if is_comment_start:
+            comment_number = int(re.findall(r"\d+", line)[0])
+            comment_metadata = re.findall(ISSUE_METADATA, line)
+
+            # Strip the leading '+' from the tags.
+            comment_metadata = [
+                tag[1:] for tag in comment_metadata
+            ]
+
+            formatted_issues[issue_number]['all_comments'].append({
+                'comment_number': comment_number,
+                'comment_tags': comment_metadata,
+                'comment_lines': [],
+            })
+
+            continue
+
+        # Finally, if there is an issue and comment ongoing, we can add to the
+        # current comment.
+        if issue_number != -1 and comment_number != -1:
+            stripped_line = line[PADDING_SIZE * 2:]
+            current_issue = formatted_issues[issue_number]['all_comments']
+            current_comment = current_issue[comment_number]['comment_lines']
+            current_comment.append(stripped_line)
+
+    return formatted_issues
+
+
 def remove_events_not_from_today(nvim):
     """remove_events_not_from_today
 
@@ -98,6 +176,29 @@ def parse_markdown_file_for_events(nvim, format_string):
     formatted_events = parse_buffer_events(events, format_string)
 
     return formatted_events
+
+
+def parse_markdown_file_for_issues(nvim):
+    """parse_markdown_file_for_issues
+
+    Gets the contents of the current NeoVim buffer,
+    and parses the issues section into issues.
+    """
+
+    current_buffer = get_buffer_contents(nvim)
+
+    # Get the start of each section, to grab the lines between. We plus one to
+    # the issues header, to skip the empty line there. We remove two from the
+    # events header to remove both the Events header itself, as well as the
+    # empty line at the end of the issues section.
+    buffer_issues_index = get_section_line(current_buffer, ISSUE_HEADING) + 1
+    buffer_events_index = get_section_line(
+        current_buffer, SCHEDULE_HEADING) - 2
+
+    issues = current_buffer[buffer_issues_index:buffer_events_index]
+    formatted_issues = parse_buffer_issues(issues)
+
+    return formatted_issues
 
 
 def combine_events(markdown_events,

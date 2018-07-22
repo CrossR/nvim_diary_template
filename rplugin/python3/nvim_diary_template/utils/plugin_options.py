@@ -1,3 +1,4 @@
+# pylint: disable=too-few-public-methods
 """plugin_options
 
 Store the plugin options for the nvim_diary_template class, as
@@ -18,17 +19,19 @@ class PluginOptions:
     value exists in the users' config.
     """
 
+    #TODO: Hook up both `use_X`.
     _defaults = {
         'active': True,
         'notes_path': os.path.join(str(Path.home()), "vimwiki"),
         'config_path': os.path.join(str(Path.home()), "vimwiki", "config"),
-        'daily_headings': ['Notes', 'Issues'],
+        'daily_headings': ['Notes'],
         'use_google_calendar': True,
         'calendar_filter_list': [],
         'add_to_google_cal': False,
         'google_cal_name': 'primary',
         'timezone': 'Europe/London',
-        'days_to_roll_over': 7,
+        'use_github_repo': True,
+        'repo_name': '',
     }
 
     def __init__(self, nvim):

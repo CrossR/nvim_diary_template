@@ -63,7 +63,8 @@ def set_line_content(
         line_offset=None):
     """set_line_content
 
-    Set the contents of the current line.
+    Set the contents of the given buffer lines, or the current line if no
+    index is given.
     """
     buffer_number = nvim.current.buffer.number
 
@@ -88,13 +89,13 @@ def get_section_line(buffer_contents, section_line):
     Given a buffer, get the line that the schedule section starts on.
     """
 
-    buffer_events_index = -1
+    buffer_section_index = -1
 
     # Do the search in reverse since we know the schedule comes last
     for line_index, line in enumerate(reversed(buffer_contents)):
         if line == section_line:
-            buffer_events_index = line_index
+            buffer_section_index = line_index
 
-    buffer_events_index = len(buffer_contents) - buffer_events_index
+    buffer_section_index = len(buffer_contents) - buffer_section_index
 
-    return buffer_events_index
+    return buffer_section_index

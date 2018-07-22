@@ -25,7 +25,7 @@ def format_events_lines(events):
         event = event['event_name']
 
         # TODO: Similarly, make this string into a config option.
-        current_line = f"{BULLET_POINT}   {start} - {end}: {event}"
+        current_line = f"{BULLET_POINT} {start} - {end}: {event}"
 
         events_lines.append(current_line)
 
