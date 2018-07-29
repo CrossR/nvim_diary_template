@@ -7,9 +7,9 @@ import re
 from nvim_diary_template.helpers.neovim_helpers import (get_buffer_contents,
                                                         get_section_line,
                                                         set_line_content)
-from nvim_diary_template.utils.constants import (BULLET_POINT, EMPTY_TODO,
-                                                 ISSUE_COMMENT, ISSUE_HEADING,
-                                                 ISSUE_START, PADDING,
+from nvim_diary_template.utils.constants import (EMPTY_TODO, HEADING_2,
+                                                 HEADING_3, ISSUE_COMMENT,
+                                                 ISSUE_HEADING, ISSUE_START,
                                                  SCHEDULE_HEADING)
 
 
@@ -112,10 +112,17 @@ def insert_new_issue(nvim):
     # Add new issue lines, and set them, and move the cursor to the end.
     new_line_number = schedule_header_index
 
-    issue_start = f"{BULLET_POINT} {EMPTY_TODO} Issue {{{issue_number + 1}}}: +new"
-    title_line = f"{PADDING}{BULLET_POINT} Title: "
-    comment_line = f"{PADDING}{BULLET_POINT} Comment {{0}}:"
-    new_comment = ['', issue_start, title_line, '', comment_line]
+    issue_start = f"{HEADING_2} {EMPTY_TODO} Issue {{{issue_number + 1}}}: +new"
+    title_line = f"{HEADING_3} Title: "
+    comment_line = f"{HEADING_3} Comment {{0}}:"
+    new_comment = [
+        '',
+        issue_start,
+        '',
+        title_line,
+        '',
+        comment_line
+    ]
 
     set_line_content(nvim, new_comment, line_index=new_line_number)
 
@@ -173,11 +180,10 @@ def insert_new_comment(nvim):
 
     # Add a new issue comment line, and set the line, before moving the cursor
     # there.
-    header_line = f"{PADDING}{BULLET_POINT} Comment {{{comment_number + 1}}}: +new"
-    indent_line = f"{PADDING * 2}"
-    new_comment = ['', header_line, indent_line]
+    header_line = f"{HEADING_3} Comment {{{comment_number + 1}}}: +new"
+    new_comment = ['', header_line, '']
 
     set_line_content(nvim, new_comment, line_index=new_line_number)
 
-    new_cursor_pos = (new_line_number + 2, len(indent_line) - 1)
+    new_cursor_pos = (new_line_number + 2, 0)
     nvim.current.window.cursor = new_cursor_pos
