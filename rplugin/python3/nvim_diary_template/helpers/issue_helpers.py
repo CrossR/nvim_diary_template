@@ -7,10 +7,12 @@ import re
 from nvim_diary_template.helpers.neovim_helpers import (get_buffer_contents,
                                                         get_section_line,
                                                         set_line_content)
-from nvim_diary_template.utils.constants import (EMPTY_TODO, HEADING_2,
-                                                 HEADING_3, ISSUE_COMMENT,
-                                                 ISSUE_HEADING, ISSUE_START,
-                                                 SCHEDULE_HEADING)
+from nvim_diary_template.utils.constants import (EMPTY_TODO, GITHUB_TODO,
+                                                 HEADING_2, HEADING_3,
+                                                 ISSUE_COMMENT, ISSUE_HEADING,
+                                                 ISSUE_START, SCHEDULE_HEADING,
+                                                 TODO_IN_PROGRESS_REGEX,
+                                                 VIMWIKI_TODO)
 
 
 def convert_issues(github_service, issue_list):
@@ -187,3 +189,52 @@ def insert_new_comment(nvim):
 
     new_cursor_pos = (new_line_number + 2, 0)
     nvim.current.window.cursor = new_cursor_pos
+
+def check_markdown_style(line, desired_style):
+    """check_markdown_style
+
+    Given a line, check that the style is consistent with what that platform expects.
+    Ie, GitHub uses [x] which Vimwiki doesn't recognise, so swap that to [X].
+
+    desired_style should be 'vimwiki' or 'github'.
+    """
+
+    if desired_style == 'vimwiki':
+        return github_to_vimwiki_process(line)
+    elif desired_style == 'github':
+        return vimwiki_to_github_process(line)
+    else:
+        raise "Unknown style."
+
+def vimwiki_to_github_process(line):
+    """vimwiki_to_github_process
+
+    Convert VimWiki markdown to Github style.
+
+    Currently, this means swapping [X] to [x] and removing all intermidate
+    states from todo checkboxes, like [o]
+    """
+
+    # If we have some vimwiki style checked todos, replace them.
+    if re.findall(re.escape(VIMWIKI_TODO), line):
+        line = line.replace(VIMWIKI_TODO, GITHUB_TODO)
+
+    # If we have some vimwiki style in-progress todos, replace them.
+    if re.findall(TODO_IN_PROGRESS_REGEX, line):
+        line = re.sub(TODO_IN_PROGRESS_REGEX, EMPTY_TODO, line)
+
+    return line
+
+def github_to_vimwiki_process(line):
+    """github_to_vimwiki_process
+
+    Convert Github markdown to Vimwiki style.
+
+    Currently, this means swapping [x] to [X].
+    """
+
+    # If we have some Github style checked todos, replace them.
+    if re.findall(re.escape(GITHUB_TODO), line):
+        line = line.replace(GITHUB_TODO, VIMWIKI_TODO)
+
+    return line

@@ -3,11 +3,11 @@
 Functions to build and parse the issue section of the markdown.
 """
 
+from nvim_diary_template.helpers.issue_helpers import check_markdown_style
 from nvim_diary_template.helpers.neovim_helpers import (get_buffer_contents,
                                                         get_section_line)
-from nvim_diary_template.utils.constants import (BULLET_POINT, EMPTY_TODO,
-                                                 HEADING_2, HEADING_3,
-                                                 ISSUE_HEADING)
+from nvim_diary_template.utils.constants import (EMPTY_TODO, HEADING_2,
+                                                 HEADING_3, ISSUE_HEADING)
 
 
 def format_issues(issues):
@@ -87,7 +87,8 @@ def format_issue_comments(comments):
                 formatted_comments.append('')
                 continue
 
-            formatted_comments.append(line)
+            processed_line = check_markdown_style(line, 'vimwiki')
+            formatted_comments.append(processed_line)
 
         if add_new_line:
             formatted_comments.append('')
