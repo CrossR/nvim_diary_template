@@ -10,6 +10,7 @@ from os import path
 from github import Github
 
 from nvim_diary_template.helpers.file_helpers import check_cache
+from nvim_diary_template.helpers.issue_helpers import check_markdown_style
 from nvim_diary_template.utils.constants import ISSUE_CACHE_DURATION
 
 
@@ -140,10 +141,15 @@ class SimpleNvimGithub():
         for issue in issues:
             for comment in issue['all_comments']:
                 if tag in comment['comment_tags']:
+                    comment_lines = comment['comment_lines']
+                    processed_comment_lines = [
+                        check_markdown_style(line, 'github') for line in comment_lines
+                    ]
+
                     comments_to_upload.append({
                         'issue_number': issue['number'],
                         'comment_number': comment['comment_number'],
-                        'comment': '\r\n'.join(comment['comment_lines'])
+                        'comment': '\r\n'.join(processed_comment_lines)
                     })
 
         return comments_to_upload
@@ -159,9 +165,14 @@ class SimpleNvimGithub():
 
         for issue in issues:
             if tag in issue['metadata']:
+                issue_body = issue['all_comments'][0]['comment_lines']
+                processed_body = [
+                    check_markdown_style(line, 'github') for line in issue_body
+                ]
+
                 issues_to_upload.append({
                     'issue_title': issue['title'],
-                    'body': '\r\n'.join(issue['all_comments'][0]['comment_lines'])
+                    'body': '\r\n'.join(processed_body)
                 })
 
         return issues_to_upload
