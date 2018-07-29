@@ -6,7 +6,7 @@ Constants to be used throughout the whole plugin.
 from datetime import timedelta
 
 # Global plugin constants
-FILE_TYPE_WILDCARD = '*.md'
+FILE_TYPE_WILDCARD = "*/diary/*.md"
 DIARY_FOLDER = "diary"
 
 # Google Calendar Constants
