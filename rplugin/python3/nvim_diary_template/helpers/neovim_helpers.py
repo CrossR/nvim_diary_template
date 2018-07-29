@@ -10,7 +10,7 @@ def is_buffer_empty(nvim):
     Checks if the buffer is empty.
     """
 
-    return get_buffer_contents(nvim) == []
+    return get_buffer_contents(nvim) == ['']
 
 
 def get_buffer_contents(nvim):
