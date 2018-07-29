@@ -17,7 +17,6 @@ from nvim_diary_template.utils.constants import (DATETIME_REGEX, EVENT_REGEX,
                                                  ISO_FORMAT, ISSUE_COMMENT,
                                                  ISSUE_HEADING, ISSUE_METADATA,
                                                  ISSUE_START, ISSUE_TITLE,
-                                                 PADDING_SIZE,
                                                  SCHEDULE_HEADING, TIME_FORMAT,
                                                  TIME_REGEX, TODO_IS_CHECKED)
 
