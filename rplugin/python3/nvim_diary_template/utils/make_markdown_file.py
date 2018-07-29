@@ -24,7 +24,18 @@ def make_todays_diary(nvim, options, gcal_service, github_service):
 
     # If the buffer is not empty, don't continue.
     if not is_buffer_empty(nvim):
+        nvim.err_write(
+            "Buffer is not empty, can't create diary.\n"
+        )
         return
+
+    # If options is none, then everything else proably wasn't setup either.
+    if options is None:
+        nvim.err_write(
+            "Options weren't initialised, aborting.\n"
+        )
+        return
+
 
     full_markdown = []
 
@@ -39,12 +50,20 @@ def make_todays_diary(nvim, options, gcal_service, github_service):
         full_markdown.append("")
 
     # Add in issues section
-    issues = convert_issues(github_service, github_service.issues)
+    if not github_service.active:
+        issues = convert_issues(github_service)
+    else:
+        issues = []
+
     issue_markdown = produce_issue_markdown(issues)
     full_markdown.extend(issue_markdown)
 
     # Add in Todays Calendar Entries
-    todays_events = gcal_service.todays_events
+    if not gcal_service.active:
+        todays_events = gcal_service.todays_events
+    else:
+        todays_events = []
+
     schedule_markdown = produce_schedule_markdown(todays_events)
     full_markdown.extend(schedule_markdown)
 
