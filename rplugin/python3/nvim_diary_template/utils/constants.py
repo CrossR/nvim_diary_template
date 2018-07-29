@@ -29,20 +29,23 @@ TODO_IS_CHECKED = r"\[X\]"
 TODO_NOT_CHECKED = r"\[[ .oO]\]"
 
 # TODO: Update both of these with metadata checks.
-ISSUE_START = r"^- \[[ X]\] Issue \{[0-9]+\}:"
-ISSUE_TITLE = r"- Title: "
-ISSUE_COMMENT = r"- Comment \{[0-9]+\}:"
+ISSUE_START = r"^## \[[ X]\] Issue \{[0-9]+\}:"
+ISSUE_TITLE = r"^### Title: "
+ISSUE_COMMENT = r"^### Comment \{[0-9]+\}:"
 ISSUE_METADATA = r"\+[a-zA-Z0-9]+"
 
 EVENT_REGEX = r"(?<=: ).*$"
 
-HEADING_REGEX = r"# .*"
+HEADING_REGEX = r"^# .*"
 
 BULLET_POINT_REGEX = r"[ ]*?-"
 
 # Markdown Constants
 SCHEDULE_HEADING = "# Schedule"
 ISSUE_HEADING = "# Issues"
+HEADING_1 = "#"
+HEADING_2 = "##"
+HEADING_3 = "###"
 PADDING = "    "
 PADDING_SIZE = 4
 EMPTY_TODO = "[ ]"

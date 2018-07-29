@@ -6,7 +6,8 @@ Functions to build and parse the issue section of the markdown.
 from nvim_diary_template.helpers.neovim_helpers import (get_buffer_contents,
                                                         get_section_line)
 from nvim_diary_template.utils.constants import (BULLET_POINT, EMPTY_TODO,
-                                                 ISSUE_HEADING, PADDING)
+                                                 HEADING_2, HEADING_3,
+                                                 ISSUE_HEADING)
 
 
 def format_issues(issues):
@@ -25,8 +26,8 @@ def format_issues(issues):
         issue_number = issue['number']
 
         # TODO: Similarly, make this string into a config option.
-        issue_start = f"{BULLET_POINT} {EMPTY_TODO} Issue {{{issue_number}}}:"
-        title_line = f"{PADDING}{BULLET_POINT} Title: {issue_title}"
+        issue_start = f"{HEADING_2} {EMPTY_TODO} Issue {{{issue_number}}}:"
+        title_line = f"{HEADING_3} Title: {issue_title}"
 
         try:
             tags = issue['metadata']
@@ -39,6 +40,7 @@ def format_issues(issues):
         formatted_comments = format_issue_comments(issue_comments)
 
         issue_lines.append(issue_start)
+        issue_lines.append('')
         issue_lines.append(title_line)
         issue_lines.append('')
         issue_lines.extend(formatted_comments)
@@ -71,7 +73,7 @@ def format_issue_comments(comments):
             split_comments = comment.splitlines()
 
         # TODO: Pass over metadata for this header line for the non-dict.
-        header_line = f"{PADDING}{BULLET_POINT} Comment {{{comment_num}}}:"
+        header_line = f"{HEADING_3} Comment {{{comment_num}}}:"
 
         # Apply the tags if there are any.
         for tag in tags:
@@ -85,8 +87,7 @@ def format_issue_comments(comments):
                 formatted_comments.append('')
                 continue
 
-            current_line = f"{PADDING * 2}{line}"
-            formatted_comments.append(current_line)
+            formatted_comments.append(line)
 
         if add_new_line:
             formatted_comments.append('')

@@ -16,18 +16,21 @@ augroup END
 
 function! DiaryFoldText()
 
-  let l:issue_start = '^- \[[ X]\] Issue {\d}:'
-  let l:comment_start = '^    - Comment {\d}:'
+  let l:issue_start = '^## \[[ X]\] Issue {\d}:'
+  let l:comment_start = '^### Comment {\d}:'
   let l:start_line = getline(v:foldstart)
 
+  " If we are folding the top of an issue, include the title for context.
+  " If we are folding a comment, instead include the first line and
+  " TODO: Include the date/time here when added.
   if l:start_line =~? l:issue_start
-    let l:issue_topic_line = getline(v:foldstart + 1)
-    let l:issue_title_regex = '^    - Title: '
+    let l:issue_topic_line = getline(v:foldstart + 2)
+    let l:issue_title_regex = '^### Title: '
     let l:issue_topic = substitute(l:issue_topic_line, l:issue_title_regex, '', "")
 
     let l:issue_number = matchstr(l:start_line, '\d')
 
-    return "-- Issue {" . l:issue_number . "} - Title: " . l:issue_topic . "."
+    return "## Issue {" . l:issue_number . "} - Title: " . l:issue_topic . "."
   elseif l:start_line =~? l:comment_start
     let l:start_of_comment = getline(v:foldstart + 1)
     let l:padding = '        '
@@ -35,7 +38,7 @@ function! DiaryFoldText()
 
     let l:comment_number = matchstr(l:start_line, '\d')
 
-    return '    - Comment {' . l:comment_number . "}: " . l:comment_brief . "."
+    return '### Comment {' . l:comment_number . "}: " . l:comment_brief . "."
   else
     return l:start_line
 
@@ -45,16 +48,16 @@ function! GetDiaryFold(lnum)
   let l:line = getline(a:lnum)
   let l:indent_level = IndentLevel(a:lnum)
 
-  let l:issue_start = '^- \[[ X]\] Issue {\d}:'
-  let l:comment_start = '^    - Comment {\d}:'
+  let l:issue_start = '^## \[[ X]\] Issue {\d}:'
+  let l:comment_start = '^### Comment {\d}:'
   let l:heading = '^# '
 
-  " If its a heading, it shouldn't be folded.
+  " If its a top level heading, it shouldn't be folded.
   if l:line =~? l:heading
     return '0'
   endif
 
-  " If its next to a heading, it shouldn't be folded to maintain the new line.
+  " If its next to a top level heading, it shouldn't be folded to maintain the new line.
   if getline(a:lnum + 1) =~? l:heading
     return '0'
   endif
