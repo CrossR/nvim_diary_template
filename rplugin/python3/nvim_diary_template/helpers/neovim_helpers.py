@@ -4,6 +4,15 @@ Simple helpers to help interfacing with NeoVim.
 """
 
 
+def is_buffer_empty(nvim):
+    """is_buffer_empty
+
+    Checks if the buffer is empty.
+    """
+
+    return get_buffer_contents(nvim) == []
+
+
 def get_buffer_contents(nvim):
     """get_buffer_contents
 

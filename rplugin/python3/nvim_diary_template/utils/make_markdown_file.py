@@ -7,7 +7,8 @@ they don't exist.
 from datetime import date
 
 from nvim_diary_template.helpers.issue_helpers import convert_issues
-from nvim_diary_template.helpers.neovim_helpers import set_buffer_contents
+from nvim_diary_template.helpers.neovim_helpers import (is_buffer_empty,
+                                                        set_buffer_contents)
 from nvim_diary_template.utils.make_issues import produce_issue_markdown
 from nvim_diary_template.utils.make_schedule import produce_schedule_markdown
 
@@ -20,6 +21,10 @@ def make_todays_diary(nvim, options, gcal_service, github_service):
         * Open the file if it already exists.
         * If not, put the default template in and save.
     """
+
+    # If the buffer is not empty, don't continue.
+    if not is_buffer_empty(nvim):
+        return
 
     full_markdown = []
 
