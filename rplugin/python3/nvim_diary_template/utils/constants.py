@@ -24,9 +24,12 @@ DATETIME_REGEX = r"[0-9]{1,2}\/[0-9]{1,2}\/[0-9]{4} [0-9]{1,2}:[0-9]{1,2}"
 TIME_REGEX = r"[0-9]{1,2}:[0-9]{1,2}"
 
 TODO_REGEX = r"(?<=\[[ .oOX]\]: ).*$"
-TODO_ONGOING_REGEX = r"(?<=    ).*$"
 TODO_IS_CHECKED = r"\[X\]"
 TODO_NOT_CHECKED = r"\[[ .oO]\]"
+
+TODO_IN_PROGRESS_REGEX = r"\[[.oO]\]"
+GITHUB_TODO = "[x]"
+VIMWIKI_TODO = "[X]"
 
 # TODO: Update both of these with metadata checks.
 ISSUE_START = r"^## \[[ X]\] Issue \{[0-9]+\}:"
