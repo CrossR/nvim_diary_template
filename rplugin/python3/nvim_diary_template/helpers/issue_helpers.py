@@ -15,7 +15,7 @@ from nvim_diary_template.utils.constants import (EMPTY_TODO, GITHUB_TODO,
                                                  VIMWIKI_TODO)
 
 
-def convert_issues(github_service, issue_list):
+def convert_issues(github_service):
     """convert_issues
 
     Given a basic list of issues, grab the associated comments for printing.
@@ -26,7 +26,7 @@ def convert_issues(github_service, issue_list):
     # For every issue, grab the associated comments and combine. We treat the
     # issue body as the 0th comment, which is why it is added to the comments
     # item.
-    for issue in issue_list:
+    for issue in github_service.issues:
         comments = github_service.get_comments_for_issue(issue['number'])
         formatted_issues.append({
             'number': issue['number'],

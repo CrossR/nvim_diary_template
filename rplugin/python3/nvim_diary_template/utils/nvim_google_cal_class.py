@@ -28,10 +28,13 @@ class SimpleNvimGoogleCal():
 
     def __init__(self, nvim, options):
         self.nvim = nvim
-        self.config_path = options.config_path
         self.options = options
 
         self.service = self.setup_google_calendar_api()
+
+        if self.service_is_not_ready():
+            return
+
         self.all_calendars = check_cache(
             self.config_path,
             "calendars",
@@ -48,6 +51,14 @@ class SimpleNvimGoogleCal():
             EVENT_CACHE_DURATION,
             self.get_events_for_today
         )
+
+    @property
+    def config_path(self):
+        return self.options.config_path
+
+    @property
+    def active(self):
+        return self.service_is_not_ready()
 
     @property
     def todays_events(self):
@@ -89,6 +100,9 @@ class SimpleNvimGoogleCal():
         Check if the Google API service is ready.
         """
         if self.service is None:
+            self.nvim.err_write(
+                "Google service not ready...\n"
+            )
             return True
 
         return False
@@ -162,6 +176,9 @@ class SimpleNvimGoogleCal():
         Given a set of events that are missing from Google calendar, will upload
         them to the calendar that is specified in the users options.
         """
+
+        if self.service_is_not_ready():
+            return
 
         todays_events = convert_events(self.todays_events, ISO_FORMAT)
 

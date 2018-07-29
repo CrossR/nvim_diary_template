@@ -28,12 +28,19 @@ class SimpleNvimGithub():
 
         self.service = self.setup_github_api()
 
+        if self.service_not_valid():
+            return
+
         self.issues = check_cache(
             self.config_path,
             'open_issues',
             ISSUE_CACHE_DURATION,
             self.get_all_open_issues
         )
+
+    @property
+    def active(self):
+        return self.service_not_valid()
 
     def setup_github_api(self):
         """setup_github_api

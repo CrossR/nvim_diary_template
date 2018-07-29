@@ -51,25 +51,14 @@ class DiaryTemplatePlugin(object):
     def event_buf_enter(self):
         if self._options is None:
             self._options = PluginOptions(self._nvim)
-            self._gcal_service = SimpleNvimGoogleCal(
-                self._nvim,
-                self._options
-            )
+            self._gcal_service = SimpleNvimGoogleCal(self._nvim, self._options)
             self._github_service = SimpleNvimGithub(self._nvim, self._options)
+            self._nvim.out_write('Finished setting up options.\n')
+        self.make_diary()
 
     @neovim.command('DiaryMake')
     # @if_active
     def make_diary(self):
-
-        # TODO: Remove this, since it shouldn't be needed due to the autocmds.
-        if self._options is None:
-            self._options = PluginOptions(self._nvim)
-            self._gcal_service = SimpleNvimGoogleCal(
-                self._nvim,
-                self._options
-            )
-            self._github_service = SimpleNvimGithub(self._nvim, self._options)
-
         make_todays_diary(
             self._nvim,
             self._options,
@@ -124,7 +113,7 @@ class DiaryTemplatePlugin(object):
         insert_edit_tag(self._nvim)
 
     @neovim.command('DiaryUploadNew')
-    def upload_new_comments(self):
+    def upload_new_issues(self):
         issues = parse_markdown_file_for_issues(self._nvim)
         self._github_service.upload_issues(issues, 'new')
         self._github_service.upload_comments(issues, 'new')
@@ -132,20 +121,20 @@ class DiaryTemplatePlugin(object):
         set_issues_from_issues_list(self._nvim, issues_without_new_tag)
 
     @neovim.command('DiaryUploadEdits')
-    def upload_edited_comments(self):
+    def upload_edited_issues(self):
         issues = parse_markdown_file_for_issues(self._nvim)
         self._github_service.update_comments(issues, 'edit')
 
         issues_without_edit_tag = remove_tag_from_issues(issues, 'edit')
         set_issues_from_issues_list(self._nvim, issues_without_edit_tag)
 
-    @neovim.command('DiaryCompleteIssues')
-    def upload_completions(self):
+    @neovim.command('DiaryUploadCompletion')
+    def upload_issue_completions(self):
         issues = parse_markdown_file_for_issues(self._nvim)
         self._github_service.complete_issues(issues)
 
     @neovim.command('DiaryUploadIssues')
     def upload_all_issues(self):
-        self.upload_new_comments()
-        self.upload_edited_comments()
-        self.upload_completions()
+        self.upload_new_issues()
+        self.upload_edited_issues()
+        self.upload_issue_completions()
