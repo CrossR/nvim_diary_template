@@ -4,6 +4,8 @@ Simple helpers to deal with Github issues.
 """
 import re
 
+from dateutil import tz
+
 from nvim_diary_template.helpers.neovim_helpers import (get_buffer_contents,
                                                         get_section_line,
                                                         set_line_content)
@@ -238,3 +240,14 @@ def github_to_vimwiki_process(line):
         line = line.replace(GITHUB_TODO, VIMWIKI_TODO)
 
     return line
+
+def convert_utc_timezone(datetime, target):
+    """convert_utc_timezone
+
+    Converts the UTC timezone Object into the correct timezone string.
+    The target should be a timezone string.
+    """
+
+    utc_time = datetime.replace(tzinfo=tz.tzutc())
+
+    return utc_time.astimezone(tz.gettz(target)).strftime("%Y-%m-%d %H:%M")
