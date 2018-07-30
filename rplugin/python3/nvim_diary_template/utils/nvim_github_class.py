@@ -41,6 +41,10 @@ class SimpleNvimGithub():
 
     @property
     def active(self):
+        """active
+
+        Is the Github service active?
+        """
         return self.service_not_valid()
 
     def setup_github_api(self):
