@@ -24,10 +24,17 @@ def format_issues(issues):
         issue_title = issue['title']
         issue_comments = issue['all_comments']
         issue_number = issue['number']
+        issue_labels = issue['labels']
 
         # TODO: Similarly, make this string into a config option.
-        issue_start = f"{HEADING_2} {EMPTY_TODO} Issue {{{issue_number}}}:"
+        issue_start = f"{HEADING_2} {EMPTY_TODO} Issue {{{issue_number}}}: "
         title_line = f"{HEADING_3} Title: {issue_title}"
+
+        # Apply the labels, before stripping to remove extra whitespace
+        for label in issue_labels:
+            issue_start += f"+label:{label} "
+
+        issue_start = issue_start.strip()
 
         try:
             tags = issue['metadata']
