@@ -53,17 +53,17 @@ class DiaryTemplatePlugin(object):
             self._options = PluginOptions(self._nvim)
             self._gcal_service = SimpleNvimGoogleCal(self._nvim, self._options)
             self._github_service = SimpleNvimGithub(self._nvim, self._options)
-            self._nvim.out_write('Finished setting up options.\n')
-        self.make_diary()
+        self.make_diary(called_from_autocommand=True)
 
     @neovim.command('DiaryMake')
     # @if_active
-    def make_diary(self):
+    def make_diary(self, called_from_autocommand=False):
         make_todays_diary(
             self._nvim,
             self._options,
             self._gcal_service,
-            self._github_service
+            self._github_service,
+            auto_command=called_from_autocommand
         )
 
     @neovim.command('DiaryUploadCalendar')

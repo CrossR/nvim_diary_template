@@ -13,7 +13,11 @@ from nvim_diary_template.utils.make_issues import produce_issue_markdown
 from nvim_diary_template.utils.make_schedule import produce_schedule_markdown
 
 
-def make_todays_diary(nvim, options, gcal_service, github_service):
+def make_todays_diary(nvim,
+                      options,
+                      gcal_service,
+                      github_service,
+                      auto_command=False):
     """make_todays_diary
 
     Make the actual diary markdown file.
@@ -23,7 +27,7 @@ def make_todays_diary(nvim, options, gcal_service, github_service):
     """
 
     # If the buffer is not empty, don't continue.
-    if not is_buffer_empty(nvim):
+    if not is_buffer_empty(nvim) and auto_command:
         nvim.err_write(
             "Buffer is not empty, can't create diary.\n"
         )
@@ -35,7 +39,6 @@ def make_todays_diary(nvim, options, gcal_service, github_service):
             "Options weren't initialised, aborting.\n"
         )
         return
-
 
     full_markdown = []
 
