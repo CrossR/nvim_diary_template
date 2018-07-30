@@ -55,7 +55,7 @@ def make_todays_diary(nvim,
         full_markdown.append("")
 
     # Add in issues section
-    if not github_service.active:
+    if not github_service or not github_service.active:
         issues = convert_issues(github_service)
     else:
         issues = []
@@ -64,7 +64,7 @@ def make_todays_diary(nvim,
     full_markdown.extend(issue_markdown)
 
     # Add in Todays Calendar Entries
-    if not gcal_service.active:
+    if not gcal_service or not gcal_service.active:
         todays_events = gcal_service.todays_events
     else:
         todays_events = []
