@@ -111,6 +111,7 @@ def parse_buffer_issues(issue_lines):
         # If this is a comment, start to add it to the existing object.
         if is_comment_start:
             comment_number = int(re.findall(r"\d+", line)[0])
+            comment_date = re.match(ISSUE_COMMENT, line).group(1)
             comment_metadata = re.findall(ISSUE_METADATA, line)
 
             # Strip the leading '+' from the tags.
@@ -121,6 +122,7 @@ def parse_buffer_issues(issue_lines):
             formatted_issues[issue_number]['all_comments'].append({
                 'comment_number': comment_number,
                 'comment_tags': comment_metadata,
+                'updated_at': comment_date,
                 'comment_lines': [],
             })
 

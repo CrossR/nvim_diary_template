@@ -8,6 +8,7 @@ import json
 from os import path
 
 from github import Github
+from dateutil.tz import gettz
 
 from nvim_diary_template.helpers.file_helpers import check_cache
 from nvim_diary_template.helpers.issue_helpers import check_markdown_style
@@ -93,13 +94,15 @@ class SimpleNvimGithub():
         issues = self.service.get_repo(self.repo_name).get_issues(state='open')
 
         issue_list = []
+        local_timezone = gettz(self.options.timezone)
 
         for issue in issues:
             issue_list.append({
                 'number': issue.number,
                 'title': issue.title,
                 'body': issue.body,
-                'updated_at': issue.updated_at.strftime("%Y-%m-%d %H:%M"),
+                'updated_at': issue.updated_at.astimezone(local_timezone)\
+                                              .strftime("%Y-%m-%d %H:%M"),
                 'labels': [label.name for label in issue.labels],
             })
 
@@ -116,19 +119,22 @@ class SimpleNvimGithub():
 
         new_line = ['']
         comment_dicts = []
+        local_timezone = gettz(self.options.timezone)
 
         # Add the issue body first
         comment_dicts.append({
             'comment_lines': issue.body.splitlines() + new_line,
             'comment_tags': [],
-            'updated_at': issue.updated_at.strftime("%Y-%m-%d %H:%M"),
+            'updated_at': issue.updated_at.astimezone(local_timezone)\
+                                          .strftime("%Y-%m-%d %H:%M"),
         })
 
         for comment in comments:
             comment_dicts.append({
                 'comment_lines': comment.body.splitlines() + new_line,
                 'comment_tags': [],
-                'updated_at': comment.updated_at.strftime("%Y-%m-%d %H:%M"),
+                'updated_at': comment.updated_at.astimezone(local_timezone)\
+                                                .strftime("%Y-%m-%d %H:%M"),
             })
 
         return comment_dicts
