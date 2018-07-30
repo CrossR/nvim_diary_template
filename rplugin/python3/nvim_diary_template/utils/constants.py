@@ -36,7 +36,7 @@ ISSUE_START = r"^## \[[ X]\] Issue \{[0-9]+\}:"
 ISSUE_TITLE = r"^### Title: "
 ISSUE_COMMENT = r"^### Comment \{[0-9]+\} - ([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}):"
 ISSUE_METADATA = r"\+[a-zA-Z0-9]+"
-
+ISSUE_LABELS = r"\+label:[a-zA-Z0-9]+"
 
 EVENT_REGEX = r"(?<=: ).*$"
 
