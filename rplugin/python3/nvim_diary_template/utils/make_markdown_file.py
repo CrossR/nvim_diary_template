@@ -26,11 +26,13 @@ def make_todays_diary(nvim,
         * If not, put the default template in and save.
     """
 
-    # If the buffer is not empty, don't continue.
-    if not is_buffer_empty(nvim) and auto_command:
-        nvim.err_write(
-            "Buffer is not empty, can't create diary.\n"
-        )
+    # If the buffer is not empty, don't continue. Issue an error if manually
+    # called, don't issue an error for an autocommand.
+    if not is_buffer_empty(nvim):
+        if not auto_command:
+            nvim.err_write(
+                "Buffer is not empty, can't create diary.\n"
+            )
         return
 
     # If options is none, then everything else proably wasn't setup either.
