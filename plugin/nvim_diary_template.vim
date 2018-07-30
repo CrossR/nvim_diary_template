@@ -1,7 +1,7 @@
 " Initalise some options
 
 let g:nvim_diary_template#active = get(g:, 'nvim_diary_template#active', v:true)
-let g:nvim_diary_template#notes_path = get(g:, 'nvim_diary_template#notes_path', '') 
+let g:nvim_diary_template#notes_path = get(g:, 'nvim_diary_template#notes_path', '')
 let g:nvim_diary_template#config_path = get(g:, 'nvim_diary_template#config_path', g:nvim_diary_template#notes_path . '/config')
 
 augroup nvim_diary_template_keybinds
@@ -17,7 +17,7 @@ augroup END
 function! DiaryFoldText()
 
   let l:issue_start = '^## \[[ X]\] Issue {\d}:'
-  let l:comment_start = '^### Comment {\d}:'
+  let l:comment_start = '^### Comment {\d} - '
   let l:start_line = getline(v:foldstart)
 
   " If we are folding the top of an issue, include the title for context.
@@ -49,7 +49,7 @@ function! GetDiaryFold(lnum)
   let l:indent_level = IndentLevel(a:lnum)
 
   let l:issue_start = '^## \[[ X]\] Issue {\d}:'
-  let l:comment_start = '^### Comment {\d}:'
+  let l:comment_start = '^### Comment {\d} - '
   let l:heading = '^# '
 
   " If its a top level heading, it shouldn't be folded.
