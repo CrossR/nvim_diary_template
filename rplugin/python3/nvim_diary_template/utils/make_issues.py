@@ -65,12 +65,9 @@ def format_issue_comments(comments):
 
         # If we've passed over a dict, for example after parsing the file, we
         # need to access the comments differently, and not apply a new line.
-        if isinstance(comment, dict):
-            split_comments = comment['comment_lines']
-            tags = comment['comment_tags']
-            add_new_line = False
-        else:
-            split_comments = comment.splitlines()
+        split_comments = comment['comment_lines']
+        tags = comment['comment_tags']
+        add_new_line = False
 
         # TODO: Pass over metadata for this header line for the non-dict.
         header_line = f"{HEADING_3} Comment {{{comment_num}}}:"

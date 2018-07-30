@@ -98,7 +98,9 @@ class SimpleNvimGithub():
             issue_list.append({
                 'number': issue.number,
                 'title': issue.title,
-                'body': issue.body
+                'body': issue.body,
+                'updated_at': issue.updated_at.strftime("%Y-%m-%d %H:%M"),
+                'labels': [label.name for label in issue.labels],
             })
 
         return issue_list
@@ -112,12 +114,24 @@ class SimpleNvimGithub():
         issue = self.service.get_repo(self.repo_name).get_issue(issue_number)
         comments = issue.get_comments()
 
-        comment_bodies = []
+        new_line = ['']
+        comment_dicts = []
+
+        # Add the issue body first
+        comment_dicts.append({
+            'comment_lines': issue.body.splitlines() + new_line,
+            'comment_tags': [],
+            'updated_at': issue.updated_at.strftime("%Y-%m-%d %H:%M"),
+        })
 
         for comment in comments:
-            comment_bodies.append(comment.body)
+            comment_dicts.append({
+                'comment_lines': comment.body.splitlines() + new_line,
+                'comment_tags': [],
+                'updated_at': comment.updated_at.strftime("%Y-%m-%d %H:%M"),
+            })
 
-        return comment_bodies
+        return comment_dicts
 
     def upload_new_issues(self, issues):
         """upload_new_issues
