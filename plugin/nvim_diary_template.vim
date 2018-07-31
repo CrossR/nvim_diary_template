@@ -17,6 +17,7 @@ augroup END
 let s:issue_start = '^## \[[ X]\] Issue {\d}:'
 let s:comment_start = '^### Comment {\d} - '
 let s:date_time_regex = '\d\{4}-\d\{2}-\d\{2} \d\{2}:\d\{2}'
+let s:label = '+label:\a\{1,}'
 
 function! DiaryFoldText()
 
@@ -29,6 +30,8 @@ function! DiaryFoldText()
     let l:issue_title_regex = '^### Title: '
     let l:issue_topic = substitute(l:issue_topic_line, l:issue_title_regex, '', "")
 
+    let l:labels = filter(map(split(l:start_line), 'matchstr(v:val, s:label)'), {idx, val -> val != ''})
+
     let l:issue_number = matchstr(l:start_line, '\d')
     let l:issue_status = matchstr(l:start_line, '\[X\]')
 
@@ -38,7 +41,19 @@ function! DiaryFoldText()
       let l:completed_status = '[X]'
     endif
 
-    return "## " . l:completed_status . " Issue {" . l:issue_number . "} - Title: " . l:issue_topic . "."
+    " Add the completion status, then the issue number, then title.
+    " Finally append each label
+    let l:issue_fold_text = "## " . l:completed_status
+    let l:issue_fold_text = l:issue_fold_text . " Issue {" . l:issue_number . "} - Title: "
+    let l:issue_fold_text = l:issue_fold_text . l:issue_topic . "."
+
+    if len(l:labels) != 0
+      for label in l:labels
+        let l:issue_fold_text = l:issue_fold_text . " " . label
+      endfor
+    endif
+
+    return l:issue_fold_text
 
   elseif l:start_line =~? s:comment_start
     let l:start_of_comment = getline(v:foldstart + 1)
