@@ -14,31 +14,41 @@ augroup nvim_diary_template_keybinds
     autocmd FileType vimwiki setlocal foldexpr=GetDiaryFold(v:lnum)
 augroup END
 
+let s:issue_start = '^## \[[ X]\] Issue {\d}:'
+let s:comment_start = '^### Comment {\d} - '
+let s:date_time_regex = '\d\{4}-\d\{2}-\d\{2} \d\{2}:\d\{2}'
+
 function! DiaryFoldText()
 
-  let l:issue_start = '^## \[[ X]\] Issue {\d}:'
-  let l:comment_start = '^### Comment {\d} - '
   let l:start_line = getline(v:foldstart)
 
   " If we are folding the top of an issue, include the title for context.
   " If we are folding a comment, instead include the first line and
-  " TODO: Include the date/time here when added.
-  if l:start_line =~? l:issue_start
+  if l:start_line =~? s:issue_start
     let l:issue_topic_line = getline(v:foldstart + 2)
     let l:issue_title_regex = '^### Title: '
     let l:issue_topic = substitute(l:issue_topic_line, l:issue_title_regex, '', "")
 
     let l:issue_number = matchstr(l:start_line, '\d')
+    let l:issue_status = matchstr(l:start_line, '\[X\]')
 
-    return "## Issue {" . l:issue_number . "} - Title: " . l:issue_topic . "."
-  elseif l:start_line =~? l:comment_start
+    let l:completed_status = '[ ]'
+
+    if l:issue_status != ""
+      let l:completed_status = '[X]'
+    endif
+
+    return "## " . l:completed_status . " Issue {" . l:issue_number . "} - Title: " . l:issue_topic . "."
+
+  elseif l:start_line =~? s:comment_start
     let l:start_of_comment = getline(v:foldstart + 1)
     let l:padding = '        '
     let l:comment_brief = substitute(l:start_of_comment, l:padding, '', "")
 
     let l:comment_number = matchstr(l:start_line, '\d')
+    let l:comment_date_time = matchstr(l:start_line, s:date_time_regex)
 
-    return '### Comment {' . l:comment_number . "}: " . l:comment_brief . "."
+    return '### Comment {' . l:comment_number . "} - " . l:comment_date_time . ": " . l:comment_brief . "."
   else
     return l:start_line
 
@@ -48,8 +58,6 @@ function! GetDiaryFold(lnum)
   let l:line = getline(a:lnum)
   let l:indent_level = IndentLevel(a:lnum)
 
-  let l:issue_start = '^## \[[ X]\] Issue {\d}:'
-  let l:comment_start = '^### Comment {\d} - '
   let l:heading = '^# '
 
   " If its a top level heading, it shouldn't be folded.
@@ -63,24 +71,24 @@ function! GetDiaryFold(lnum)
   endif
 
   " If its the start of an issue, fold to level 1.
-  if l:line =~? l:issue_start
+  if l:line =~? s:issue_start
     return '>1'
   endif
 
   " If its the start of a comment, fold to level 2.
   " This means it will be folded into the issue fold.
-  if l:line =~? l:comment_start
+  if l:line =~? s:comment_start
     return '>2'
   endif
 
   " If we are between two comments, we should set the fold level to 1 to
   " close the previous comment fold.
-  if getline(a:lnum + 1) =~? l:comment_start && indent_level == 0 && foldlevel(a:lnum - 1) != 1
+  if getline(a:lnum + 1) =~? s:comment_start && indent_level == 0 && foldlevel(a:lnum - 1) != 1
     return '1'
   endif
 
   " If its between issues, close the current issue fold so the issues are seperate.
-  if getline(a:lnum + 1) =~? l:issue_start && indent_level == 0 && foldlevel(a:lnum - 2) == 2
+  if getline(a:lnum + 1) =~? s:issue_start && indent_level == 0 && foldlevel(a:lnum - 2) == 2
     return '0'
   endif
 
