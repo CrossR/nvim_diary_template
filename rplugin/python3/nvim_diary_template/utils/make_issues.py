@@ -77,7 +77,6 @@ def format_issue_comments(comments):
         comment_edit_time = comment['updated_at']
         add_new_line = False
 
-        # TODO: Pass over metadata for this header line for the non-dict.
         header_line = f"{HEADING_3} Comment {{{comment_num}}} - {comment_edit_time}:"
 
         # Apply the tags if there are any.
