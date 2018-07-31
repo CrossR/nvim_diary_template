@@ -10,7 +10,8 @@ from os import path
 from github import Github
 
 from nvim_diary_template.helpers.file_helpers import check_cache
-from nvim_diary_template.helpers.issue_helpers import check_markdown_style
+from nvim_diary_template.helpers.issue_helpers import (check_markdown_style,
+                                                       convert_utc_timezone)
 from nvim_diary_template.utils.constants import ISSUE_CACHE_DURATION
 
 
@@ -40,6 +41,10 @@ class SimpleNvimGithub():
 
     @property
     def active(self):
+        """active
+
+        Is the Github service active?
+        """
         return self.service_not_valid()
 
     def setup_github_api(self):
@@ -98,7 +103,12 @@ class SimpleNvimGithub():
             issue_list.append({
                 'number': issue.number,
                 'title': issue.title,
-                'body': issue.body
+                'body': issue.body,
+                'updated_at': convert_utc_timezone(
+                    issue.updated_at,
+                    self.options.timezone
+                ),
+                'labels': [label.name for label in issue.labels],
             })
 
         return issue_list
@@ -112,12 +122,30 @@ class SimpleNvimGithub():
         issue = self.service.get_repo(self.repo_name).get_issue(issue_number)
         comments = issue.get_comments()
 
-        comment_bodies = []
+        new_line = ['']
+        comment_dicts = []
+
+        # Add the issue body first
+        comment_dicts.append({
+            'comment_lines': issue.body.splitlines() + new_line,
+            'comment_tags': [],
+            'updated_at': convert_utc_timezone(
+                issue.updated_at,
+                self.options.timezone
+            ),
+        })
 
         for comment in comments:
-            comment_bodies.append(comment.body)
+            comment_dicts.append({
+                'comment_lines': comment.body.splitlines() + new_line,
+                'comment_tags': [],
+                'updated_at': convert_utc_timezone(
+                    comment.updated_at,
+                    self.options.timezone
+                ),
+            })
 
-        return comment_bodies
+        return comment_dicts
 
     def upload_new_issues(self, issues):
         """upload_new_issues

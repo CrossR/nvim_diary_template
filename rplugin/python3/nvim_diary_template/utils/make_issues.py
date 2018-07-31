@@ -24,10 +24,17 @@ def format_issues(issues):
         issue_title = issue['title']
         issue_comments = issue['all_comments']
         issue_number = issue['number']
+        issue_labels = issue['labels']
 
         # TODO: Similarly, make this string into a config option.
-        issue_start = f"{HEADING_2} {EMPTY_TODO} Issue {{{issue_number}}}:"
+        issue_start = f"{HEADING_2} {EMPTY_TODO} Issue {{{issue_number}}}: "
         title_line = f"{HEADING_3} Title: {issue_title}"
+
+        # Apply the labels, before stripping to remove extra whitespace
+        for label in issue_labels:
+            issue_start += f"+label:{label} "
+
+        issue_start = issue_start.strip()
 
         try:
             tags = issue['metadata']
@@ -65,15 +72,12 @@ def format_issue_comments(comments):
 
         # If we've passed over a dict, for example after parsing the file, we
         # need to access the comments differently, and not apply a new line.
-        if isinstance(comment, dict):
-            split_comments = comment['comment_lines']
-            tags = comment['comment_tags']
-            add_new_line = False
-        else:
-            split_comments = comment.splitlines()
+        split_comments = comment['comment_lines']
+        tags = comment['comment_tags']
+        comment_edit_time = comment['updated_at']
+        add_new_line = False
 
-        # TODO: Pass over metadata for this header line for the non-dict.
-        header_line = f"{HEADING_3} Comment {{{comment_num}}}:"
+        header_line = f"{HEADING_3} Comment {{{comment_num}}} - {comment_edit_time}:"
 
         # Apply the tags if there are any.
         for tag in tags:

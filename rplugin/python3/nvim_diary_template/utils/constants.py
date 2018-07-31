@@ -23,6 +23,7 @@ ISO_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"
 DATETIME_REGEX = r"[0-9]{1,2}\/[0-9]{1,2}\/[0-9]{4} [0-9]{1,2}:[0-9]{1,2}"
 TIME_REGEX = r"[0-9]{1,2}:[0-9]{1,2}"
 
+# ToDo Existence and State Regex
 TODO_REGEX = r"(?<=\[[ .oOX]\]: ).*$"
 TODO_IS_CHECKED = r"\[X\]"
 TODO_NOT_CHECKED = r"\[[ .oO]\]"
@@ -31,11 +32,11 @@ TODO_IN_PROGRESS_REGEX = r"\[[.oO]\]"
 GITHUB_TODO = "[x]"
 VIMWIKI_TODO = "[X]"
 
-# TODO: Update both of these with metadata checks.
 ISSUE_START = r"^## \[[ X]\] Issue \{[0-9]+\}:"
 ISSUE_TITLE = r"^### Title: "
-ISSUE_COMMENT = r"^### Comment \{[0-9]+\}:"
+ISSUE_COMMENT = r"^### Comment \{[0-9]+\} - ([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}):"
 ISSUE_METADATA = r"\+[a-zA-Z0-9]+"
+ISSUE_LABELS = r"\+label:[a-zA-Z0-9]+"
 
 EVENT_REGEX = r"(?<=: ).*$"
 

@@ -15,10 +15,11 @@ from nvim_diary_template.helpers.neovim_helpers import (get_buffer_contents,
                                                         set_line_content)
 from nvim_diary_template.utils.constants import (DATETIME_REGEX, EVENT_REGEX,
                                                  ISO_FORMAT, ISSUE_COMMENT,
-                                                 ISSUE_HEADING, ISSUE_METADATA,
-                                                 ISSUE_START, ISSUE_TITLE,
-                                                 SCHEDULE_HEADING, TIME_FORMAT,
-                                                 TIME_REGEX, TODO_IS_CHECKED)
+                                                 ISSUE_HEADING, ISSUE_LABELS,
+                                                 ISSUE_METADATA, ISSUE_START,
+                                                 ISSUE_TITLE, SCHEDULE_HEADING,
+                                                 TIME_FORMAT, TIME_REGEX,
+                                                 TODO_IS_CHECKED)
 
 
 def parse_buffer_events(events, format_string):
@@ -84,10 +85,16 @@ def parse_buffer_issues(issue_lines):
             issue_number += 1
             comment_number = -1
             metadata = re.findall(ISSUE_METADATA, line)
+            labels = re.findall(ISSUE_LABELS, line)
 
-            # Strip the leading '+' from the tags.
+            # Strip the leading '+' from the metadata.
             metadata = [
-                tag[1:] for tag in metadata
+                tag[1:] for tag in metadata if not tag.startswith('+label')
+            ]
+
+            # Strip the leading '+label:' from the labels.
+            labels = [
+                label[7:] for label in labels
             ]
 
             formatted_issues.append({
@@ -96,6 +103,7 @@ def parse_buffer_issues(issue_lines):
                 'metadata': metadata,
                 'complete': re.search(TODO_IS_CHECKED, line) != None,
                 'all_comments': [],
+                'labels': labels,
             })
 
             continue
@@ -111,6 +119,7 @@ def parse_buffer_issues(issue_lines):
         # If this is a comment, start to add it to the existing object.
         if is_comment_start:
             comment_number = int(re.findall(r"\d+", line)[0])
+            comment_date = re.match(ISSUE_COMMENT, line).group(1)
             comment_metadata = re.findall(ISSUE_METADATA, line)
 
             # Strip the leading '+' from the tags.
@@ -121,6 +130,7 @@ def parse_buffer_issues(issue_lines):
             formatted_issues[issue_number]['all_comments'].append({
                 'comment_number': comment_number,
                 'comment_tags': comment_metadata,
+                'updated_at': comment_date,
                 'comment_lines': [],
             })
 

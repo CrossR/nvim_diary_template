@@ -54,10 +54,20 @@ class SimpleNvimGoogleCal():
 
     @property
     def config_path(self):
+        """config_path
+
+        Get the Users' config path.
+        """
+
         return self.options.config_path
 
     @property
     def active(self):
+        """active
+
+        Is the Gcal service active?
+        """
+
         return self.service_is_not_ready()
 
     @property
