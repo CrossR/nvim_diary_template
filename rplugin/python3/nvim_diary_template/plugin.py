@@ -58,6 +58,11 @@ class DiaryTemplatePlugin(object):
     @neovim.command('DiaryMake')
     # @if_active
     def make_diary(self, called_from_autocommand=False):
+        if self._options is None:
+            self._options = PluginOptions(self._nvim)
+            self._gcal_service = SimpleNvimGoogleCal(self._nvim, self._options)
+            self._github_service = SimpleNvimGithub(self._nvim, self._options)
+
         make_todays_diary(
             self._nvim,
             self._options,
@@ -115,8 +120,8 @@ class DiaryTemplatePlugin(object):
     @neovim.command('DiaryUploadNew')
     def upload_new_issues(self):
         issues = parse_markdown_file_for_issues(self._nvim)
-        self._github_service.upload_issues(issues, 'new')
-        self._github_service.upload_comments(issues, 'new')
+        issues = self._github_service.upload_issues(issues, 'new')
+        issues = self._github_service.upload_comments(issues, 'new')
         issues_without_new_tag = remove_tag_from_issues(issues, 'new')
         set_issues_from_issues_list(self._nvim, issues_without_new_tag)
 
