@@ -262,6 +262,10 @@ class SimpleNvimGithub():
                 .create_issue(title=issue_title, body=issue_body)
 
             issues[index]['number'] = new_issue.number
+            issues[index]['all_comments'][0]['updated_at'] = convert_utc_timezone(
+                new_issue.updated_at,
+                self.options.timezone
+            )
 
         return issues
 
@@ -307,6 +311,7 @@ class SimpleNvimGithub():
                 self.options.timezone
             )
 
+        return issues
 
     def complete_issues(self, issues):
         """complete_issues
