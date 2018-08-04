@@ -120,15 +120,17 @@ class DiaryTemplatePlugin(object):
     @neovim.command('DiaryUploadNew')
     def upload_new_issues(self):
         issues = parse_markdown_file_for_issues(self._nvim)
+
         issues = self._github_service.upload_issues(issues, 'new')
         issues = self._github_service.upload_comments(issues, 'new')
+
         issues_without_new_tag = remove_tag_from_issues(issues, 'new')
         set_issues_from_issues_list(self._nvim, issues_without_new_tag)
 
     @neovim.command('DiaryUploadEdits')
     def upload_edited_issues(self):
         issues = parse_markdown_file_for_issues(self._nvim)
-        self._github_service.update_comments(issues, 'edit')
+        issues = self._github_service.update_comments(issues, 'edit')
 
         issues_without_edit_tag = remove_tag_from_issues(issues, 'edit')
         set_issues_from_issues_list(self._nvim, issues_without_edit_tag)
