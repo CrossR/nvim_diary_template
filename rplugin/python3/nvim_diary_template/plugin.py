@@ -58,11 +58,6 @@ class DiaryTemplatePlugin(object):
     @neovim.command('DiaryMake')
     # @if_active
     def make_diary(self, called_from_autocommand=False):
-        if self._options is None:
-            self._options = PluginOptions(self._nvim)
-            self._gcal_service = SimpleNvimGoogleCal(self._nvim, self._options)
-            self._github_service = SimpleNvimGithub(self._nvim, self._options)
-
         make_todays_diary(
             self._nvim,
             self._options,
