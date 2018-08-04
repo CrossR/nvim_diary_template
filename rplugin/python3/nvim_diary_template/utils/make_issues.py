@@ -7,7 +7,8 @@ from nvim_diary_template.helpers.issue_helpers import check_markdown_style
 from nvim_diary_template.helpers.neovim_helpers import (get_buffer_contents,
                                                         get_section_line)
 from nvim_diary_template.utils.constants import (EMPTY_TODO, HEADING_2,
-                                                 HEADING_3, ISSUE_HEADING)
+                                                 HEADING_3, ISSUE_HEADING,
+                                                 VIMWIKI_TODO)
 
 
 def format_issues(issues):
@@ -25,9 +26,14 @@ def format_issues(issues):
         issue_comments = issue['all_comments']
         issue_number = issue['number']
         issue_labels = issue['labels']
+        issue_complete = issue['complete']
 
         # TODO: Similarly, make this string into a config option.
-        issue_start = f"{HEADING_2} {EMPTY_TODO} Issue {{{issue_number}}}: "
+        if issue_complete:
+            issue_start = f"{HEADING_2} {VIMWIKI_TODO} Issue {{{issue_number}}}: "
+        else:
+            issue_start = f"{HEADING_2} {EMPTY_TODO} Issue {{{issue_number}}}: "
+
         title_line = f"{HEADING_3} Title: {issue_title}"
 
         # Apply the labels, before stripping to remove extra whitespace

@@ -33,6 +33,7 @@ def convert_issues(github_service):
         formatted_issues.append({
             'number': issue['number'],
             'title': issue['title'],
+            'complete': issue['complete'],
             'labels': issue['labels'],
             'all_comments': comments,
         })

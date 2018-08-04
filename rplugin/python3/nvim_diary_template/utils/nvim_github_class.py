@@ -102,6 +102,7 @@ class SimpleNvimGithub():
         for issue in issues:
             issue_list.append({
                 'number': issue.number,
+                'complete': False,
                 'title': issue.title,
                 'body': issue.body,
                 'updated_at': convert_utc_timezone(
