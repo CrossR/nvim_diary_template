@@ -106,7 +106,8 @@ def insert_new_issue(nvim):
 
     issue_start = f"{HEADING_2} {EMPTY_TODO} Issue {{00}}: +new"
     title_line = f"{HEADING_3} Title: "
-    comment_line = f"{HEADING_3} Comment {{0}}:"
+    comment_line = f"{HEADING_3} Comment {{0}} - 0000-00-00 00:00: +new"
+
     new_comment = [
         '',
         issue_start,
@@ -172,7 +173,7 @@ def insert_new_comment(nvim):
 
     # Add a new issue comment line, and set the line, before moving the cursor
     # there.
-    header_line = f"{HEADING_3} Comment {{{comment_number + 1}}}: +new"
+    header_line = f"{HEADING_3} Comment {{{comment_number + 1}}} - 0000-00-00 00:00: +new"
     new_comment = ['', header_line, '']
 
     set_line_content(nvim, new_comment, line_index=new_line_number)
