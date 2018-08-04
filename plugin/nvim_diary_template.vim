@@ -14,8 +14,8 @@ augroup nvim_diary_template_keybinds
     autocmd FileType vimwiki setlocal foldexpr=GetDiaryFold(v:lnum)
 augroup END
 
-let s:issue_start = '^## \[[ X]\] Issue {\d}:'
-let s:comment_start = '^### Comment {\d} - '
+let s:issue_start = '^## \[[ X]\] Issue {\d\{1,}}:'
+let s:comment_start = '^### Comment {\d\{1,}} - '
 let s:date_time_regex = '\d\{4}-\d\{2}-\d\{2} \d\{2}:\d\{2}'
 let s:label = '+label:\a\{1,}'
 
