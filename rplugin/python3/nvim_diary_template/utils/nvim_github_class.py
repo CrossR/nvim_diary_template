@@ -102,6 +102,7 @@ class SimpleNvimGithub():
         for issue in issues:
             issue_list.append({
                 'number': issue.number,
+                'complete': False,
                 'title': issue.title,
                 'body': issue.body,
                 'updated_at': convert_utc_timezone(
@@ -172,9 +173,10 @@ class SimpleNvimGithub():
         """
 
         comments_to_upload = []
+        change_indexes = []
 
-        for issue in issues:
-            for comment in issue['all_comments']:
+        for issue_index, issue in enumerate(issues):
+            for comment_index, comment in enumerate(issue['all_comments']):
                 if tag in comment['comment_tags']:
                     comment_lines = comment['comment_lines']
                     processed_comment_lines = [
@@ -187,7 +189,12 @@ class SimpleNvimGithub():
                         'comment': '\r\n'.join(processed_comment_lines)
                     })
 
-        return comments_to_upload
+                    change_indexes.append({
+                        'issue': issue_index,
+                        'comment': comment_index
+                    })
+
+        return comments_to_upload, change_indexes
 
     @staticmethod
     def filter_issues(issues, tag):
@@ -197,8 +204,9 @@ class SimpleNvimGithub():
         """
 
         issues_to_upload = []
+        change_indexes = []
 
-        for issue in issues:
+        for index, issue in enumerate(issues):
             if tag in issue['metadata']:
                 issue_body = issue['all_comments'][0]['comment_lines']
                 processed_body = [
@@ -210,7 +218,9 @@ class SimpleNvimGithub():
                     'body': '\r\n'.join(processed_body)
                 })
 
-        return issues_to_upload
+                change_indexes.append(index)
+
+        return issues_to_upload, change_indexes
 
     def upload_comments(self, issues, tag):
         """upload_comments
@@ -218,15 +228,24 @@ class SimpleNvimGithub():
         Upload comments with the specific tag to GitHub.
         """
 
-        comments_to_upload = self.filter_comments(issues, tag)
+        comments_to_upload, change_indexes = self.filter_comments(issues, tag)
 
-        for comment in comments_to_upload:
+        for comment, change_index in zip(comments_to_upload, change_indexes):
             issue_number = comment['issue_number']
             comment_body = comment['comment']
 
-            self.service.get_repo(self.repo_name) \
-                        .get_issue(issue_number) \
-                        .create_comment(comment_body)
+            new_comment = self.service.get_repo(self.repo_name) \
+                .get_issue(issue_number) \
+                .create_comment(comment_body)
+
+            current_issue = issues[change_index['issue']]
+            current_comment = current_issue['all_comments'][change_index['comment']]
+            current_comment['updated_at'] = convert_utc_timezone(
+                new_comment.updated_at,
+                self.options.timezone
+            )
+
+        return issues
 
     def upload_issues(self, issues, tag):
         """upload_issues
@@ -234,14 +253,22 @@ class SimpleNvimGithub():
         Upload issues with the specific tag to GitHub.
         """
 
-        issues_to_upload = self.filter_issues(issues, tag)
+        issues_to_upload, change_indexes = self.filter_issues(issues, tag)
 
-        for issue in issues_to_upload:
+        for issue, index in zip(issues_to_upload, change_indexes):
             issue_title = issue['issue_title']
             issue_body = issue['body']
 
-            self.service.get_repo(self.repo_name) \
-                        .create_issue(title=issue_title, body=issue_body)
+            new_issue = self.service.get_repo(self.repo_name) \
+                .create_issue(title=issue_title, body=issue_body)
+
+            issues[index]['number'] = new_issue.number
+            issues[index]['all_comments'][0]['updated_at'] = convert_utc_timezone(
+                new_issue.updated_at,
+                self.options.timezone
+            )
+
+        return issues
 
     def update_comments(self, issues, tag):
         """update_comments
@@ -249,13 +276,12 @@ class SimpleNvimGithub():
         Update existing comments with the specific tag to GitHub.
         """
 
-        comments_to_upload = self.filter_comments(issues, tag)
+        comments_to_upload, change_indexes = self.filter_comments(issues, tag)
 
-        for comment in comments_to_upload:
+        for comment, change_index in zip(comments_to_upload, change_indexes):
             issue_number = comment['issue_number']
             comment_number = comment['comment_number']
             comment_body = comment['comment']
-
 
             # Comment 0 is actually the issue body, not a comment.
             if comment_number == 0:
@@ -267,11 +293,26 @@ class SimpleNvimGithub():
                 continue
 
             github_comment = self.service \
-                                    .get_repo(self.repo_name) \
-                                    .get_issue(issue_number) \
-                                    .get_comments()[comment_number - 1]
+                .get_repo(self.repo_name) \
+                .get_issue(issue_number) \
+                .get_comments()[comment_number - 1]
 
             github_comment.edit(comment_body)
+
+            # Grab the comment again, to sort the update time.
+            github_comment = self.service \
+                .get_repo(self.repo_name) \
+                .get_issue(issue_number) \
+                .get_comments()[comment_number - 1]
+
+            current_issue = issues[change_index['issue']]
+            current_comment = current_issue['all_comments'][change_index['comment']]
+            current_comment['updated_at'] = convert_utc_timezone(
+                github_comment.updated_at,
+                self.options.timezone
+            )
+
+        return issues
 
     def complete_issues(self, issues):
         """complete_issues

@@ -14,8 +14,8 @@ augroup nvim_diary_template_keybinds
     autocmd FileType vimwiki setlocal foldexpr=GetDiaryFold(v:lnum)
 augroup END
 
-let s:issue_start = '^## \[[ X]\] Issue {\d}:'
-let s:comment_start = '^### Comment {\d} - '
+let s:issue_start = '^## \[[ X]\] Issue {\d\{1,}}:'
+let s:comment_start = '^### Comment {\d\{1,}} - '
 let s:date_time_regex = '\d\{4}-\d\{2}-\d\{2} \d\{2}:\d\{2}'
 let s:label = '+label:\a\{1,}'
 
@@ -32,7 +32,7 @@ function! DiaryFoldText()
 
     let l:labels = filter(map(split(l:start_line), 'matchstr(v:val, s:label)'), {idx, val -> val != ''})
 
-    let l:issue_number = matchstr(l:start_line, '\d')
+    let l:issue_number = matchstr(l:start_line, '\d\{1,}')
     let l:issue_status = matchstr(l:start_line, '\[X\]')
 
     let l:completed_status = '[ ]'
@@ -60,7 +60,7 @@ function! DiaryFoldText()
     let l:padding = '        '
     let l:comment_brief = substitute(l:start_of_comment, l:padding, '', "")
 
-    let l:comment_number = matchstr(l:start_line, '\d')
+    let l:comment_number = matchstr(l:start_line, '\d\{1,}')
     let l:comment_date_time = matchstr(l:start_line, s:date_time_regex)
 
     return '### Comment {' . l:comment_number . "} - " . l:comment_date_time . ": " . l:comment_brief . "."

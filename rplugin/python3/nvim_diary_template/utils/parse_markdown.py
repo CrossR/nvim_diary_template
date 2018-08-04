@@ -101,9 +101,9 @@ def parse_buffer_issues(issue_lines):
                 'number': int(re.findall(r"\d+", line)[0]),
                 'title': '',
                 'metadata': metadata,
+                'labels': labels,
                 'complete': re.search(TODO_IS_CHECKED, line) != None,
                 'all_comments': [],
-                'labels': labels,
             })
 
             continue

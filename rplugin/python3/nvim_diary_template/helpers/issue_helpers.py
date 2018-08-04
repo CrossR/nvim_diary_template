@@ -33,6 +33,7 @@ def convert_issues(github_service):
         formatted_issues.append({
             'number': issue['number'],
             'title': issue['title'],
+            'complete': issue['complete'],
             'labels': issue['labels'],
             'all_comments': comments,
         })
@@ -99,27 +100,15 @@ def insert_new_issue(nvim):
 
     # Grab the indexes needed to find the issue we are in.
     current_buffer = get_buffer_contents(nvim)
-    issues_header_index = get_section_line(current_buffer, ISSUE_HEADING)
     schedule_header_index = get_section_line(
         current_buffer, SCHEDULE_HEADING) - 1
 
-    relevant_buffer = current_buffer[issues_header_index:schedule_header_index]
-
-    # Search the buffer backwards and find the start of the last issue, to
-    # get its number.
-    for index in range(len(relevant_buffer) - 1, 0, -1):
-        line = relevant_buffer[index]
-        if re.findall(ISSUE_START, line):
-            issue_number = int(re.findall(r"\d+", line)[0])
-
-            break
-
-    # Add new issue lines, and set them, and move the cursor to the end.
     new_line_number = schedule_header_index
 
-    issue_start = f"{HEADING_2} {EMPTY_TODO} Issue {{{issue_number + 1}}}: +new"
+    issue_start = f"{HEADING_2} {EMPTY_TODO} Issue {{00}}: +new"
     title_line = f"{HEADING_3} Title: "
-    comment_line = f"{HEADING_3} Comment {{0}}:"
+    comment_line = f"{HEADING_3} Comment {{0}} - 0000-00-00 00:00: +new"
+
     new_comment = [
         '',
         issue_start,
@@ -185,13 +174,14 @@ def insert_new_comment(nvim):
 
     # Add a new issue comment line, and set the line, before moving the cursor
     # there.
-    header_line = f"{HEADING_3} Comment {{{comment_number + 1}}}: +new"
+    header_line = f"{HEADING_3} Comment {{{comment_number + 1}}} - 0000-00-00 00:00: +new"
     new_comment = ['', header_line, '']
 
     set_line_content(nvim, new_comment, line_index=new_line_number)
 
     new_cursor_pos = (new_line_number + 2, 0)
     nvim.current.window.cursor = new_cursor_pos
+
 
 def check_markdown_style(line, desired_style):
     """check_markdown_style
@@ -208,6 +198,7 @@ def check_markdown_style(line, desired_style):
         return vimwiki_to_github_process(line)
     else:
         raise "Unknown style."
+
 
 def vimwiki_to_github_process(line):
     """vimwiki_to_github_process
@@ -228,6 +219,7 @@ def vimwiki_to_github_process(line):
 
     return line
 
+
 def github_to_vimwiki_process(line):
     """github_to_vimwiki_process
 
@@ -241,6 +233,7 @@ def github_to_vimwiki_process(line):
         line = line.replace(GITHUB_TODO, VIMWIKI_TODO)
 
     return line
+
 
 def convert_utc_timezone(datetime, target):
     """convert_utc_timezone
