@@ -10,7 +10,7 @@ def is_buffer_empty(nvim):
     Checks if the buffer is empty.
     """
 
-    return get_buffer_contents(nvim) == ['']
+    return get_buffer_contents(nvim) == [""]
 
 
 def get_buffer_contents(nvim):
@@ -21,12 +21,7 @@ def get_buffer_contents(nvim):
 
     buffer_number = nvim.current.buffer.number
 
-    return nvim.api.buf_get_lines(
-        buffer_number,
-        0,
-        -1,
-        True
-    )
+    return nvim.api.buf_get_lines(buffer_number, 0, -1, True)
 
 
 def set_buffer_contents(nvim, data):
@@ -36,13 +31,7 @@ def set_buffer_contents(nvim, data):
     """
     buffer_number = nvim.current.buffer.number
 
-    nvim.api.buf_set_lines(
-        buffer_number,
-        0,
-        -1,
-        True,
-        data
-    )
+    nvim.api.buf_set_lines(buffer_number, 0, -1, True, data)
 
 
 def get_line_content(nvim, line_offset=None):
@@ -57,19 +46,10 @@ def get_line_content(nvim, line_offset=None):
     if line_offset:
         cursor_line += line_offset
 
-    return nvim.api.buf_get_lines(
-        buffer_number,
-        cursor_line - 1,
-        cursor_line,
-        True
-    )[0]
+    return nvim.api.buf_get_lines(buffer_number, cursor_line - 1, cursor_line, True)[0]
 
 
-def set_line_content(
-        nvim,
-        data,
-        line_index=None,
-        line_offset=None):
+def set_line_content(nvim, data, line_index=None, line_offset=None):
     """set_line_content
 
     Set the contents of the given buffer lines, or the current line if no
@@ -84,11 +64,7 @@ def set_line_content(
         line_offset = 0
 
     nvim.api.buf_set_lines(
-        buffer_number,
-        line_index - 1,
-        line_index + line_offset - 1,
-        True,
-        data
+        buffer_number, line_index - 1, line_index + line_offset - 1, True, data
     )
 
 
@@ -108,6 +84,7 @@ def get_section_line(buffer_contents, section_line):
     buffer_section_index = len(buffer_contents) - buffer_section_index
 
     return buffer_section_index
+
 
 def buffered_info_message(nvim, message):
     """buffered_info_message

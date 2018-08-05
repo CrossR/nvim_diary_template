@@ -10,14 +10,18 @@ from os import path
 from github import Github
 
 from nvim_diary_template.helpers.file_helpers import check_cache
-from nvim_diary_template.helpers.issue_helpers import (check_markdown_style,
-                                                       convert_utc_timezone)
+from nvim_diary_template.helpers.issue_helpers import (
+    check_markdown_style,
+    convert_utc_timezone,
+)
 from nvim_diary_template.helpers.neovim_helpers import buffered_info_message
-from nvim_diary_template.utils.constants import (CALENDAR_CACHE_DURATION,
-                                                 ISSUE_CACHE_DURATION)
+from nvim_diary_template.utils.constants import (
+    CALENDAR_CACHE_DURATION,
+    ISSUE_CACHE_DURATION,
+)
 
 
-class SimpleNvimGithub():
+class SimpleNvimGithub:
     """SimpleNvimGithub
 
     A class to deal with the simple interactions with the Github API.
@@ -36,16 +40,16 @@ class SimpleNvimGithub():
 
         self.issues = check_cache(
             self.config_path,
-            'open_issues',
+            "open_issues",
             ISSUE_CACHE_DURATION,
-            self.get_all_open_issues
+            self.get_all_open_issues,
         )
 
         self.repo_labels = check_cache(
             self.config_path,
-            'repo_labels',
+            "repo_labels",
             CALENDAR_CACHE_DURATION,
-            self.get_repo_issues
+            self.get_repo_issues,
         )
 
     @property
@@ -64,10 +68,12 @@ class SimpleNvimGithub():
         """
 
         try:
-            with open(path.join(self.config_path, "github_credentials.json")) as json_file:
+            with open(
+                path.join(self.config_path, "github_credentials.json")
+            ) as json_file:
                 store = json.load(json_file)
 
-            access_token = store['access_token']
+            access_token = store["access_token"]
         except (IOError, ValueError):
             self.nvim.err_write(
                 "Credentials invalid, try re-generating or checking the path.\n"
@@ -86,7 +92,7 @@ class SimpleNvimGithub():
         if self.service is None:
             return True
 
-        if self.repo_name == '':
+        if self.repo_name == "":
             return True
 
         return False
@@ -98,13 +104,10 @@ class SimpleNvimGithub():
         """
 
         if self.service_not_valid():
-            self.nvim.err_write(
-                "Github service not currently running...\n"
-            )
+            self.nvim.err_write("Github service not currently running...\n")
             return []
 
-        repo_labels = self.service.get_repo(self.repo_name) \
-                                  .get_labels()
+        repo_labels = self.service.get_repo(self.repo_name).get_labels()
 
         return [label.name for label in repo_labels]
 
@@ -116,28 +119,26 @@ class SimpleNvimGithub():
         """
 
         if self.service_not_valid():
-            self.nvim.err_write(
-                "Github service not currently running...\n"
-            )
+            self.nvim.err_write("Github service not currently running...\n")
             return []
 
-        issues = self.service.get_repo(self.repo_name) \
-                             .get_issues(state='open')
+        issues = self.service.get_repo(self.repo_name).get_issues(state="open")
 
         issue_list = []
 
         for issue in issues:
-            issue_list.append({
-                'number': issue.number,
-                'complete': False,
-                'title': issue.title,
-                'body': issue.body,
-                'updated_at': convert_utc_timezone(
-                    issue.updated_at,
-                    self.options.timezone
-                ),
-                'labels': [label.name for label in issue.labels],
-            })
+            issue_list.append(
+                {
+                    "number": issue.number,
+                    "complete": False,
+                    "title": issue.title,
+                    "body": issue.body,
+                    "updated_at": convert_utc_timezone(
+                        issue.updated_at, self.options.timezone
+                    ),
+                    "labels": [label.name for label in issue.labels],
+                }
+            )
 
         return issue_list
 
@@ -150,28 +151,30 @@ class SimpleNvimGithub():
         issue = self.service.get_repo(self.repo_name).get_issue(issue_number)
         comments = issue.get_comments()
 
-        new_line = ['']
+        new_line = [""]
         comment_dicts = []
 
         # Add the issue body first
-        comment_dicts.append({
-            'comment_lines': issue.body.splitlines() + new_line,
-            'comment_tags': [],
-            'updated_at': convert_utc_timezone(
-                issue.updated_at,
-                self.options.timezone
-            ),
-        })
+        comment_dicts.append(
+            {
+                "comment_lines": issue.body.splitlines() + new_line,
+                "comment_tags": [],
+                "updated_at": convert_utc_timezone(
+                    issue.updated_at, self.options.timezone
+                ),
+            }
+        )
 
         for comment in comments:
-            comment_dicts.append({
-                'comment_lines': comment.body.splitlines() + new_line,
-                'comment_tags': [],
-                'updated_at': convert_utc_timezone(
-                    comment.updated_at,
-                    self.options.timezone
-                ),
-            })
+            comment_dicts.append(
+                {
+                    "comment_lines": comment.body.splitlines() + new_line,
+                    "comment_tags": [],
+                    "updated_at": convert_utc_timezone(
+                        comment.updated_at, self.options.timezone
+                    ),
+                }
+            )
 
         return comment_dicts
 
@@ -186,23 +189,24 @@ class SimpleNvimGithub():
         change_indexes = []
 
         for issue_index, issue in enumerate(issues):
-            for comment_index, comment in enumerate(issue['all_comments']):
-                if tag in comment['comment_tags']:
-                    comment_lines = comment['comment_lines']
+            for comment_index, comment in enumerate(issue["all_comments"]):
+                if tag in comment["comment_tags"]:
+                    comment_lines = comment["comment_lines"]
                     processed_comment_lines = [
-                        check_markdown_style(line, 'github') for line in comment_lines
+                        check_markdown_style(line, "github") for line in comment_lines
                     ]
 
-                    comments_to_upload.append({
-                        'issue_number': issue['number'],
-                        'comment_number': comment['comment_number'],
-                        'comment': '\r\n'.join(processed_comment_lines)
-                    })
+                    comments_to_upload.append(
+                        {
+                            "issue_number": issue["number"],
+                            "comment_number": comment["comment_number"],
+                            "comment": "\r\n".join(processed_comment_lines),
+                        }
+                    )
 
-                    change_indexes.append({
-                        'issue': issue_index,
-                        'comment': comment_index
-                    })
+                    change_indexes.append(
+                        {"issue": issue_index, "comment": comment_index}
+                    )
 
         return comments_to_upload, change_indexes
 
@@ -217,18 +221,20 @@ class SimpleNvimGithub():
         change_indexes = []
 
         for index, issue in enumerate(issues):
-            if tag in issue['metadata']:
-                issue_body = issue['all_comments'][0]['comment_lines']
+            if tag in issue["metadata"]:
+                issue_body = issue["all_comments"][0]["comment_lines"]
                 processed_body = [
-                    check_markdown_style(line, 'github') for line in issue_body
+                    check_markdown_style(line, "github") for line in issue_body
                 ]
 
-                issues_to_upload.append({
-                    'number': issue['number'],
-                    'title': issue['title'],
-                    'labels': issue['labels'],
-                    'body': '\r\n'.join(processed_body)
-                })
+                issues_to_upload.append(
+                    {
+                        "number": issue["number"],
+                        "title": issue["title"],
+                        "labels": issue["labels"],
+                        "body": "\r\n".join(processed_body),
+                    }
+                )
 
                 change_indexes.append(index)
 
@@ -243,23 +249,23 @@ class SimpleNvimGithub():
         comments_to_upload, change_indexes = self.filter_comments(issues, tag)
 
         for comment, change_index in zip(comments_to_upload, change_indexes):
-            issue_number = comment['issue_number']
-            comment_body = comment['comment']
+            issue_number = comment["issue_number"]
+            comment_body = comment["comment"]
 
-            new_comment = self.service.get_repo(self.repo_name) \
-                .get_issue(issue_number) \
+            new_comment = (
+                self.service.get_repo(self.repo_name)
+                .get_issue(issue_number)
                 .create_comment(comment_body)
+            )
 
-            current_issue = issues[change_index['issue']]
-            current_comment = current_issue['all_comments'][change_index['comment']]
-            current_comment['updated_at'] = convert_utc_timezone(
-                new_comment.updated_at,
-                self.options.timezone
+            current_issue = issues[change_index["issue"]]
+            current_comment = current_issue["all_comments"][change_index["comment"]]
+            current_comment["updated_at"] = convert_utc_timezone(
+                new_comment.updated_at, self.options.timezone
             )
 
         buffered_info_message(
-            self.nvim,
-            f"Uploaded {len(comments_to_upload)} comments to GitHub. "
+            self.nvim, f"Uploaded {len(comments_to_upload)} comments to GitHub. "
         )
 
         return issues
@@ -273,26 +279,21 @@ class SimpleNvimGithub():
         issues_to_upload, change_indexes = self.filter_issues(issues, tag)
 
         for issue, index in zip(issues_to_upload, change_indexes):
-            issue_title = issue['title']
-            issue_body = issue['body']
-            issue_labels = issue['labels']
+            issue_title = issue["title"]
+            issue_body = issue["body"]
+            issue_labels = issue["labels"]
 
-            new_issue = self.service.get_repo(self.repo_name) \
-                                    .create_issue(
-                                        title=issue_title,
-                                        body=issue_body,
-                                        labels=issue_labels
-                                    )
+            new_issue = self.service.get_repo(self.repo_name).create_issue(
+                title=issue_title, body=issue_body, labels=issue_labels
+            )
 
-            issues[index]['number'] = new_issue.number
-            issues[index]['all_comments'][0]['updated_at'] = convert_utc_timezone(
-                new_issue.updated_at,
-                self.options.timezone
+            issues[index]["number"] = new_issue.number
+            issues[index]["all_comments"][0]["updated_at"] = convert_utc_timezone(
+                new_issue.updated_at, self.options.timezone
             )
 
         buffered_info_message(
-            self.nvim,
-            f"Uploaded {len(issues_to_upload)} issues to GitHub. "
+            self.nvim, f"Uploaded {len(issues_to_upload)} issues to GitHub. "
         )
 
         return issues
@@ -306,42 +307,41 @@ class SimpleNvimGithub():
         comments_to_upload, change_indexes = self.filter_comments(issues, tag)
 
         for comment, change_index in zip(comments_to_upload, change_indexes):
-            issue_number = comment['issue_number']
-            comment_number = comment['comment_number']
-            comment_body = comment['comment']
+            issue_number = comment["issue_number"]
+            comment_number = comment["comment_number"]
+            comment_body = comment["comment"]
 
             # Comment 0 is actually the issue body, not a comment.
             if comment_number == 0:
-                self.service \
-                    .get_repo(self.repo_name) \
-                    .get_issue(issue_number) \
-                    .edit(body=comment_body)
+                self.service.get_repo(self.repo_name).get_issue(issue_number).edit(
+                    body=comment_body
+                )
 
                 continue
 
-            github_comment = self.service \
-                .get_repo(self.repo_name) \
-                .get_issue(issue_number) \
+            github_comment = (
+                self.service.get_repo(self.repo_name)
+                .get_issue(issue_number)
                 .get_comments()[comment_number - 1]
+            )
 
             github_comment.edit(comment_body)
 
             # Grab the comment again, to sort the update time.
-            github_comment = self.service \
-                .get_repo(self.repo_name) \
-                .get_issue(issue_number) \
+            github_comment = (
+                self.service.get_repo(self.repo_name)
+                .get_issue(issue_number)
                 .get_comments()[comment_number - 1]
+            )
 
-            current_issue = issues[change_index['issue']]
-            current_comment = current_issue['all_comments'][change_index['comment']]
-            current_comment['updated_at'] = convert_utc_timezone(
-                github_comment.updated_at,
-                self.options.timezone
+            current_issue = issues[change_index["issue"]]
+            current_comment = current_issue["all_comments"][change_index["comment"]]
+            current_comment["updated_at"] = convert_utc_timezone(
+                github_comment.updated_at, self.options.timezone
             )
 
         buffered_info_message(
-            self.nvim,
-            f"Updated {len(comments_to_upload)} comments on GitHub. "
+            self.nvim, f"Updated {len(comments_to_upload)} comments on GitHub. "
         )
 
         return issues
@@ -355,36 +355,25 @@ class SimpleNvimGithub():
         issues_to_upload, change_indexes = self.filter_issues(issues, tag)
 
         for issue, change_index in zip(issues_to_upload, change_indexes):
-            issue_number = issue['number']
-            issue_title = issue['title']
-            issue_body = issue['body']
-            issue_labels = issue['labels']
+            issue_number = issue["number"]
+            issue_title = issue["title"]
+            issue_body = issue["body"]
+            issue_labels = issue["labels"]
 
-            github_issue = self.service \
-                .get_repo(self.repo_name) \
-                .get_issue(issue_number)
+            github_issue = self.service.get_repo(self.repo_name).get_issue(issue_number)
 
-            github_issue.edit(
-                title=issue_title,
-                body=issue_body,
-                labels=issue_labels
-            )
+            github_issue.edit(title=issue_title, body=issue_body, labels=issue_labels)
 
             # Grab the issue again, to sort the update time.
-            github_issue = self.service \
-                .get_repo(self.repo_name) \
-                .get_issue(issue_number) \
-
+            github_issue = self.service.get_repo(self.repo_name).get_issue(issue_number)
             current_issue = issues[change_index]
-            issue_body_comment = current_issue['all_comments'][0]
-            issue_body_comment['updated_at'] = convert_utc_timezone(
-                github_issue.updated_at,
-                self.options.timezone
+            issue_body_comment = current_issue["all_comments"][0]
+            issue_body_comment["updated_at"] = convert_utc_timezone(
+                github_issue.updated_at, self.options.timezone
             )
 
         buffered_info_message(
-            self.nvim,
-            f"Updated {len(issues_to_upload)} issues on GitHub. "
+            self.nvim, f"Updated {len(issues_to_upload)} issues on GitHub. "
         )
 
         return issues
@@ -399,19 +388,20 @@ class SimpleNvimGithub():
         change_counter = 0
 
         for issue in issues:
-            github_issue = self.service.get_repo(self.repo_name) \
-                                       .get_issue(issue['number'])
+            github_issue = self.service.get_repo(self.repo_name).get_issue(
+                issue["number"]
+            )
 
-            if issue['complete'] and github_issue.state == 'open':
-                github_issue.edit(state='closed')
+            if issue["complete"] and github_issue.state == "open":
+                github_issue.edit(state="closed")
                 change_counter += 1
-            elif not issue['complete'] and github_issue.state == 'closed':
-                github_issue.edit(state='open')
+            elif not issue["complete"] and github_issue.state == "closed":
+                github_issue.edit(state="open")
                 change_counter += 1
 
         buffered_info_message(
             self.nvim,
-            f"Changed the completion status of {change_counter} issues on GitHub. "
+            f"Changed the completion status of {change_counter} issues on GitHub. ",
         )
 
         return

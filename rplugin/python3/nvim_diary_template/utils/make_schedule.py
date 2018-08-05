@@ -4,10 +4,15 @@ Functions to build and parse the schedule section of the markdown.
 """
 
 from nvim_diary_template.helpers.google_calendar_helpers import convert_events
-from nvim_diary_template.helpers.neovim_helpers import (get_buffer_contents,
-                                                        get_section_line)
-from nvim_diary_template.utils.constants import (BULLET_POINT, SCHEDULE_HEADING,
-                                                 TIME_FORMAT)
+from nvim_diary_template.helpers.neovim_helpers import (
+    get_buffer_contents,
+    get_section_line,
+)
+from nvim_diary_template.utils.constants import (
+    BULLET_POINT,
+    SCHEDULE_HEADING,
+    TIME_FORMAT,
+)
 
 
 def format_events_lines(events):
@@ -20,9 +25,9 @@ def format_events_lines(events):
 
     for event in events:
 
-        start = event['start_time']
-        end = event['end_time']
-        event = event['event_name']
+        start = event["start_time"]
+        end = event["end_time"]
+        event = event["event_name"]
 
         # TODO: Similarly, make this string into a config option.
         current_line = f"{BULLET_POINT} {start} - {end}: {event}"
@@ -66,10 +71,7 @@ def set_schedule_from_events_list(nvim, events, strict_indexing):
 
     # We want the line after, as this gives the line of the heading.
     # Then add one to the end to replace the newline, as we add one.
-    old_events_start_line = get_section_line(
-        current_buffer,
-        SCHEDULE_HEADING
-    ) + 1
+    old_events_start_line = get_section_line(current_buffer, SCHEDULE_HEADING) + 1
 
     old_events_end_line = old_events_start_line + len(events) + 1
 
@@ -78,5 +80,5 @@ def set_schedule_from_events_list(nvim, events, strict_indexing):
         old_events_start_line,
         old_events_end_line,
         strict_indexing,
-        event_lines
+        event_lines,
     )

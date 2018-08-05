@@ -6,15 +6,23 @@ import re
 
 from dateutil import tz
 
-from nvim_diary_template.helpers.neovim_helpers import (get_buffer_contents,
-                                                        get_section_line,
-                                                        set_line_content)
-from nvim_diary_template.utils.constants import (EMPTY_TODO, GITHUB_TODO,
-                                                 HEADING_2, HEADING_3,
-                                                 ISSUE_COMMENT, ISSUE_HEADING,
-                                                 ISSUE_START, SCHEDULE_HEADING,
-                                                 TODO_IN_PROGRESS_REGEX,
-                                                 VIMWIKI_TODO)
+from nvim_diary_template.helpers.neovim_helpers import (
+    get_buffer_contents,
+    get_section_line,
+    set_line_content,
+)
+from nvim_diary_template.utils.constants import (
+    EMPTY_TODO,
+    GITHUB_TODO,
+    HEADING_2,
+    HEADING_3,
+    ISSUE_COMMENT,
+    ISSUE_HEADING,
+    ISSUE_START,
+    SCHEDULE_HEADING,
+    TODO_IN_PROGRESS_REGEX,
+    VIMWIKI_TODO,
+)
 
 
 def convert_issues(github_service):
@@ -29,14 +37,16 @@ def convert_issues(github_service):
     # issue body as the 0th comment, which is why it is added to the comments
     # item.
     for issue in github_service.issues:
-        comments = github_service.get_comments_for_issue(issue['number'])
-        formatted_issues.append({
-            'number': issue['number'],
-            'title': issue['title'],
-            'complete': issue['complete'],
-            'labels': issue['labels'],
-            'all_comments': comments,
-        })
+        comments = github_service.get_comments_for_issue(issue["number"])
+        formatted_issues.append(
+            {
+                "number": issue["number"],
+                "title": issue["title"],
+                "complete": issue["complete"],
+                "labels": issue["labels"],
+                "all_comments": comments,
+            }
+        )
 
     return formatted_issues
 
@@ -51,11 +61,11 @@ def insert_edit_tag(nvim, location):
     current_line = nvim.current.window.cursor[0]
     current_buffer = get_buffer_contents(nvim)
     issues_header_index = get_section_line(current_buffer, ISSUE_HEADING)
-    schedule_header_index = get_section_line(
-        current_buffer, SCHEDULE_HEADING) - 1
+    schedule_header_index = get_section_line(current_buffer, SCHEDULE_HEADING) - 1
 
-    inside_issues_section = (current_line >= issues_header_index and
-                             current_line <= schedule_header_index)
+    inside_issues_section = (
+        current_line >= issues_header_index and current_line <= schedule_header_index
+    )
 
     # If we are outside the issues section, return.
     if not inside_issues_section:
@@ -64,9 +74,9 @@ def insert_edit_tag(nvim, location):
     relevant_buffer = current_buffer[issues_header_index:current_line]
     line_index = -1
 
-    if location == 'issue':
+    if location == "issue":
         target_line = ISSUE_START
-    elif location == 'comment':
+    elif location == "comment":
         target_line = ISSUE_COMMENT
     else:
         raise ValueError(f"{location} is not a recognised target.")
@@ -87,14 +97,11 @@ def insert_edit_tag(nvim, location):
     # If we did find a line, we want to append +edit to the end, and set it.
     # We need to update the line index to be relative to the full buffer.
     updated_line = relevant_buffer[line_index]
-    updated_line += ' +edit'
+    updated_line += " +edit"
 
     insert_index = issues_header_index + line_index + 1
 
-    set_line_content(nvim,
-                     [updated_line],
-                     line_index=insert_index,
-                     line_offset=1)
+    set_line_content(nvim, [updated_line], line_index=insert_index, line_offset=1)
 
 
 def insert_new_issue(nvim):
@@ -107,8 +114,7 @@ def insert_new_issue(nvim):
 
     # Grab the indexes needed to find the issue we are in.
     current_buffer = get_buffer_contents(nvim)
-    schedule_header_index = get_section_line(
-        current_buffer, SCHEDULE_HEADING) - 1
+    schedule_header_index = get_section_line(current_buffer, SCHEDULE_HEADING) - 1
 
     new_line_number = schedule_header_index
 
@@ -116,14 +122,7 @@ def insert_new_issue(nvim):
     title_line = f"{HEADING_3} Title: "
     comment_line = f"{HEADING_3} Comment {{0}} - 0000-00-00 00:00: +new"
 
-    new_comment = [
-        '',
-        issue_start,
-        '',
-        title_line,
-        '',
-        comment_line
-    ]
+    new_comment = ["", issue_start, "", title_line, "", comment_line]
 
     set_line_content(nvim, new_comment, line_index=new_line_number)
 
@@ -143,11 +142,11 @@ def insert_new_comment(nvim):
     current_line = nvim.current.window.cursor[0]
     current_buffer = get_buffer_contents(nvim)
     issues_header_index = get_section_line(current_buffer, ISSUE_HEADING)
-    schedule_header_index = get_section_line(
-        current_buffer, SCHEDULE_HEADING) - 1
+    schedule_header_index = get_section_line(current_buffer, SCHEDULE_HEADING) - 1
 
-    inside_issues_section = (current_line >= issues_header_index and
-                             current_line <= schedule_header_index)
+    inside_issues_section = (
+        current_line >= issues_header_index and current_line <= schedule_header_index
+    )
 
     # If we are outside the issues section, return.
     if not inside_issues_section:
@@ -181,8 +180,10 @@ def insert_new_comment(nvim):
 
     # Add a new issue comment line, and set the line, before moving the cursor
     # there.
-    header_line = f"{HEADING_3} Comment {{{comment_number + 1}}} - 0000-00-00 00:00: +new"
-    new_comment = ['', header_line, '']
+    header_line = (
+        f"{HEADING_3} Comment {{{comment_number + 1}}} - 0000-00-00 00:00: +new"
+    )
+    new_comment = ["", header_line, ""]
 
     set_line_content(nvim, new_comment, line_index=new_line_number)
 
@@ -199,9 +200,9 @@ def check_markdown_style(line, desired_style):
     desired_style should be 'vimwiki' or 'github'.
     """
 
-    if desired_style == 'vimwiki':
+    if desired_style == "vimwiki":
         return github_to_vimwiki_process(line)
-    elif desired_style == 'github':
+    elif desired_style == "github":
         return vimwiki_to_github_process(line)
     else:
         raise "Unknown style."

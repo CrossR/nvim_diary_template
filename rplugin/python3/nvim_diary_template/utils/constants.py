@@ -10,7 +10,7 @@ FILE_TYPE_WILDCARD = "*/diary/*.md"
 DIARY_FOLDER = "diary"
 
 # Google Calendar Constants
-CACHE_EPOCH_REGEX = '([0-9])+'
+CACHE_EPOCH_REGEX = "([0-9])+"
 CALENDAR_CACHE_DURATION = timedelta(days=31)
 EVENT_CACHE_DURATION = timedelta(minutes=30)
 ISSUE_CACHE_DURATION = timedelta(minutes=30)
@@ -34,7 +34,9 @@ VIMWIKI_TODO = "[X]"
 
 ISSUE_START = r"^## \[[ X]\] Issue \{[0-9]+\}:"
 ISSUE_TITLE = r"^### Title: "
-ISSUE_COMMENT = r"^### Comment \{[0-9]+\} - ([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}):"
+ISSUE_COMMENT = (
+    r"^### Comment \{[0-9]+\} - ([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}):"
+)
 ISSUE_METADATA = r"\+[a-zA-Z0-9]+"
 ISSUE_LABELS = r"\+label:[a-zA-Z0-9]+"
 
