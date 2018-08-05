@@ -109,10 +109,12 @@ def get_section_line(buffer_contents, section_line):
 
     return buffer_section_index
 
-def info_message(nvim, message):
-    """info_message
+def buffered_info_message(nvim, message):
+    """buffered_info_message
 
     A helper function to return an info message to the user.
+    This is buffered, so this will not print anything until a final
+    newline (\n) is sent.
     """
 
-    nvim.out_write(f"{message}\n")
+    nvim.out_write(f"{message}")

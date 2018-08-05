@@ -12,7 +12,7 @@ from github import Github
 from nvim_diary_template.helpers.file_helpers import check_cache
 from nvim_diary_template.helpers.issue_helpers import (check_markdown_style,
                                                        convert_utc_timezone)
-from nvim_diary_template.helpers.neovim_helpers import info_message
+from nvim_diary_template.helpers.neovim_helpers import buffered_info_message
 from nvim_diary_template.utils.constants import (CALENDAR_CACHE_DURATION,
                                                  ISSUE_CACHE_DURATION)
 
@@ -257,9 +257,9 @@ class SimpleNvimGithub():
                 self.options.timezone
             )
 
-        info_message(
+        buffered_info_message(
             self.nvim,
-            f"Uploaded {len(comments_to_upload)} comments to GitHub."
+            f"Uploaded {len(comments_to_upload)} comments to GitHub. "
         )
 
         return issues
@@ -290,9 +290,9 @@ class SimpleNvimGithub():
                 self.options.timezone
             )
 
-        info_message(
+        buffered_info_message(
             self.nvim,
-            f"Uploaded {len(issues_to_upload)} issues to GitHub."
+            f"Uploaded {len(issues_to_upload)} issues to GitHub. "
         )
 
         return issues
@@ -339,9 +339,9 @@ class SimpleNvimGithub():
                 self.options.timezone
             )
 
-        info_message(
+        buffered_info_message(
             self.nvim,
-            f"Updated {len(comments_to_upload)} comments on GitHub."
+            f"Updated {len(comments_to_upload)} comments on GitHub. "
         )
 
         return issues
@@ -382,9 +382,9 @@ class SimpleNvimGithub():
                 self.options.timezone
             )
 
-        info_message(
+        buffered_info_message(
             self.nvim,
-            f"Updated {len(issues_to_upload)} issues on GitHub."
+            f"Updated {len(issues_to_upload)} issues on GitHub. "
         )
 
         return issues
@@ -409,9 +409,9 @@ class SimpleNvimGithub():
                 github_issue.edit(state='open')
                 change_counter += 1
 
-        info_message(
+        buffered_info_message(
             self.nvim,
-            f"Changed the completion status of {change_counter} issues on GitHub."
+            f"Changed the completion status of {change_counter} issues on GitHub. "
         )
 
         return
