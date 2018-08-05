@@ -56,8 +56,8 @@ def make_todays_diary(nvim,
 
     # Add in issues section
     if (not options.use_github_repo or
-        not github_service or 
-        not github_service.active):
+            not github_service or
+            not github_service.active):
         issues = []
     else:
         issues = convert_issues(github_service)
@@ -67,8 +67,8 @@ def make_todays_diary(nvim,
 
     # Add in Todays Calendar Entries
     if (not options.use_google_calendar or
-        not gcal_service or 
-        not gcal_service.active):
+            not gcal_service or
+            not gcal_service.active):
         todays_events = []
     else:
         todays_events = gcal_service.todays_events
