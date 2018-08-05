@@ -100,17 +100,21 @@ class DiaryTemplatePlugin(object):
     def sort_calendar(self):
         sort_markdown_events(self._nvim)
 
-    @neovim.command('DiaryIssue')
+    @neovim.command('DiaryInsertIssue')
     def insert_issue(self):
         insert_new_issue(self._nvim)
 
-    @neovim.command('DiaryIssueComment')
+    @neovim.command('DiaryInsertComment')
     def insert_comment(self):
         insert_new_comment(self._nvim)
 
-    @neovim.command('DiaryIssueEdit')
+    @neovim.command('DiaryEditComment')
     def edit_comment(self):
-        insert_edit_tag(self._nvim)
+        insert_edit_tag(self._nvim, 'comment')
+
+    @neovim.command('DiaryEditIssue')
+    def edit_issue(self):
+        insert_edit_tag(self._nvim, 'issue')
 
     @neovim.command('DiaryUploadNew')
     def upload_new_issues(self):
