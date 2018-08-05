@@ -9,6 +9,7 @@ FORCE_REGEN = False
 
 warnings.filterwarnings("error")
 
+
 def generate_credentials():
     """generate_credentials
 
@@ -25,7 +26,7 @@ def generate_credentials():
     creds = None
 
     try:
-        store = file.Storage(path.join(CREDENTIALS_PATH, 'credentials.json'))
+        store = file.Storage(path.join(CREDENTIALS_PATH, "credentials.json"))
         creds = store.get()
     except UserWarning:
         print("No credentials file found, generating...")
@@ -36,11 +37,12 @@ def generate_credentials():
         return
     else:
         flow = client.flow_from_clientsecrets(
-            path.join(CREDENTIALS_PATH, "client_secret.json"),
-            SCOPES)
+            path.join(CREDENTIALS_PATH, "client_secret.json"), SCOPES
+        )
         creds = tools.run_flow(flow, store)
 
     return
+
 
 if __name__ == "__main__":
     generate_credentials()
