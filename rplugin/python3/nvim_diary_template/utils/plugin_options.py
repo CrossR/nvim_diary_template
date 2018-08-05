@@ -19,7 +19,6 @@ class PluginOptions:
     value exists in the users' config.
     """
 
-    #TODO: Hook up both `use_X`.
     _defaults = {
         'active': True,
         'notes_path': os.path.join(str(Path.home()), "vimwiki"),
