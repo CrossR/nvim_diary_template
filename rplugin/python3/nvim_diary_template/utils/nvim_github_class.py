@@ -12,7 +12,7 @@ from github import Github
 from nvim_diary_template.helpers.file_helpers import check_cache
 from nvim_diary_template.helpers.issue_helpers import (check_markdown_style,
                                                        convert_utc_timezone)
-from nvim_diary_template.utils.constants import ISSUE_CACHE_DURATION
+from nvim_diary_template.utils.constants import ISSUE_CACHE_DURATION, CALENDAR_CACHE_DURATION
 
 
 class SimpleNvimGithub():
@@ -37,6 +37,13 @@ class SimpleNvimGithub():
             'open_issues',
             ISSUE_CACHE_DURATION,
             self.get_all_open_issues
+        )
+
+        self.repo_labels = check_cache(
+            self.config_path,
+            'repo_labels',
+            CALENDAR_CACHE_DURATION,
+            self.get_repo_issues
         )
 
     @property
@@ -82,6 +89,23 @@ class SimpleNvimGithub():
 
         return False
 
+    def get_repo_issues(self):
+        """get_repo_issues
+
+        Get the labels for the current repo.
+        """
+
+        if self.service_not_valid():
+            self.nvim.err_write(
+                "Github service not currently running...\n"
+            )
+            return []
+
+        repo_labels = self.service.get_repo(self.repo_name) \
+                                  .get_labels()
+
+        return [label.name for label in repo_labels]
+
     def get_all_open_issues(self):
         """get_all_open_issues
 
@@ -95,7 +119,8 @@ class SimpleNvimGithub():
             )
             return []
 
-        issues = self.service.get_repo(self.repo_name).get_issues(state='open')
+        issues = self.service.get_repo(self.repo_name) \
+                             .get_issues(state='open')
 
         issue_list = []
 
