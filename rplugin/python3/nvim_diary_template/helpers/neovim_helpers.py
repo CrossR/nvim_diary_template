@@ -108,3 +108,11 @@ def get_section_line(buffer_contents, section_line):
     buffer_section_index = len(buffer_contents) - buffer_section_index
 
     return buffer_section_index
+
+def info_message(nvim, message):
+    """info_message
+
+    A helper function to return an info message to the user.
+    """
+
+    nvim.out_write(f"{message}\n")

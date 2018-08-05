@@ -12,7 +12,9 @@ from github import Github
 from nvim_diary_template.helpers.file_helpers import check_cache
 from nvim_diary_template.helpers.issue_helpers import (check_markdown_style,
                                                        convert_utc_timezone)
-from nvim_diary_template.utils.constants import ISSUE_CACHE_DURATION, CALENDAR_CACHE_DURATION
+from nvim_diary_template.helpers.neovim_helpers import info_message
+from nvim_diary_template.utils.constants import (CALENDAR_CACHE_DURATION,
+                                                 ISSUE_CACHE_DURATION)
 
 
 class SimpleNvimGithub():
@@ -255,6 +257,11 @@ class SimpleNvimGithub():
                 self.options.timezone
             )
 
+        info_message(
+            self.nvim,
+            f"Uploaded {len(comments_to_upload)} comments to GitHub."
+        )
+
         return issues
 
     def upload_issues(self, issues, tag):
@@ -282,6 +289,11 @@ class SimpleNvimGithub():
                 new_issue.updated_at,
                 self.options.timezone
             )
+
+        info_message(
+            self.nvim,
+            f"Uploaded {len(issues_to_upload)} issues to GitHub."
+        )
 
         return issues
 
@@ -327,6 +339,11 @@ class SimpleNvimGithub():
                 self.options.timezone
             )
 
+        info_message(
+            self.nvim,
+            f"Updated {len(comments_to_upload)} comments on GitHub."
+        )
+
         return issues
 
     def update_issues(self, issues, tag):
@@ -365,6 +382,11 @@ class SimpleNvimGithub():
                 self.options.timezone
             )
 
+        info_message(
+            self.nvim,
+            f"Updated {len(issues_to_upload)} issues on GitHub."
+        )
+
         return issues
 
     def complete_issues(self, issues):
@@ -374,13 +396,22 @@ class SimpleNvimGithub():
         We assume the buffer is always correct.
         """
 
+        change_counter = 0
+
         for issue in issues:
             github_issue = self.service.get_repo(self.repo_name) \
                                        .get_issue(issue['number'])
 
             if issue['complete'] and github_issue.state == 'open':
                 github_issue.edit(state='closed')
+                change_counter += 1
             elif not issue['complete'] and github_issue.state == 'closed':
                 github_issue.edit(state='open')
+                change_counter += 1
+
+        info_message(
+            self.nvim,
+            f"Changed the completion status of {change_counter} issues on GitHub."
+        )
 
         return
