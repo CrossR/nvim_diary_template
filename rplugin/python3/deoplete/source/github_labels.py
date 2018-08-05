@@ -7,6 +7,7 @@ from os import path
 
 from .base import Base
 
+LENGTH_OF_PATTERN = 7
 
 class Source(Base):
 
@@ -45,5 +46,10 @@ class Source(Base):
         return [{'word': f"+label:{l}"} for l in label_list]
 
     def get_complete_position(self, context):
-        match = self.__pattern.search(context['input'])
+        match_pos = context['position'][2] - LENGTH_OF_PATTERN - 1
+
+        if match_pos < 0:
+            match_pos = 0
+
+        match = self.__pattern.search(context['input'], match_pos)
         return match.start() if match is not None else -1
