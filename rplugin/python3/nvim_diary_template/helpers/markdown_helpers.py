@@ -16,7 +16,7 @@ def get_start_of_line(line):
     """
 
     first_non_space = len(line) - len(line.strip())
-    start_of_line = line[:first_non_space + 1]
+    start_of_line = line[: first_non_space + 1]
 
     return start_of_line
 
@@ -48,7 +48,7 @@ def split_line(line):
         return [line]
 
     reversed_line = line[:80][::-1]
-    space_index = reversed_line.find(' ')
+    space_index = reversed_line.find(" ")
 
     before_space_index = 80 - space_index - 1
     after_space_index = 80 - space_index
@@ -67,7 +67,7 @@ def get_line_padding(line):
     Return the indentation of the line before the bullet.
     """
 
-    return len(line) - len(line.lstrip(' '))
+    return len(line) - len(line.lstrip(" "))
 
 
 def apply_padding(line, padding):

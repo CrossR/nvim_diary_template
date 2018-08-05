@@ -10,16 +10,26 @@ from dateutil import parser
 
 from nvim_diary_template.helpers.event_helpers import format_event
 from nvim_diary_template.helpers.google_calendar_helpers import convert_events
-from nvim_diary_template.helpers.neovim_helpers import (get_buffer_contents,
-                                                        get_section_line,
-                                                        set_line_content)
-from nvim_diary_template.utils.constants import (DATETIME_REGEX, EVENT_REGEX,
-                                                 ISO_FORMAT, ISSUE_COMMENT,
-                                                 ISSUE_HEADING, ISSUE_LABELS,
-                                                 ISSUE_METADATA, ISSUE_START,
-                                                 ISSUE_TITLE, SCHEDULE_HEADING,
-                                                 TIME_FORMAT, TIME_REGEX,
-                                                 TODO_IS_CHECKED)
+from nvim_diary_template.helpers.neovim_helpers import (
+    get_buffer_contents,
+    get_section_line,
+    set_line_content,
+)
+from nvim_diary_template.utils.constants import (
+    DATETIME_REGEX,
+    EVENT_REGEX,
+    ISO_FORMAT,
+    ISSUE_COMMENT,
+    ISSUE_HEADING,
+    ISSUE_LABELS,
+    ISSUE_METADATA,
+    ISSUE_START,
+    ISSUE_TITLE,
+    SCHEDULE_HEADING,
+    TIME_FORMAT,
+    TIME_REGEX,
+    TODO_IS_CHECKED,
+)
 
 
 def parse_buffer_events(events, format_string):
@@ -31,7 +41,7 @@ def parse_buffer_events(events, format_string):
     formatted_events = []
 
     for event in events:
-        if event == '':
+        if event == "":
             continue
 
         # TODO: Regex is probably going to be a giant pain here,
@@ -40,22 +50,18 @@ def parse_buffer_events(events, format_string):
 
         if not matches_date_time:
             matches_time = re.findall(TIME_REGEX, event)
-            start_date = parser.parse(matches_time[0]) \
-                               .strftime(format_string)
-            end_date = parser.parse(matches_time[1]) \
-                             .strftime(format_string)
+            start_date = parser.parse(matches_time[0]).strftime(format_string)
+            end_date = parser.parse(matches_time[1]).strftime(format_string)
         else:
-            start_date = parser.parse(matches_date_time[0]) \
-                               .strftime(format_string)
-            end_date = parser.parse(matches_date_time[1]) \
-                             .strftime(format_string)
+            start_date = parser.parse(matches_date_time[0]).strftime(format_string)
+            end_date = parser.parse(matches_date_time[1]).strftime(format_string)
 
         event_details = re.search(EVENT_REGEX, event)[0]
 
         event_dict = {
-            'event_name': event_details,
-            'start_time': start_date,
-            'end_time': end_date
+            "event_name": event_details,
+            "start_time": start_date,
+            "end_time": end_date,
         }
 
         formatted_events.append(event_dict)
@@ -88,31 +94,29 @@ def parse_buffer_issues(issue_lines):
             labels = re.findall(ISSUE_LABELS, line)
 
             # Strip the leading '+' from the metadata.
-            metadata = [
-                tag[1:] for tag in metadata if not tag.startswith('+label')
-            ]
+            metadata = [tag[1:] for tag in metadata if not tag.startswith("+label")]
 
             # Strip the leading '+label:' from the labels.
-            labels = [
-                label[7:] for label in labels
-            ]
+            labels = [label[7:] for label in labels]
 
-            formatted_issues.append({
-                'number': int(re.findall(r"\d+", line)[0]),
-                'title': '',
-                'metadata': metadata,
-                'labels': labels,
-                'complete': re.search(TODO_IS_CHECKED, line) != None,
-                'all_comments': [],
-            })
+            formatted_issues.append(
+                {
+                    "number": int(re.findall(r"\d+", line)[0]),
+                    "title": "",
+                    "metadata": metadata,
+                    "labels": labels,
+                    "complete": re.search(TODO_IS_CHECKED, line) != None,
+                    "all_comments": [],
+                }
+            )
 
             continue
 
         # If its the issue title, then add that to the empty object.
         if is_issue_title:
-            issue_title = re.sub(ISSUE_TITLE, '', line).strip()
+            issue_title = re.sub(ISSUE_TITLE, "", line).strip()
 
-            formatted_issues[issue_number]['title'] = issue_title
+            formatted_issues[issue_number]["title"] = issue_title
 
             continue
 
@@ -123,24 +127,24 @@ def parse_buffer_issues(issue_lines):
             comment_metadata = re.findall(ISSUE_METADATA, line)
 
             # Strip the leading '+' from the tags.
-            comment_metadata = [
-                tag[1:] for tag in comment_metadata
-            ]
+            comment_metadata = [tag[1:] for tag in comment_metadata]
 
-            formatted_issues[issue_number]['all_comments'].append({
-                'comment_number': comment_number,
-                'comment_tags': comment_metadata,
-                'updated_at': comment_date,
-                'comment_lines': [],
-            })
+            formatted_issues[issue_number]["all_comments"].append(
+                {
+                    "comment_number": comment_number,
+                    "comment_tags": comment_metadata,
+                    "updated_at": comment_date,
+                    "comment_lines": [],
+                }
+            )
 
             continue
 
         # Finally, if there is an issue and comment ongoing, we can add to the
         # current comment.
         if issue_number != -1 and comment_number != -1:
-            current_issue = formatted_issues[issue_number]['all_comments']
-            current_comment = current_issue[comment_number]['comment_lines']
+            current_issue = formatted_issues[issue_number]["all_comments"]
+            current_comment = current_issue[comment_number]["comment_lines"]
             current_comment.append(line)
 
     return formatted_issues
@@ -154,13 +158,10 @@ def remove_events_not_from_today(nvim):
 
     current_events = parse_markdown_file_for_events(nvim, ISO_FORMAT)
     date_today = date.today()
-    schedule_index = get_section_line(
-        get_buffer_contents(nvim),
-        SCHEDULE_HEADING
-    ) + 1
+    schedule_index = get_section_line(get_buffer_contents(nvim), SCHEDULE_HEADING) + 1
 
     for index, event in enumerate(current_events):
-        event_date = parser.parse(event['start_time']).date()
+        event_date = parser.parse(event["start_time"]).date()
 
         if date_today == event_date:
             continue
@@ -200,8 +201,7 @@ def parse_markdown_file_for_issues(nvim):
     # events header to remove both the Events header itself, as well as the
     # empty line at the end of the issues section.
     buffer_issues_index = get_section_line(current_buffer, ISSUE_HEADING) + 1
-    buffer_events_index = get_section_line(
-        current_buffer, SCHEDULE_HEADING) - 2
+    buffer_events_index = get_section_line(current_buffer, SCHEDULE_HEADING) - 2
 
     issues = current_buffer[buffer_issues_index:buffer_events_index]
     formatted_issues = parse_buffer_issues(issues)
@@ -209,8 +209,7 @@ def parse_markdown_file_for_issues(nvim):
     return formatted_issues
 
 
-def combine_events(markdown_events,
-                   google_events):
+def combine_events(markdown_events, google_events):
     """combine_events
 
     Takes both markdown and google events and combines them into a single list,
@@ -219,20 +218,14 @@ def combine_events(markdown_events,
     The markdown is taken to be the ground truth, as there is no online copy.
     """
 
-    buffer_events = [
-        format_event(event, ISO_FORMAT) for event in markdown_events
-    ]
+    buffer_events = [format_event(event, ISO_FORMAT) for event in markdown_events]
 
     formatted_calendar = convert_events(google_events, ISO_FORMAT)
-    calendar_events = [
-        format_event(event, ISO_FORMAT) for event in formatted_calendar
-    ]
+    calendar_events = [format_event(event, ISO_FORMAT) for event in formatted_calendar]
 
     combined_events = buffer_events
     combined_events.extend(
         event for event in calendar_events if event not in buffer_events
     )
 
-    return [
-        format_event(event, TIME_FORMAT) for event in combined_events
-    ]
+    return [format_event(event, TIME_FORMAT) for event in combined_events]

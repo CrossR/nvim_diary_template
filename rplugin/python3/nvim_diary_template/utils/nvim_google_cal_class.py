@@ -12,15 +12,19 @@ from httplib2 import Http
 from oauth2client import file
 
 from nvim_diary_template.helpers.file_helpers import check_cache, set_cache
-from nvim_diary_template.helpers.google_calendar_helpers import (convert_events,
-                                                                 create_google_event,
-                                                                 format_google_events)
-from nvim_diary_template.utils.constants import (CALENDAR_CACHE_DURATION,
-                                                 EVENT_CACHE_DURATION,
-                                                 ISO_FORMAT)
+from nvim_diary_template.helpers.google_calendar_helpers import (
+    convert_events,
+    create_google_event,
+    format_google_events,
+)
+from nvim_diary_template.utils.constants import (
+    CALENDAR_CACHE_DURATION,
+    EVENT_CACHE_DURATION,
+    ISO_FORMAT,
+)
 
 
-class SimpleNvimGoogleCal():
+class SimpleNvimGoogleCal:
     """SimpleNvimGoogleCal
 
     A class to deal with the simple interactions with the Google Cal API.
@@ -39,17 +43,14 @@ class SimpleNvimGoogleCal():
             self.config_path,
             "calendars",
             CALENDAR_CACHE_DURATION,
-            self.get_all_calendars
+            self.get_all_calendars,
         )
 
         self.filter_list = options.calendar_filter_list
         self.filtered_calendars = self.filter_calendars()
 
         self._events = check_cache(
-            self.config_path,
-            'events',
-            EVENT_CACHE_DURATION,
-            self.get_events_for_today
+            self.config_path, "events", EVENT_CACHE_DURATION, self.get_events_for_today
         )
 
     @property
@@ -78,10 +79,7 @@ class SimpleNvimGoogleCal():
         """
 
         return check_cache(
-            self.config_path,
-            "events",
-            EVENT_CACHE_DURATION,
-            self.get_events_for_today
+            self.config_path, "events", EVENT_CACHE_DURATION, self.get_events_for_today
         )
 
     def setup_google_calendar_api(self):
@@ -100,7 +98,7 @@ class SimpleNvimGoogleCal():
             )
             return None
 
-        service = discovery.build('calendar', 'v3', http=credentials.authorize(Http()))
+        service = discovery.build("calendar", "v3", http=credentials.authorize(Http()))
 
         return service
 
@@ -110,9 +108,7 @@ class SimpleNvimGoogleCal():
         Check if the Google API service is ready.
         """
         if self.service is None:
-            self.nvim.err_write(
-                "Google service not ready...\n"
-            )
+            self.nvim.err_write("Google service not ready...\n")
             return True
 
         return False
@@ -124,7 +120,8 @@ class SimpleNvimGoogleCal():
         """
 
         return {
-            cal_name: cal_id for cal_name, cal_id in self.all_calendars.items()
+            cal_name: cal_id
+            for cal_name, cal_id in self.all_calendars.items()
             if cal_name not in self.filter_list
         }
 
@@ -139,14 +136,12 @@ class SimpleNvimGoogleCal():
             return []
 
         page_token = None
-        calendar_list = self.service.calendarList() \
-            .list(pageToken=page_token).execute()
+        calendar_list = self.service.calendarList().list(pageToken=page_token).execute()
 
         all_calendars = {}
 
-        for calendar_list_entry in calendar_list['items']:
-            all_calendars[calendar_list_entry['summary']] = \
-                calendar_list_entry['id']
+        for calendar_list_entry in calendar_list["items"]:
+            all_calendars[calendar_list_entry["summary"]] = calendar_list_entry["id"]
 
         return all_calendars
 
@@ -162,21 +157,25 @@ class SimpleNvimGoogleCal():
             return []
 
         date_today = date.today()
-        time_min = datetime.combine(date_today, time.min).isoformat() + 'Z'
-        time_max = datetime.combine(date_today, time.max).isoformat() + 'Z'
+        time_min = datetime.combine(date_today, time.min).isoformat() + "Z"
+        time_max = datetime.combine(date_today, time.max).isoformat() + "Z"
 
         page_token = None
         events_in_timeframe = []
 
         for _, calendar_id in self.filtered_calendars.items():
-            events = self.service.events().list(
-                calendarId=calendar_id,
-                pageToken=page_token,
-                timeMin=time_min,
-                timeMax=time_max
-            ).execute()
+            events = (
+                self.service.events()
+                .list(
+                    calendarId=calendar_id,
+                    pageToken=page_token,
+                    timeMin=time_min,
+                    timeMax=time_max,
+                )
+                .execute()
+            )
 
-            events_in_timeframe.extend(events['items'])
+            events_in_timeframe.extend(events["items"])
 
         return format_google_events(events_in_timeframe)
 
@@ -203,13 +202,12 @@ class SimpleNvimGoogleCal():
             gcal_event = create_google_event(event, self.options.timezone)
 
             self.service.events().insert(
-                calendarId=target_calendar,
-                body=gcal_event
+                calendarId=target_calendar, body=gcal_event
             ).execute()
 
         # Now that the events have been updated, update the cache.
         updated_events = self.get_events_for_today()
-        set_cache(self.config_path, updated_events, 'events')
+        set_cache(self.config_path, updated_events, "events")
 
         self.nvim.out_write(
             f"Added {len(missing_events)} events to {self.options.google_cal_name} calendar.\n"
@@ -223,12 +221,10 @@ class SimpleNvimGoogleCal():
 
         target_calendar = self.options.google_cal_name
 
-        if target_calendar == 'primary':
-            return 'primary'
+        if target_calendar == "primary":
+            return "primary"
         else:
             try:
                 return self.all_calendars[target_calendar]
             except KeyError:
-                self.nvim.err_write(
-                    f"No calendar named {target_calendar} exists.\n"
-                )
+                self.nvim.err_write(f"No calendar named {target_calendar} exists.\n")

@@ -10,8 +10,7 @@ import time as t
 from datetime import datetime
 from os import makedirs, path, remove
 
-from nvim_diary_template.utils.constants import (CACHE_EPOCH_REGEX,
-                                                 DIARY_FOLDER)
+from nvim_diary_template.utils.constants import CACHE_EPOCH_REGEX, DIARY_FOLDER
 
 
 def get_file_content(file_path):
@@ -21,7 +20,7 @@ def get_file_content(file_path):
     """
 
     with open(file_path) as note_file:
-        return note_file.read().split('\n')
+        return note_file.read().split("\n")
 
 
 def get_diary_path(options, note_name):
@@ -29,11 +28,7 @@ def get_diary_path(options, note_name):
 
     Gives a full path, given just a diary name.
     """
-    pattern = path.join(
-        options.notes_path,
-        DIARY_FOLDER,
-        note_name
-    )
+    pattern = path.join(options.notes_path, DIARY_FOLDER, note_name)
 
     return glob.glob(pattern)[0]
 
@@ -46,16 +41,10 @@ def check_cache(config_path, data_name, data_age, fallback_function):
     is called to generate the data and cache it.
     """
 
-    cache_path = path.join(
-        config_path,
-        "cache",
-    )
+    cache_path = path.join(config_path, "cache")
     makedirs(cache_path, exist_ok=True)
 
-    pattern = path.join(
-        cache_path,
-        f"nvim_diary_template_{data_name}_cache_*.json"
-    )
+    pattern = path.join(cache_path, f"nvim_diary_template_{data_name}_cache_*.json")
 
     try:
         cache_file_name = glob.glob(pattern)[0]
@@ -90,19 +79,17 @@ def set_cache(config_path, data, data_name):
     cache_file_name = path.join(
         config_path,
         "cache",
-        f"nvim_diary_template_{data_name}_cache_{int(t.time())}.json"
+        f"nvim_diary_template_{data_name}_cache_{int(t.time())}.json",
     )
 
     pattern = path.join(
-        config_path,
-        "cache",
-        f"nvim_diary_template_{data_name}_cache_*.json"
+        config_path, "cache", f"nvim_diary_template_{data_name}_cache_*.json"
     )
 
     makedirs(path.dirname(cache_file_name), exist_ok=True)
     old_cache_files = glob.glob(pattern)
 
-    with open(cache_file_name, 'w') as cache_file:
+    with open(cache_file_name, "w") as cache_file:
         json.dump(data, cache_file)
 
     for old_cache_file in old_cache_files:
