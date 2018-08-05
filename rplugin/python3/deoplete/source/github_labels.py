@@ -7,6 +7,7 @@ from os import path
 
 from .base import Base
 
+LENGTH_OF_PATTERN = 7
 
 class Source(Base):
 
@@ -19,6 +20,7 @@ class Source(Base):
         self.mark = '[GH]'
         self.filetypes = ['vimwiki']
         self.min_pattern_length = 0
+        self.rank = 550
         self.config_folder = self.vim.eval('g:nvim_diary_template#config_path')
 
     def gather_candidates(self, context):
@@ -45,5 +47,10 @@ class Source(Base):
         return [{'word': f"+label:{l}"} for l in label_list]
 
     def get_complete_position(self, context):
-        match = self.__pattern.search(context['input'])
+        match_pos = context['position'][2] - LENGTH_OF_PATTERN - 1
+
+        if match_pos < 0:
+            match_pos = 0
+
+        match = self.__pattern.search(context['input'], match_pos)
         return match.start() if match is not None else -1

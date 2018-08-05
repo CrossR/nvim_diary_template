@@ -6,9 +6,19 @@ let g:nvim_diary_template#config_path = get(g:, 'nvim_diary_template#config_path
 
 augroup nvim_diary_template_keybinds
     autocmd!
-    autocmd FileType vimwiki nnoremap <buffer> <leader>wec :DiaryIssueEdit<CR>
-    autocmd FileType vimwiki nnoremap <buffer> <leader>wic :DiaryIssueComment<CR>
-    autocmd FileType vimwiki nnoremap <buffer> <leader>wii :DiaryIssue<CR>
+    " Edit existing issue/comments binds
+    autocmd FileType vimwiki nnoremap <buffer> <leader>wec :DiaryEditComment<CR>
+    autocmd FileType vimwiki nnoremap <buffer> <leader>wei :DiaryEditIssue<CR>
+
+    " Insert new issue/comments binds
+    autocmd FileType vimwiki nnoremap <buffer> <leader>wic :DiaryInsertComment<CR>
+    autocmd FileType vimwiki nnoremap <buffer> <leader>wii :DiaryInsertIssue<CR>
+
+    " Upload edited/new issues and comments
+    autocmd FileType vimwiki nnoremap <buffer> <leader>wun :DiaryUploadNew<CR>
+    autocmd FileType vimwiki nnoremap <buffer> <leader>wue :DiaryUploadEdits<CR>
+    autocmd FileType vimwiki nnoremap <buffer> <leader>wuc :DiaryUploadCompletion<CR>
+
     autocmd FileType vimwiki setlocal foldtext=DiaryFoldText()
     autocmd FileType vimwiki setlocal foldmethod=expr
     autocmd FileType vimwiki setlocal foldexpr=GetDiaryFold(v:lnum)

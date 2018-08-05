@@ -100,43 +100,64 @@ class DiaryTemplatePlugin(object):
     def sort_calendar(self):
         sort_markdown_events(self._nvim)
 
-    @neovim.command('DiaryIssue')
+    @neovim.command('DiaryInsertIssue')
     def insert_issue(self):
         insert_new_issue(self._nvim)
 
-    @neovim.command('DiaryIssueComment')
+    @neovim.command('DiaryInsertComment')
     def insert_comment(self):
         insert_new_comment(self._nvim)
 
-    @neovim.command('DiaryIssueEdit')
+    @neovim.command('DiaryEditComment')
     def edit_comment(self):
-        insert_edit_tag(self._nvim)
+        insert_edit_tag(self._nvim, 'comment')
+
+    @neovim.command('DiaryEditIssue')
+    def edit_issue(self):
+        insert_edit_tag(self._nvim, 'issue')
 
     @neovim.command('DiaryUploadNew')
-    def upload_new_issues(self):
+    def upload_new_issues(self, buffered=False):
         issues = parse_markdown_file_for_issues(self._nvim)
 
         issues = self._github_service.upload_issues(issues, 'new')
+        issues = remove_tag_from_issues(issues, 'new', 'issues')
         issues = self._github_service.upload_comments(issues, 'new')
 
         issues_without_new_tag = remove_tag_from_issues(issues, 'new')
         set_issues_from_issues_list(self._nvim, issues_without_new_tag)
 
+        if not buffered:
+            self.flush_messages()
+
     @neovim.command('DiaryUploadEdits')
-    def upload_edited_issues(self):
+    def upload_edited_issues(self, buffered=False):
         issues = parse_markdown_file_for_issues(self._nvim)
         issues = self._github_service.update_comments(issues, 'edit')
+        issues = self._github_service.update_issues(issues, 'edit')
 
         issues_without_edit_tag = remove_tag_from_issues(issues, 'edit')
         set_issues_from_issues_list(self._nvim, issues_without_edit_tag)
 
+        if not buffered:
+            self.flush_messages()
+
     @neovim.command('DiaryUploadCompletion')
-    def upload_issue_completions(self):
+    def upload_issue_completions(self, buffered=False):
         issues = parse_markdown_file_for_issues(self._nvim)
         self._github_service.complete_issues(issues)
 
+        if not buffered:
+            self.flush_messages()
+
+
     @neovim.command('DiaryUploadIssues')
     def upload_all_issues(self):
-        self.upload_new_issues()
-        self.upload_edited_issues()
-        self.upload_issue_completions()
+        self.upload_new_issues(True)
+        self.upload_edited_issues(True)
+        self.upload_issue_completions(True)
+
+        self.flush_messages()
+
+    def flush_messages(self):
+        self._nvim.out_write("\n")
