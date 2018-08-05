@@ -126,20 +126,26 @@ def produce_issue_markdown(issue_list):
     return markdown_lines
 
 
-def remove_tag_from_issues(issues, tag):
+def remove_tag_from_issues(issues, tag, scope='all'):
     """remove_tag_from_issues
 
     Removes all of a tag from the given issues.
+    If scoped to just issues, we still check the first comment as this
+    comment is the issue body.
     """
 
     for issue in issues:
 
-        if tag in issue['metadata']:
-            issue['metadata'].remove(tag)
+        if scope == 'all' or 'issues':
+            if tag in issue['metadata']:
+                issue['metadata'].remove(tag)
+                if tag in issue['all_comments'][0]['comment_tags']:
+                    issue['all_comments'][0]['comment_tags'].remove(tag)
 
-        for comment in issue['all_comments']:
-            if tag in comment['comment_tags']:
-                comment['comment_tags'].remove(tag)
+        if scope == 'all' or 'comments':
+            for comment in issue['all_comments']:
+                if tag in comment['comment_tags']:
+                    comment['comment_tags'].remove(tag)
 
     return issues
 
