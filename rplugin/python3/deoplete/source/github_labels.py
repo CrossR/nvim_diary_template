@@ -7,8 +7,6 @@ from os import path
 
 from .base import Base
 
-LabelCacheItem = namedtuple('DictCacheItem', 'mtime candidates')
-
 
 class Source(Base):
 
@@ -17,7 +15,7 @@ class Source(Base):
 
         self.__pattern = re.compile(f"\+label:")
 
-        self.name = 'gh_labels'
+        self.name = 'gh_label'
         self.mark = '[GH]'
         self.filetypes = ['vimwiki']
         self.min_pattern_length = 0
