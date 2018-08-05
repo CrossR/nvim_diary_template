@@ -44,8 +44,6 @@ def parse_buffer_events(events, format_string):
         if event == "":
             continue
 
-        # TODO: Regex is probably going to be a giant pain here,
-        # and won't work if the string pattern changes.
         matches_date_time = re.findall(DATETIME_REGEX, event)
 
         if not matches_date_time:

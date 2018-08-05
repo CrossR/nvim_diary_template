@@ -17,6 +17,6 @@ million and one simpler ways to achieve this.
       are progressing.
     - Issues you make online and in-diary are synced, along with all
       comments.
-    - **TODO**: Add tags for projects, as well as the associated filtering.
+    - Support for Github labels (including Deoplete source).
 - Diary outline generation:
     - Builds a diary file with metadata in and the defined headings.

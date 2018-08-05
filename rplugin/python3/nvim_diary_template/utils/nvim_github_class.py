@@ -107,6 +107,7 @@ class SimpleNvimGithub:
             self.nvim.err_write("Github service not currently running...\n")
             return []
 
+        #TODO: Add a wrapper for all GitHub calls.
         repo_labels = self.service.get_repo(self.repo_name).get_labels()
 
         return [label.name for label in repo_labels]

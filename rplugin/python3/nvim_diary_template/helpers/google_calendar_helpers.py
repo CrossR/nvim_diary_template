@@ -16,7 +16,6 @@ def convert_events(events, format_string):
     formatted_events = []
 
     for event in events:
-        # TODO: Make the format strings here into a config option.
         start_time = get_time(event["start_time"]).strftime(format_string)
         end_time = get_time(event["end_time"]).strftime(format_string)
         event_name = event["event_name"]

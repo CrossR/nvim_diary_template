@@ -34,7 +34,6 @@ def format_issues(issues):
         issue_labels = issue["labels"]
         issue_complete = issue["complete"]
 
-        # TODO: Similarly, make this string into a config option.
         if issue_complete:
             issue_start = f"{HEADING_2} {VIMWIKI_TODO} Issue {{{issue_number}}}: "
         else:
@@ -121,8 +120,6 @@ def produce_issue_markdown(issue_list):
 
     markdown_lines = []
 
-    # TODO: Should probably swap this to be a config option,
-    # something like f"{importance * #}".
     markdown_lines.append(ISSUE_HEADING)
     markdown_lines.append("")
 
