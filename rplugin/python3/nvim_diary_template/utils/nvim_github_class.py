@@ -268,10 +268,14 @@ class SimpleNvimGithub():
         for issue, index in zip(issues_to_upload, change_indexes):
             issue_title = issue['title']
             issue_body = issue['body']
-            issue_labels = issue['labels'] #TODO: Hook up sending these.
+            issue_labels = issue['labels']
 
             new_issue = self.service.get_repo(self.repo_name) \
-                .create_issue(title=issue_title, body=issue_body)
+                                    .create_issue(
+                                        title=issue_title,
+                                        body=issue_body,
+                                        labels=issue_labels
+                                    )
 
             issues[index]['number'] = new_issue.number
             issues[index]['all_comments'][0]['updated_at'] = convert_utc_timezone(
