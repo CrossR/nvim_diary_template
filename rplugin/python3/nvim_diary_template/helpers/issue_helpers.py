@@ -41,10 +41,10 @@ def convert_issues(github_service):
     return formatted_issues
 
 
-def insert_edit_tag(nvim):
+def insert_edit_tag(nvim, location):
     """insert_edit_tag
 
-    Insert an edit tag for the current comment, so it can be uploaded.
+    Insert an edit tag for the current issue or comment, so it can be updated.
     """
 
     # Grab the indexes needed to find the issue we are in.
@@ -64,11 +64,18 @@ def insert_edit_tag(nvim):
     relevant_buffer = current_buffer[issues_header_index:current_line]
     line_index = -1
 
+    if location == 'issue':
+        target_line = ISSUE_START
+    elif location == 'comment':
+        target_line = ISSUE_COMMENT
+    else:
+        raise ValueError(f"{location} is not a recognised target.")
+
     # Search the buffer backwards and find the start of the current comment, to
     # get its line index.
     for index in range(len(relevant_buffer) - 1, 0, -1):
         line = relevant_buffer[index]
-        if re.findall(ISSUE_COMMENT, line):
+        if re.findall(target_line, line):
             line_index = index
 
             break
@@ -79,13 +86,13 @@ def insert_edit_tag(nvim):
 
     # If we did find a line, we want to append +edit to the end, and set it.
     # We need to update the line index to be relative to the full buffer.
-    comment_line = relevant_buffer[line_index]
-    comment_line += ' +edit'
+    updated_line = relevant_buffer[line_index]
+    updated_line += ' +edit'
 
     insert_index = issues_header_index + line_index + 1
 
     set_line_content(nvim,
-                     [comment_line],
+                     [updated_line],
                      line_index=insert_index,
                      line_offset=1)
 
