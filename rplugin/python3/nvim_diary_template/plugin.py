@@ -150,7 +150,6 @@ class DiaryTemplatePlugin(object):
         if not buffered:
             self.flush_messages()
 
-
     @neovim.command('DiaryUploadIssues')
     def upload_all_issues(self):
         self.upload_new_issues(True)

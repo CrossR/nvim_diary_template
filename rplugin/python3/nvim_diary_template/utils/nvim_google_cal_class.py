@@ -68,7 +68,7 @@ class SimpleNvimGoogleCal():
         Is the Gcal service active?
         """
 
-        return self.service_is_not_ready()
+        return not self.service_is_not_ready()
 
     @property
     def todays_events(self):

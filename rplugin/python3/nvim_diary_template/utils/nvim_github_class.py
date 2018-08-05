@@ -54,7 +54,7 @@ class SimpleNvimGithub():
 
         Is the Github service active?
         """
-        return self.service_not_valid()
+        return not self.service_not_valid()
 
     def setup_github_api(self):
         """setup_github_api
