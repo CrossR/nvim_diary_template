@@ -222,7 +222,9 @@ class SimpleNvimGithub():
                 ]
 
                 issues_to_upload.append({
-                    'issue_title': issue['title'],
+                    'number': issue['number'],
+                    'title': issue['title'],
+                    'labels': issue['labels'],
                     'body': '\r\n'.join(processed_body)
                 })
 
@@ -264,8 +266,9 @@ class SimpleNvimGithub():
         issues_to_upload, change_indexes = self.filter_issues(issues, tag)
 
         for issue, index in zip(issues_to_upload, change_indexes):
-            issue_title = issue['issue_title']
+            issue_title = issue['title']
             issue_body = issue['body']
+            issue_labels = issue['labels'] #TODO: Hook up sending these.
 
             new_issue = self.service.get_repo(self.repo_name) \
                 .create_issue(title=issue_title, body=issue_body)
@@ -281,7 +284,7 @@ class SimpleNvimGithub():
     def update_comments(self, issues, tag):
         """update_comments
 
-        Update existing comments with the specific tag to GitHub.
+        Update existing comments with the specific tag on GitHub.
         """
 
         comments_to_upload, change_indexes = self.filter_comments(issues, tag)
@@ -317,6 +320,44 @@ class SimpleNvimGithub():
             current_comment = current_issue['all_comments'][change_index['comment']]
             current_comment['updated_at'] = convert_utc_timezone(
                 github_comment.updated_at,
+                self.options.timezone
+            )
+
+        return issues
+
+    def update_issues(self, issues, tag):
+        """update_issues
+
+        Update existing issues with the specific tag on GitHub.
+        """
+
+        issues_to_upload, change_indexes = self.filter_issues(issues, tag)
+
+        for issue, change_index in zip(issues_to_upload, change_indexes):
+            issue_number = issue['number']
+            issue_title = issue['title']
+            issue_body = issue['body']
+            issue_labels = issue['labels']
+
+            github_issue = self.service \
+                .get_repo(self.repo_name) \
+                .get_issue(issue_number)
+
+            github_issue.edit(
+                title=issue_title,
+                body=issue_body,
+                labels=issue_labels
+            )
+
+            # Grab the issue again, to sort the update time.
+            github_issue = self.service \
+                .get_repo(self.repo_name) \
+                .get_issue(issue_number) \
+
+            current_issue = issues[change_index]
+            issue_body_comment = current_issue['all_comments'][0]
+            issue_body_comment['updated_at'] = convert_utc_timezone(
+                github_issue.updated_at,
                 self.options.timezone
             )
 

@@ -130,6 +130,7 @@ class DiaryTemplatePlugin(object):
     def upload_edited_issues(self):
         issues = parse_markdown_file_for_issues(self._nvim)
         issues = self._github_service.update_comments(issues, 'edit')
+        issues = self._github_service.update_issues(issues, 'edit')
 
         issues_without_edit_tag = remove_tag_from_issues(issues, 'edit')
         set_issues_from_issues_list(self._nvim, issues_without_edit_tag)
