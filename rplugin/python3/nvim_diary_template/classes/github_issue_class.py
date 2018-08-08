@@ -19,6 +19,7 @@ class GitHubIssue:
     all_comments: list
     metadata: list
 
+
 @dataclass
 class GitHubIssueComment:
     """GitHubIssueComment
