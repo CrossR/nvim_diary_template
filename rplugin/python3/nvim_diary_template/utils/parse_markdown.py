@@ -145,6 +145,12 @@ def parse_buffer_issues(issue_lines):
             current_comment = current_issue[comment_number]["comment_lines"]
             current_comment.append(line)
 
+    # Strip any trailing new lines from the comments
+    for issue in formatted_issues:
+        for comment in issue['all_comments']:
+            if comment["comment_lines"][-1] == "":
+                comment['comment_lines'] = comment['comment_lines'][:-1]
+
     return formatted_issues
 
 

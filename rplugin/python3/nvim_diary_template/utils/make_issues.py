@@ -76,18 +76,14 @@ def format_issue_comments(comments):
     """
 
     formatted_comments = []
-    add_new_line = True
 
     for comment_num, comment in enumerate(comments):
 
         tags = []
 
-        # If we've passed over a dict, for example after parsing the file, we
-        # need to access the comments differently, and not apply a new line.
         split_comments = comment["comment_lines"]
         tags = comment["comment_tags"]
         comment_edit_time = comment["updated_at"]
-        add_new_line = False
 
         header_line = f"{HEADING_3} Comment {{{comment_num}}} - {comment_edit_time}:"
 
@@ -106,8 +102,7 @@ def format_issue_comments(comments):
             processed_line = check_markdown_style(line, "vimwiki")
             formatted_comments.append(processed_line)
 
-        if add_new_line:
-            formatted_comments.append("")
+        formatted_comments.append("")
 
     return formatted_comments
 
