@@ -181,10 +181,12 @@ class SimpleNvimGithub:
             )
         )
 
+        current_comment = 1
+
         for comment in comments:
             comment_dicts.append(
                 GitHubIssueComment(
-                    number=comment.number,
+                    number=current_comment,
                     body=comment.body.splitlines() + new_line,
                     tags=[],
                     updated_at=convert_utc_timezone(
@@ -192,6 +194,7 @@ class SimpleNvimGithub:
                     ),
                 )
             )
+            current_comment += 1
 
         return comment_dicts
 
