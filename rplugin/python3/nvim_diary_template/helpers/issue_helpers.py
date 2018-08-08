@@ -49,6 +49,7 @@ def convert_issues(github_service):
                 complete=issue.complete,
                 labels=issue.labels,
                 all_comments=comments,
+                metadata=[],
             )
         )
 
@@ -298,3 +299,34 @@ def sort_completion_state(issue):
         return 0
 
     return 100
+
+
+def get_github_objects(issue_dicts):
+    """get_github_objects
+
+    Convert the loaded dicts to Objects.
+    This is easier for a number of reasons, the main of which is
+    that naming is kept consistent, versus dicts which require more
+    careful usage.
+    """
+
+    issues = []
+
+    for issue in issue_dicts:
+        current_comments = []
+
+        for comment in issue["all_comments"]:
+            current_comments.append(GitHubIssueComment(**comment))
+
+        issues.append(
+            GitHubIssue(
+                number=issue["number"],
+                title=issue["title"],
+                complete=issue["complete"],
+                labels=issue["labels"],
+                all_comments=current_comments,
+                metadata=[],
+            )
+        )
+
+    return issues

@@ -17,6 +17,7 @@ from nvim_diary_template.helpers.file_helpers import check_cache
 from nvim_diary_template.helpers.issue_helpers import (
     check_markdown_style,
     convert_utc_timezone,
+    get_github_objects
 )
 from nvim_diary_template.helpers.neovim_helpers import buffered_info_message
 from nvim_diary_template.utils.constants import (
@@ -42,12 +43,14 @@ class SimpleNvimGithub:
         if self.service_not_valid():
             return
 
-        self.issues = check_cache(
+        loaded_issues = check_cache(
             self.config_path,
             "open_issues",
             ISSUE_CACHE_DURATION,
             self.get_all_open_issues,
         )
+
+        self.issues = get_github_objects(loaded_issues)
 
         self.repo_labels = check_cache(
             self.config_path,
