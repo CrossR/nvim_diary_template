@@ -3,7 +3,7 @@
 Functions to build and parse the issue section of the markdown.
 """
 
-from nvim_diary_template.helpers.issue_helpers import check_markdown_style
+from nvim_diary_template.helpers.issue_helpers import check_markdown_style, sort_issues
 from nvim_diary_template.helpers.neovim_helpers import (
     get_buffer_contents,
     get_section_line,
@@ -24,9 +24,10 @@ def format_issues(issues):
     """
 
     issue_lines = []
+    sorted_issues = sort_issues(issues)
 
     # For every issue, format it into markdown lines that are easily read.
-    for issue in issues:
+    for issue in sorted_issues:
 
         issue_title = issue["title"]
         issue_comments = issue["all_comments"]
@@ -75,18 +76,14 @@ def format_issue_comments(comments):
     """
 
     formatted_comments = []
-    add_new_line = True
 
     for comment_num, comment in enumerate(comments):
 
         tags = []
 
-        # If we've passed over a dict, for example after parsing the file, we
-        # need to access the comments differently, and not apply a new line.
         split_comments = comment["comment_lines"]
         tags = comment["comment_tags"]
         comment_edit_time = comment["updated_at"]
-        add_new_line = False
 
         header_line = f"{HEADING_3} Comment {{{comment_num}}} - {comment_edit_time}:"
 
@@ -105,8 +102,7 @@ def format_issue_comments(comments):
             processed_line = check_markdown_style(line, "vimwiki")
             formatted_comments.append(processed_line)
 
-        if add_new_line:
-            formatted_comments.append("")
+        formatted_comments.append("")
 
     return formatted_comments
 

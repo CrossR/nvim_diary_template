@@ -253,3 +253,44 @@ def convert_utc_timezone(datetime, target):
     utc_time = datetime.replace(tzinfo=tz.tzutc())
 
     return utc_time.astimezone(tz.gettz(target)).strftime("%Y-%m-%d %H:%M")
+
+
+def sort_issues(issues):
+    """sort_issues
+
+    A helper function to sort the given issues.
+    The sorting works as follows:
+    - Complete issues have the lowest priority.
+    - Blocked Issues have low priority.
+    - In-progress issues have the highest priority.
+    - The latest edit is used for any ties, with issue number being used in
+    the case of a tie there.
+    """
+
+    return sorted(
+        issues,
+        key=lambda i: (
+            sort_completion_state(i),
+            i["all_comments"][-1]["updated_at"],
+            i["number"],
+        ),
+    )
+
+
+def sort_completion_state(issue):
+    """sort_completion_state
+
+    Simple helper function to return a value for the issue current state for
+    sorting.
+    """
+
+    if issue["complete"]:
+        return 10000
+
+    if "blocked" in issue["labels"]:
+        return 1000
+
+    if "inprogress" in issue["labels"]:
+        return 0
+
+    return 100
