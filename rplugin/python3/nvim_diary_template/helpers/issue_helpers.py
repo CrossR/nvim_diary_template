@@ -6,6 +6,10 @@ import re
 
 from dateutil import tz
 
+from nvim_diary_template.classes.github_issue_class import (
+    GitHubIssue,
+    GitHubIssueComment,
+)
 from nvim_diary_template.helpers.neovim_helpers import (
     get_buffer_contents,
     get_section_line,
@@ -37,15 +41,15 @@ def convert_issues(github_service):
     # issue body as the 0th comment, which is why it is added to the comments
     # item.
     for issue in github_service.issues:
-        comments = github_service.get_comments_for_issue(issue["number"])
+        comments = github_service.get_comments_for_issue(issue.number)
         formatted_issues.append(
-            {
-                "number": issue["number"],
-                "title": issue["title"],
-                "complete": issue["complete"],
-                "labels": issue["labels"],
-                "all_comments": comments,
-            }
+            GitHubIssue(
+                number=issue.number,
+                title=issue.title,
+                complete=issue.complete,
+                labels=issue.labels,
+                all_comments=comments,
+            )
         )
 
     return formatted_issues
@@ -271,8 +275,8 @@ def sort_issues(issues):
         issues,
         key=lambda i: (
             sort_completion_state(i),
-            i["all_comments"][-1]["updated_at"],
-            i["number"],
+            i.all_comments[-1].updated_at,
+            i.number,
         ),
     )
 
@@ -284,13 +288,13 @@ def sort_completion_state(issue):
     sorting.
     """
 
-    if issue["complete"]:
+    if issue.complete:
         return 10000
 
-    if "blocked" in issue["labels"]:
+    if "blocked" in issue.labels:
         return 1000
 
-    if "inprogress" in issue["labels"]:
+    if "inprogress" in issue.labels:
         return 0
 
     return 100

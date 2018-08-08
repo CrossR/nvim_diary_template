@@ -8,6 +8,10 @@ from datetime import date
 
 from dateutil import parser
 
+from nvim_diary_template.classes.github_issue_class import (
+    GitHubIssue,
+    GitHubIssueComment,
+)
 from nvim_diary_template.helpers.event_helpers import format_event
 from nvim_diary_template.helpers.google_calendar_helpers import convert_events
 from nvim_diary_template.helpers.neovim_helpers import (
@@ -98,14 +102,14 @@ def parse_buffer_issues(issue_lines):
             labels = [label[7:] for label in labels]
 
             formatted_issues.append(
-                {
-                    "number": int(re.findall(r"\d+", line)[0]),
-                    "title": "",
-                    "metadata": metadata,
-                    "labels": labels,
-                    "complete": re.search(TODO_IS_CHECKED, line) != None,
-                    "all_comments": [],
-                }
+                GitHubIssue(
+                    number=int(re.findall(r"\d+", line)[0]),
+                    complete=re.search(TODO_IS_CHECKED, line) is not None,
+                    title="",
+                    labels=labels,
+                    all_comments=[],
+                    metadata=metadata,
+                )
             )
 
             continue
@@ -114,7 +118,7 @@ def parse_buffer_issues(issue_lines):
         if is_issue_title:
             issue_title = re.sub(ISSUE_TITLE, "", line).strip()
 
-            formatted_issues[issue_number]["title"] = issue_title
+            formatted_issues[issue_number].title = issue_title
 
             continue
 
@@ -127,13 +131,13 @@ def parse_buffer_issues(issue_lines):
             # Strip the leading '+' from the tags.
             comment_metadata = [tag[1:] for tag in comment_metadata]
 
-            formatted_issues[issue_number]["all_comments"].append(
-                {
-                    "comment_number": comment_number,
-                    "comment_tags": comment_metadata,
-                    "updated_at": comment_date,
-                    "comment_lines": [],
-                }
+            formatted_issues[issue_number].all_comments.append(
+                GitHubIssueComment(
+                    number=comment_number,
+                    tags=comment_metadata,
+                    updated_at=comment_date,
+                    body=[],
+                )
             )
 
             continue
@@ -141,15 +145,15 @@ def parse_buffer_issues(issue_lines):
         # Finally, if there is an issue and comment ongoing, we can add to the
         # current comment.
         if issue_number != -1 and comment_number != -1:
-            current_issue = formatted_issues[issue_number]["all_comments"]
-            current_comment = current_issue[comment_number]["comment_lines"]
+            current_issue = formatted_issues[issue_number].all_comments
+            current_comment = current_issue[comment_number].comment_lines
             current_comment.append(line)
 
     # Strip any trailing new lines from the comments
     for issue in formatted_issues:
-        for comment in issue["all_comments"]:
-            if comment["comment_lines"][-1] == "":
-                comment["comment_lines"] = comment["comment_lines"][:-1]
+        for comment in issue.all_comments:
+            if comment.body[-1] == "":
+                comment.body = comment.body[:-1]
 
     return formatted_issues
 

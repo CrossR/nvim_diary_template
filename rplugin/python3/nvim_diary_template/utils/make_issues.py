@@ -29,11 +29,11 @@ def format_issues(issues):
     # For every issue, format it into markdown lines that are easily read.
     for issue in sorted_issues:
 
-        issue_title = issue["title"]
-        issue_comments = issue["all_comments"]
-        issue_number = issue["number"]
-        issue_labels = issue["labels"]
-        issue_complete = issue["complete"]
+        issue_title = issue.title
+        issue_comments = issue.all_comments
+        issue_number = issue.number
+        issue_labels = issue.labels
+        issue_complete = issue.complete
 
         if issue_complete:
             issue_start = f"{HEADING_2} {VIMWIKI_TODO} Issue {{{issue_number}}}: "
@@ -49,7 +49,7 @@ def format_issues(issues):
         issue_start = issue_start.strip()
 
         try:
-            tags = issue["metadata"]
+            tags = issue.metadata
 
             for tag in tags:
                 issue_start += f" +{tag}"
@@ -81,9 +81,9 @@ def format_issue_comments(comments):
 
         tags = []
 
-        split_comments = comment["comment_lines"]
-        tags = comment["comment_tags"]
-        comment_edit_time = comment["updated_at"]
+        split_comments = comment.body
+        tags = comment.tags
+        comment_edit_time = comment.updated_at
 
         header_line = f"{HEADING_3} Comment {{{comment_num}}} - {comment_edit_time}:"
 
@@ -136,15 +136,15 @@ def remove_tag_from_issues(issues, tag, scope="all"):
     for issue in issues:
 
         if scope == "all" or "issues":
-            if tag in issue["metadata"]:
-                issue["metadata"].remove(tag)
-                if tag in issue["all_comments"][0]["comment_tags"]:
-                    issue["all_comments"][0]["comment_tags"].remove(tag)
+            if tag in issue.metadata:
+                issue.metadata.remove(tag)
+                if tag in issue.all_comments[0].tags:
+                    issue.all_comments[0].tags.remove(tag)
 
         if scope == "all" or "comments":
-            for comment in issue["all_comments"]:
-                if tag in comment["comment_tags"]:
-                    comment["comment_tags"].remove(tag)
+            for comment in issue.all_comments:
+                if tag in comment.tags:
+                    comment.tags.remove(tag)
 
     return issues
 
