@@ -3,7 +3,7 @@
 Functions to build and parse the issue section of the markdown.
 """
 
-from nvim_diary_template.helpers.issue_helpers import check_markdown_style
+from nvim_diary_template.helpers.issue_helpers import check_markdown_style, sort_issues
 from nvim_diary_template.helpers.neovim_helpers import (
     get_buffer_contents,
     get_section_line,
@@ -24,9 +24,10 @@ def format_issues(issues):
     """
 
     issue_lines = []
+    sorted_issues = sort_issues(issues)
 
     # For every issue, format it into markdown lines that are easily read.
-    for issue in issues:
+    for issue in sorted_issues:
 
         issue_title = issue["title"]
         issue_comments = issue["all_comments"]

@@ -144,6 +144,10 @@ class DiaryTemplatePlugin(object):
         issues = parse_markdown_file_for_issues(self._nvim)
         self._github_service.complete_issues(issues)
 
+        # Despite no changes happening here, we want to set the issues again to
+        # sort them.
+        set_issues_from_issues_list(self._nvim, issues)
+
         if not buffered:
             self.flush_messages()
 
