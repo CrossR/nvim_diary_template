@@ -11,6 +11,7 @@ from datetime import datetime
 from os import makedirs, path, remove
 
 from nvim_diary_template.utils.constants import CACHE_EPOCH_REGEX, DIARY_FOLDER
+from nvim_diary_template.classes.data_class_json import EnhancedJSONEncoder
 
 
 def get_file_content(file_path):
@@ -90,7 +91,7 @@ def set_cache(config_path, data, data_name):
     old_cache_files = glob.glob(pattern)
 
     with open(cache_file_name, "w") as cache_file:
-        json.dump(data, cache_file)
+        json.dump(data, cache_file, cls=EnhancedJSONEncoder)
 
     for old_cache_file in old_cache_files:
         remove(old_cache_file)
