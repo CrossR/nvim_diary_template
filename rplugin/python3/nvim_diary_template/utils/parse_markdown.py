@@ -146,7 +146,7 @@ def parse_buffer_issues(issue_lines):
         # current comment.
         if issue_number != -1 and comment_number != -1:
             current_issue = formatted_issues[issue_number].all_comments
-            current_comment = current_issue[comment_number].comment_lines
+            current_comment = current_issue[comment_number].body
             current_comment.append(line)
 
     # Strip any trailing new lines from the comments

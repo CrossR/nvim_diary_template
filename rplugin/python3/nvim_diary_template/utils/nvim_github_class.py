@@ -17,7 +17,7 @@ from nvim_diary_template.helpers.file_helpers import check_cache
 from nvim_diary_template.helpers.issue_helpers import (
     check_markdown_style,
     convert_utc_timezone,
-    get_github_objects
+    get_github_objects,
 )
 from nvim_diary_template.helpers.neovim_helpers import buffered_info_message
 from nvim_diary_template.utils.constants import (
@@ -279,8 +279,8 @@ class SimpleNvimGithub:
             )
 
             current_issue = issues[change_index["issue"]]
-            current_comment = current_issue["all_comments"][change_index["comment"]]
-            current_comment["updated_at"] = convert_utc_timezone(
+            current_comment = current_issue.all_comments[change_index["comment"]]
+            current_comment.updated_at = convert_utc_timezone(
                 new_comment.updated_at, self.options.timezone
             )
 
@@ -307,8 +307,8 @@ class SimpleNvimGithub:
                 title=issue_title, body=issue_body, labels=issue_labels
             )
 
-            issues[index]["number"] = new_issue.number
-            issues[index]["all_comments"][0]["updated_at"] = convert_utc_timezone(
+            issues[index].number = new_issue.number
+            issues[index].all_comments[0].updated_at = convert_utc_timezone(
                 new_issue.updated_at, self.options.timezone
             )
 
@@ -355,8 +355,8 @@ class SimpleNvimGithub:
             )
 
             current_issue = issues[change_index["issue"]]
-            current_comment = current_issue["all_comments"][change_index["comment"]]
-            current_comment["updated_at"] = convert_utc_timezone(
+            current_comment = current_issue.all_comments[change_index["comment"]]
+            current_comment.updated_at = convert_utc_timezone(
                 github_comment.updated_at, self.options.timezone
             )
 
@@ -387,8 +387,8 @@ class SimpleNvimGithub:
             # Grab the issue again, to sort the update time.
             github_issue = self.service.get_repo(self.repo_name).get_issue(issue_number)
             current_issue = issues[change_index]
-            issue_body_comment = current_issue["all_comments"][0]
-            issue_body_comment["updated_at"] = convert_utc_timezone(
+            issue_body_comment = current_issue.all_comments[0]
+            issue_body_comment.updated_at = convert_utc_timezone(
                 github_issue.updated_at, self.options.timezone
             )
 
