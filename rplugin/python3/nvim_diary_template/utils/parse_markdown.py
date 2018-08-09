@@ -8,6 +8,7 @@ from datetime import date
 
 from dateutil import parser
 
+from nvim_diary_template.classes.calendar_event_class import CalendarEvent
 from nvim_diary_template.classes.github_issue_class import (
     GitHubIssue,
     GitHubIssueComment,
@@ -60,13 +61,9 @@ def parse_buffer_events(events, format_string):
 
         event_details = re.search(EVENT_REGEX, event)[0]
 
-        event_dict = {
-            "event_name": event_details,
-            "start_time": start_date,
-            "end_time": end_date,
-        }
-
-        formatted_events.append(event_dict)
+        formatted_events.append(
+            CalendarEvent(name=event_details, start=start_date, end=end_date)
+        )
 
     return formatted_events
 
@@ -165,7 +162,7 @@ def remove_events_not_from_today(nvim):
     schedule_index = get_section_line(get_buffer_contents(nvim), SCHEDULE_HEADING) + 1
 
     for index, event in enumerate(current_events):
-        event_date = parser.parse(event["start_time"]).date()
+        event_date = parser.parse(event.start).date()
 
         if date_today == event_date:
             continue

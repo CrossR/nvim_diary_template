@@ -46,7 +46,7 @@ def if_active(function):
 
 
 @neovim.plugin
-class DiaryTemplatePlugin():
+class DiaryTemplatePlugin:
     def __init__(self, nvim):
         self._nvim = nvim
         self._options = None

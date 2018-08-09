@@ -25,9 +25,9 @@ def format_events_lines(events):
 
     for event in events:
 
-        start = event["start_time"]
-        end = event["end_time"]
-        event = event["event_name"]
+        start = event.start
+        end = event.end
+        event = event.name
 
         current_line = f"{BULLET_POINT} {start} - {end}: {event}"
 
