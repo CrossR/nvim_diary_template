@@ -5,6 +5,7 @@ Simple helpers to deal with Github issues.
 import re
 
 from dateutil import tz
+from dataclasses import is_dataclass
 
 from nvim_diary_template.classes.github_issue_class import (
     GitHubIssue,
@@ -260,6 +261,8 @@ def sort_completion_state(issue):
 
     Simple helper function to return a value for the issue current state for
     sorting.
+
+    The higher the value, the lower they will be on the list.
     """
 
     if issue.complete:
@@ -274,18 +277,22 @@ def sort_completion_state(issue):
     return 100
 
 
-def get_github_objects(issue_dicts):
+def get_github_objects(issues):
     """get_github_objects
 
-    Convert the loaded dicts to Objects.
+    Convert the loaded dicts to Objects, if they are not already.
     This is easier for a number of reasons, the main of which is
     that naming is kept consistent, versus dicts which require more
     careful usage.
     """
 
+    # If the first object is a dataclass, they must all be.
+    if is_dataclass(issues[0]):
+        return issues
+
     issues = []
 
-    for issue in issue_dicts:
+    for issue in issues:
         current_comments = []
 
         for comment in issue["all_comments"]:

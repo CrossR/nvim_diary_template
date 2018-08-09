@@ -145,6 +145,7 @@ class SimpleNvimGithub:
                 ),
             )
 
+            # Grab the comments for this issue too.
             all_comments = self.format_comments(issue.get_comments())
 
             issue_list.append(
@@ -197,6 +198,10 @@ class SimpleNvimGithub:
         comments_to_upload = []
         change_indexes = []
 
+        # For every issue, check the comments and check if the tags for that
+        # comment contain the target tag. If it does, setup a dict with some
+        # needed value as well as storing the index of the comment, so it can
+        # be updated later.
         for issue_index, issue in enumerate(issues):
             for comment_index, comment in enumerate(issue.all_comments):
                 if tag in comment.tags:
@@ -229,6 +234,9 @@ class SimpleNvimGithub:
         issues_to_upload = []
         change_indexes = []
 
+        # For every issue, check the metadata to see if it contains the target
+        # tag. If it does, setup a dict with some needed value as well as
+        # storing the index of the issue, so it can be updated later.
         for index, issue in enumerate(issues):
             if tag in issue.metadata:
                 issue_body = issue.all_comments[0].body
