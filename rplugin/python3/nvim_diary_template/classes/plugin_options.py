@@ -20,20 +20,6 @@ class PluginOptions:
     value exists in the users' config.
     """
 
-    _defaults = {
-        "active": True,
-        "notes_path": os.path.join(str(Path.home()), "vimwiki"),
-        "config_path": os.path.join(str(Path.home()), "vimwiki", "config"),
-        "daily_headings": ["Notes"],
-        "use_google_calendar": True,
-        "calendar_filter_list": [],
-        "add_to_google_cal": False,
-        "google_cal_name": "primary",
-        "timezone": "Europe/London",
-        "use_github_repo": True,
-        "repo_name": "",
-    }
-
     def __init__(self, nvim):
 
         self.active: bool = True
@@ -48,8 +34,8 @@ class PluginOptions:
         self.use_github_repo: bool = True
         self.repo_name: str = ""
 
-        for key, default_value in PluginOptions._defaults.items():
-            value = nvim.vars.get(f"nvim_diary_template#{key}", default_value)
+        for key, default_value in self.__dict__.items():
+            value: any = nvim.vars.get(f"nvim_diary_template#{key}", default_value)
             nvim.vars[f"nvim_diary_template#{key}"] = value
 
             setattr(self, key, value)
