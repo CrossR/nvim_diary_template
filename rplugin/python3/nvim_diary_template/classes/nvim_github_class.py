@@ -9,10 +9,7 @@ from os import path
 
 from github import Github
 
-from ..classes.github_issue_class import (
-    GitHubIssue,
-    GitHubIssueComment,
-)
+from ..classes.github_issue_class import GitHubIssue, GitHubIssueComment
 from ..helpers.file_helpers import check_cache
 from ..helpers.issue_helpers import (
     check_markdown_style,
@@ -20,10 +17,7 @@ from ..helpers.issue_helpers import (
     get_github_objects,
 )
 from ..helpers.neovim_helpers import buffered_info_message
-from ..utils.constants import (
-    CALENDAR_CACHE_DURATION,
-    ISSUE_CACHE_DURATION,
-)
+from ..utils.constants import CALENDAR_CACHE_DURATION, ISSUE_CACHE_DURATION
 
 
 class SimpleNvimGithub:

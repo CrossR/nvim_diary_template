@@ -17,11 +17,7 @@ from ..helpers.google_calendar_helpers import (
     create_google_event,
     format_google_events,
 )
-from ..utils.constants import (
-    CALENDAR_CACHE_DURATION,
-    EVENT_CACHE_DURATION,
-    ISO_FORMAT,
-)
+from ..utils.constants import CALENDAR_CACHE_DURATION, EVENT_CACHE_DURATION, ISO_FORMAT
 
 
 class SimpleNvimGoogleCal:

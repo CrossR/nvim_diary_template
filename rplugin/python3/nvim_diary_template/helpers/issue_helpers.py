@@ -7,10 +7,7 @@ import re
 from dateutil import tz
 from dataclasses import is_dataclass
 
-from ..classes.github_issue_class import (
-    GitHubIssue,
-    GitHubIssueComment,
-)
+from ..classes.github_issue_class import GitHubIssue, GitHubIssueComment
 from ..helpers.neovim_helpers import (
     get_buffer_contents,
     get_section_line,
@@ -42,9 +39,7 @@ def insert_edit_tag(nvim, location):
     issues_header_index = get_section_line(current_buffer, ISSUE_HEADING)
     schedule_header_index = get_section_line(current_buffer, SCHEDULE_HEADING) - 1
 
-    inside_issues_section = (
-            issues_header_index <= current_line <= schedule_header_index
-    )
+    inside_issues_section = issues_header_index <= current_line <= schedule_header_index
 
     # If we are outside the issues section, return.
     if not inside_issues_section:
@@ -123,9 +118,7 @@ def insert_new_comment(nvim):
     issues_header_index = get_section_line(current_buffer, ISSUE_HEADING)
     schedule_header_index = get_section_line(current_buffer, SCHEDULE_HEADING) - 1
 
-    inside_issues_section = (
-            issues_header_index <= current_line <= schedule_header_index
-    )
+    inside_issues_section = issues_header_index <= current_line <= schedule_header_index
 
     # If we are outside the issues section, return.
     if not inside_issues_section:

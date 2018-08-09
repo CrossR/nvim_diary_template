@@ -8,15 +8,8 @@ from neovim import Nvim
 
 from ..classes.calendar_event_class import CalendarEvent
 from ..helpers.google_calendar_helpers import convert_events
-from ..helpers.neovim_helpers import (
-    get_buffer_contents,
-    get_section_line,
-)
-from ..utils.constants import (
-    BULLET_POINT,
-    SCHEDULE_HEADING,
-    TIME_FORMAT,
-)
+from ..helpers.neovim_helpers import get_buffer_contents, get_section_line
+from ..utils.constants import BULLET_POINT, SCHEDULE_HEADING, TIME_FORMAT
 
 
 def format_events_lines(events: List[CalendarEvent]) -> List[str]:

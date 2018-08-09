@@ -14,10 +14,7 @@ from ..classes.github_issue_class import GitHubIssue
 from ..classes.nvim_github_class import SimpleNvimGithub
 from ..classes.nvim_google_cal_class import SimpleNvimGoogleCal
 from ..classes.plugin_options import PluginOptions
-from ..helpers.neovim_helpers import (
-    is_buffer_empty,
-    set_buffer_contents,
-)
+from ..helpers.neovim_helpers import is_buffer_empty, set_buffer_contents
 from ..utils.make_issues import produce_issue_markdown
 from ..utils.make_schedule import produce_schedule_markdown
 
@@ -89,7 +86,9 @@ def generate_markdown_metadata(metadata_obj: Dict[str, str]) -> List[str]:
 
     metadata: List[str] = ["<!---"]
 
-    passed_metadata: List[str] = [f"    {key}: {value}" for key, value in metadata_obj.items()]
+    passed_metadata: List[str] = [
+        f"    {key}: {value}" for key, value in metadata_obj.items()
+    ]
 
     metadata.extend(passed_metadata)
     metadata.append(f"    Tags:")

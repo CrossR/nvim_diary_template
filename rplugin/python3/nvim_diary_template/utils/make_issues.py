@@ -6,15 +6,9 @@ from typing import List
 
 from neovim import Nvim
 
-from ..classes.github_issue_class import (
-    GitHubIssue,
-    GitHubIssueComment,
-)
+from ..classes.github_issue_class import GitHubIssue, GitHubIssueComment
 from ..helpers.issue_helpers import check_markdown_style, sort_issues
-from ..helpers.neovim_helpers import (
-    get_buffer_contents,
-    get_section_line,
-)
+from ..helpers.neovim_helpers import get_buffer_contents, get_section_line
 from ..utils.constants import (
     EMPTY_TODO,
     HEADING_2,
