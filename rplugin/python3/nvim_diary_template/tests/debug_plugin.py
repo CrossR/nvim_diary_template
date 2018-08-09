@@ -10,4 +10,3 @@ PIPES = os.listdir("\\\\.\\pipe")
 CURRENT_PIPE = [pipe for pipe in PIPES if pipe.startswith("nvim")][0]
 NVIM = neovim.attach("socket", path=f"\\\\.\\pipe\\{CURRENT_PIPE}")
 DiaryTemplatePlugin(NVIM).make_diary()
-
