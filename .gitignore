@@ -105,6 +105,7 @@ venv.bak/
 
 # Ignore VS Code files
 /.vscode/**
+!/.vscode/launch.json
 
 # Ignore JSON files incase there is any
 # credentials here.
