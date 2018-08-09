@@ -67,7 +67,7 @@ def make_todays_diary(
     # Add in Todays Calendar Entries
     todays_events: List[CalendarEvent] = []
     if options.use_google_calendar and gcal_service and gcal_service.active:
-        todays_events = gcal_service.todays_events
+        todays_events = gcal_service.events
 
     schedule_markdown: List[str] = produce_schedule_markdown(todays_events)
     full_markdown.extend(schedule_markdown)
