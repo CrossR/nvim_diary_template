@@ -6,10 +6,13 @@ back to the user.
 
 import json
 from os import path
+from typing import Dict, List, Optional, Tuple, Union
 
-from github import Github
+from github import Github, GithubObject, Issue, IssueComment, Label
+from neovim import Nvim
 
 from ..classes.github_issue_class import GitHubIssue, GitHubIssueComment
+from ..classes.plugin_options import PluginOptions
 from ..helpers.file_helpers import check_cache
 from ..helpers.issue_helpers import (
     check_markdown_style,
@@ -19,6 +22,9 @@ from ..helpers.issue_helpers import (
 from ..helpers.neovim_helpers import buffered_info_message
 from ..utils.constants import CALENDAR_CACHE_DURATION, ISSUE_CACHE_DURATION
 
+IntStrDict = Dict[str, Union[str, int]]
+IntStrListDict = Dict[str, Union[str, int, List]]
+
 
 class SimpleNvimGithub:
     """SimpleNvimGithub
@@ -26,27 +32,27 @@ class SimpleNvimGithub:
     A class to deal with the simple interactions with the Github API.
     """
 
-    def __init__(self, nvim, options):
-        self.nvim = nvim
-        self.config_path = options.config_path
-        self.repo_name = options.repo_name
-        self.options = options
+    def __init__(self, nvim: Nvim, options: PluginOptions) -> None:
+        self.nvim: Nvim = nvim
+        self.config_path: str = options.config_path
+        self.repo_name: str = options.repo_name
+        self.options: PluginOptions = options
 
-        self.service = self.setup_github_api()
+        self.service: GithubObject = self.setup_github_api()
 
         if self.service_not_valid():
             return
 
-        loaded_issues = check_cache(
+        loaded_issues: Union[Dict[str, str], List[GitHubIssue]] = check_cache(
             self.config_path,
             "open_issues",
             ISSUE_CACHE_DURATION,
             self.get_all_open_issues,
         )
 
-        self.issues = get_github_objects(loaded_issues)
+        self.issues: List[GitHubIssue] = get_github_objects(loaded_issues)
 
-        self.repo_labels = check_cache(
+        self.repo_labels: List[str] = check_cache(
             self.config_path,
             "repo_labels",
             CALENDAR_CACHE_DURATION,
@@ -54,14 +60,14 @@ class SimpleNvimGithub:
         )
 
     @property
-    def active(self):
+    def active(self) -> bool:
         """active
 
         Is the Github service active?
         """
         return not self.service_not_valid()
 
-    def setup_github_api(self):
+    def setup_github_api(self) -> Optional[GithubObject]:
         """setup_github_api
 
             Sets up the initial Github service, which can then be used
@@ -72,20 +78,20 @@ class SimpleNvimGithub:
             with open(
                 path.join(self.config_path, "github_credentials.json")
             ) as json_file:
-                store = json.load(json_file)
+                store: Dict[str, str] = json.load(json_file)
 
-            access_token = store["access_token"]
+            access_token: str = store["access_token"]
         except (IOError, ValueError):
             self.nvim.err_write(
                 "Credentials invalid, try re-generating or checking the path.\n"
             )
             return None
 
-        service = Github(access_token)
+        service: GithubObject = Github(access_token)
 
         return service
 
-    def service_not_valid(self):
+    def service_not_valid(self) -> bool:
         """service_not_valid
 
         Check if the Github API service is ready.
@@ -98,7 +104,7 @@ class SimpleNvimGithub:
 
         return False
 
-    def get_repo_issues(self):
+    def get_repo_issues(self) -> List[str]:
         """get_repo_issues
 
         Get the labels for the current repo.
@@ -109,11 +115,11 @@ class SimpleNvimGithub:
             return []
 
         # TODO: Add a wrapper for all GitHub calls.
-        repo_labels = self.service.get_repo(self.repo_name).get_labels()
+        repo_labels: List[Label] = self.service.get_repo(self.repo_name).get_labels()
 
         return [label.name for label in repo_labels]
 
-    def get_all_open_issues(self):
+    def get_all_open_issues(self) -> List[GitHubIssue]:
         """get_all_open_issues
 
         Returns a list of all the open issues, which will include ones that
@@ -124,13 +130,15 @@ class SimpleNvimGithub:
             self.nvim.err_write("Github service not currently running...\n")
             return []
 
-        issues = self.service.get_repo(self.repo_name).get_issues(state="open")
+        issues: List[Issue] = self.service.get_repo(self.repo_name).get_issues(
+            state="open"
+        )
 
-        issue_list = []
+        issue_list: List[GitHubIssue] = []
 
         for issue in issues:
 
-            initial_comment = GitHubIssueComment(
+            initial_comment: GitHubIssueComment = GitHubIssueComment(
                 number=0,
                 body=issue.body.splitlines(),
                 tags=[],
@@ -140,7 +148,9 @@ class SimpleNvimGithub:
             )
 
             # Grab the comments for this issue too.
-            all_comments = self.format_comments(issue.get_comments())
+            all_comments: List[GitHubIssueComment] = self.format_comments(
+                issue.get_comments()
+            )
 
             issue_list.append(
                 GitHubIssue(
@@ -155,16 +165,16 @@ class SimpleNvimGithub:
 
         return issue_list
 
-    def format_comments(self, comments):
+    def format_comments(self, comments) -> List[GitHubIssueComment]:
         """format_comments
 
         Format all the comments that are passed into GitHubIssueComment
         objects.
         """
 
-        comment_objs = []
+        comment_objs: List[GitHubIssueComment] = []
 
-        current_comment = 1
+        current_comment: int = 1
 
         for comment in comments:
             comment_objs.append(
@@ -183,14 +193,16 @@ class SimpleNvimGithub:
         return comment_objs
 
     @staticmethod
-    def filter_comments(issues, tag):
+    def filter_comments(
+        issues: List[GitHubIssue], tag: str
+    ) -> Tuple[List[Dict], List[Dict[str, int]]]:
         """filter_comments
 
         Filter comments for uploading, by a specific tag.
         """
 
-        comments_to_upload = []
-        change_indexes = []
+        comments_to_upload: List[IntStrDict] = []
+        change_indexes: List[Dict[str, int]] = []
 
         # For every issue, check the comments and check if the tags for that
         # comment contain the target tag. If it does, setup a dict with some
@@ -199,8 +211,8 @@ class SimpleNvimGithub:
         for issue_index, issue in enumerate(issues):
             for comment_index, comment in enumerate(issue.all_comments):
                 if tag in comment.tags:
-                    comment_lines = comment.body
-                    processed_comment_lines = [
+                    comment_lines: List[str] = comment.body
+                    processed_comment_lines: List[str] = [
                         check_markdown_style(line, "github") for line in comment_lines
                     ]
 
@@ -219,22 +231,24 @@ class SimpleNvimGithub:
         return comments_to_upload, change_indexes
 
     @staticmethod
-    def filter_issues(issues, tag):
+    def filter_issues(
+        issues: List[GitHubIssue], tag: str
+    ) -> Tuple[List[Dict], List[int]]:
         """filter_issues
 
         Filter issues for uploading, by a specific tag.
         """
 
-        issues_to_upload = []
-        change_indexes = []
+        issues_to_upload: List[IntStrListDict] = []
+        change_indexes: List[int] = []
 
         # For every issue, check the metadata to see if it contains the target
         # tag. If it does, setup a dict with some needed value as well as
         # storing the index of the issue, so it can be updated later.
         for index, issue in enumerate(issues):
             if tag in issue.metadata:
-                issue_body = issue.all_comments[0].body
-                processed_body = [
+                issue_body: List[str] = issue.all_comments[0].body
+                processed_body: List[str] = [
                     check_markdown_style(line, "github") for line in issue_body
                 ]
 
@@ -251,7 +265,7 @@ class SimpleNvimGithub:
 
         return issues_to_upload, change_indexes
 
-    def upload_comments(self, issues, tag):
+    def upload_comments(self, issues: List[GitHubIssue], tag: str) -> List[GitHubIssue]:
         """upload_comments
 
         Upload comments with the specific tag to GitHub.
@@ -260,17 +274,19 @@ class SimpleNvimGithub:
         comments_to_upload, change_indexes = self.filter_comments(issues, tag)
 
         for comment, change_index in zip(comments_to_upload, change_indexes):
-            issue_number = comment["issue_number"]
-            comment_body = comment["comment"]
+            issue_number: int = comment["issue_number"]
+            comment_body: List[str] = comment["comment"]
 
-            new_comment = (
+            new_comment: IssueComment = (
                 self.service.get_repo(self.repo_name)
                 .get_issue(issue_number)
                 .create_comment(comment_body)
             )
 
-            current_issue = issues[change_index["issue"]]
-            current_comment = current_issue.all_comments[change_index["comment"]]
+            current_issue: GitHubIssue = issues[change_index["issue"]]
+            current_comment: GitHubIssueComment = current_issue.all_comments[
+                change_index["comment"]
+            ]
             current_comment.updated_at = convert_utc_timezone(
                 new_comment.updated_at, self.options.timezone
             )
@@ -281,7 +297,7 @@ class SimpleNvimGithub:
 
         return issues
 
-    def upload_issues(self, issues, tag):
+    def upload_issues(self, issues: List[GitHubIssue], tag: str) -> List[GitHubIssue]:
         """upload_issues
 
         Upload issues with the specific tag to GitHub.
@@ -290,11 +306,11 @@ class SimpleNvimGithub:
         issues_to_upload, change_indexes = self.filter_issues(issues, tag)
 
         for issue, index in zip(issues_to_upload, change_indexes):
-            issue_title = issue["title"]
-            issue_body = issue["body"]
-            issue_labels = issue["labels"]
+            issue_title: str = issue["title"]
+            issue_body: List[str] = issue["body"]
+            issue_labels: List[str] = issue["labels"]
 
-            new_issue = self.service.get_repo(self.repo_name).create_issue(
+            new_issue: Issue = self.service.get_repo(self.repo_name).create_issue(
                 title=issue_title, body=issue_body, labels=issue_labels
             )
 
@@ -309,7 +325,7 @@ class SimpleNvimGithub:
 
         return issues
 
-    def update_comments(self, issues, tag):
+    def update_comments(self, issues: List[GitHubIssue], tag: str) -> List[GitHubIssue]:
         """update_comments
 
         Update existing comments with the specific tag on GitHub.
@@ -318,9 +334,9 @@ class SimpleNvimGithub:
         comments_to_upload, change_indexes = self.filter_comments(issues, tag)
 
         for comment, change_index in zip(comments_to_upload, change_indexes):
-            issue_number = comment["issue_number"]
-            comment_number = comment["comment_number"]
-            comment_body = comment["comment"]
+            issue_number: int = comment["issue_number"]
+            comment_number: int = comment["comment_number"]
+            comment_body: List[str] = comment["comment"]
 
             # Comment 0 is actually the issue body, not a comment.
             if comment_number == 0:
@@ -330,7 +346,7 @@ class SimpleNvimGithub:
 
                 continue
 
-            github_comment = (
+            github_comment: IssueComment = (
                 self.service.get_repo(self.repo_name)
                 .get_issue(issue_number)
                 .get_comments()[comment_number - 1]
@@ -345,8 +361,10 @@ class SimpleNvimGithub:
                 .get_comments()[comment_number - 1]
             )
 
-            current_issue = issues[change_index["issue"]]
-            current_comment = current_issue.all_comments[change_index["comment"]]
+            current_issue: GitHubIssue = issues[change_index["issue"]]
+            current_comment: GitHubIssueComment = current_issue.all_comments[
+                change_index["comment"]
+            ]
             current_comment.updated_at = convert_utc_timezone(
                 github_comment.updated_at, self.options.timezone
             )
@@ -357,7 +375,7 @@ class SimpleNvimGithub:
 
         return issues
 
-    def update_issues(self, issues, tag):
+    def update_issues(self, issues: List[GitHubIssue], tag: str) -> List[GitHubIssue]:
         """update_issues
 
         Update existing issues with the specific tag on GitHub.
@@ -366,19 +384,21 @@ class SimpleNvimGithub:
         issues_to_upload, change_indexes = self.filter_issues(issues, tag)
 
         for issue, change_index in zip(issues_to_upload, change_indexes):
-            issue_number = issue["number"]
-            issue_title = issue["title"]
-            issue_body = issue["body"]
-            issue_labels = issue["labels"]
+            issue_number: int = issue["number"]
+            issue_title: str = issue["title"]
+            issue_body: List[str] = issue["body"]
+            issue_labels: List[str] = issue["labels"]
 
-            github_issue = self.service.get_repo(self.repo_name).get_issue(issue_number)
+            github_issue: Issue = self.service.get_repo(self.repo_name).get_issue(
+                issue_number
+            )
 
             github_issue.edit(title=issue_title, body=issue_body, labels=issue_labels)
 
             # Grab the issue again, to sort the update time.
             github_issue = self.service.get_repo(self.repo_name).get_issue(issue_number)
-            current_issue = issues[change_index]
-            issue_body_comment = current_issue.all_comments[0]
+            current_issue: GitHubIssue = issues[change_index]
+            issue_body_comment: GitHubIssueComment = current_issue.all_comments[0]
             issue_body_comment.updated_at = convert_utc_timezone(
                 github_issue.updated_at, self.options.timezone
             )
@@ -389,17 +409,19 @@ class SimpleNvimGithub:
 
         return issues
 
-    def complete_issues(self, issues):
+    def complete_issues(self, issues: List[GitHubIssue]) -> None:
         """complete_issues
 
         Sort the complete status of the issues in the current buffer.
         We assume the buffer is always correct.
         """
 
-        change_counter = 0
+        change_counter: int = 0
 
         for issue in issues:
-            github_issue = self.service.get_repo(self.repo_name).get_issue(issue.number)
+            github_issue: Issue = self.service.get_repo(self.repo_name).get_issue(
+                issue.number
+            )
 
             if issue.complete and github_issue.state == "open":
                 github_issue.edit(state="closed")

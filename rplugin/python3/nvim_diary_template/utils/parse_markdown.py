@@ -9,7 +9,7 @@ from typing import List, Match, Optional
 
 from dateutil import parser
 
-from Neovim import Nvim
+from neovim import Nvim
 
 from ..classes.calendar_event_class import CalendarEvent
 from ..classes.github_issue_class import GitHubIssue, GitHubIssueComment
