@@ -29,33 +29,6 @@ from nvim_diary_template.utils.constants import (
 )
 
 
-def convert_issues(github_service):
-    """convert_issues
-
-    Given a basic list of issues, grab the associated comments for printing.
-    """
-
-    formatted_issues = []
-
-    # For every issue, grab the associated comments and combine. We treat the
-    # issue body as the 0th comment, which is why it is added to the comments
-    # item.
-    for issue in github_service.issues:
-        comments = github_service.get_comments_for_issue(issue.number)
-        formatted_issues.append(
-            GitHubIssue(
-                number=issue.number,
-                title=issue.title,
-                complete=issue.complete,
-                labels=issue.labels,
-                all_comments=comments,
-                metadata=[],
-            )
-        )
-
-    return formatted_issues
-
-
 def insert_edit_tag(nvim, location):
     """insert_edit_tag
 

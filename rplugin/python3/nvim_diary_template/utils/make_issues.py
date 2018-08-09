@@ -71,7 +71,7 @@ def format_issue_comments(comments):
     """format_issue_comments
 
     Formats each of the comments for a given issue, including the initial body
-    of the comment.  This includes adding padding and swapping newlines, as the
+    of the comment. This includes adding padding and swapping newlines, as the
     nvim API does not allow this.
     """
 

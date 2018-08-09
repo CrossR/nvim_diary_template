@@ -6,7 +6,6 @@ they don't exist.
 
 from datetime import date
 
-from nvim_diary_template.helpers.issue_helpers import convert_issues
 from nvim_diary_template.helpers.neovim_helpers import (
     is_buffer_empty,
     set_buffer_contents,
@@ -50,7 +49,7 @@ def make_todays_diary(nvim, options, gcal_service, github_service, auto_command=
     if not options.use_github_repo or not github_service or not github_service.active:
         issues = []
     else:
-        issues = convert_issues(github_service)
+        issues = github_service.issues
 
     issue_markdown = produce_issue_markdown(issues)
     full_markdown.extend(issue_markdown)
