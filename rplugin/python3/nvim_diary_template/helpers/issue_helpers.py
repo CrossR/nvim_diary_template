@@ -5,7 +5,12 @@ Simple helpers to deal with Github issues.
 import re
 
 from dateutil import tz
+from dataclasses import is_dataclass
 
+from nvim_diary_template.classes.github_issue_class import (
+    GitHubIssue,
+    GitHubIssueComment,
+)
 from nvim_diary_template.helpers.neovim_helpers import (
     get_buffer_contents,
     get_section_line,
@@ -23,32 +28,6 @@ from nvim_diary_template.utils.constants import (
     TODO_IN_PROGRESS_REGEX,
     VIMWIKI_TODO,
 )
-
-
-def convert_issues(github_service):
-    """convert_issues
-
-    Given a basic list of issues, grab the associated comments for printing.
-    """
-
-    formatted_issues = []
-
-    # For every issue, grab the associated comments and combine. We treat the
-    # issue body as the 0th comment, which is why it is added to the comments
-    # item.
-    for issue in github_service.issues:
-        comments = github_service.get_comments_for_issue(issue["number"])
-        formatted_issues.append(
-            {
-                "number": issue["number"],
-                "title": issue["title"],
-                "complete": issue["complete"],
-                "labels": issue["labels"],
-                "all_comments": comments,
-            }
-        )
-
-    return formatted_issues
 
 
 def insert_edit_tag(nvim, location):
@@ -271,8 +250,8 @@ def sort_issues(issues):
         issues,
         key=lambda i: (
             sort_completion_state(i),
-            i["all_comments"][-1]["updated_at"],
-            i["number"],
+            i.all_comments[-1].updated_at,
+            i.number,
         ),
     )
 
@@ -282,15 +261,52 @@ def sort_completion_state(issue):
 
     Simple helper function to return a value for the issue current state for
     sorting.
+
+    The higher the value, the lower they will be on the list.
     """
 
-    if issue["complete"]:
+    if issue.complete:
         return 10000
 
-    if "blocked" in issue["labels"]:
+    if "blocked" in issue.labels:
         return 1000
 
-    if "inprogress" in issue["labels"]:
+    if "inprogress" in issue.labels:
         return 0
 
     return 100
+
+
+def get_github_objects(issues):
+    """get_github_objects
+
+    Convert the loaded dicts to Objects, if they are not already.
+    This is easier for a number of reasons, the main of which is
+    that naming is kept consistent, versus dicts which require more
+    careful usage.
+    """
+
+    # If the first object is a dataclass, they must all be.
+    if is_dataclass(issues[0]):
+        return issues
+
+    issues = []
+
+    for issue in issues:
+        current_comments = []
+
+        for comment in issue["all_comments"]:
+            current_comments.append(GitHubIssueComment(**comment))
+
+        issues.append(
+            GitHubIssue(
+                number=issue["number"],
+                title=issue["title"],
+                complete=issue["complete"],
+                labels=issue["labels"],
+                all_comments=current_comments,
+                metadata=[],
+            )
+        )
+
+    return issues

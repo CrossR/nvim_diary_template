@@ -5,6 +5,8 @@ Simple helpers to deal with Google calendar, and the replies it sends.
 
 from dateutil import parser
 
+from nvim_diary_template.classes.calendar_event_class import CalendarEvent
+
 
 def convert_events(events, format_string):
     """convert_events
@@ -16,12 +18,11 @@ def convert_events(events, format_string):
     formatted_events = []
 
     for event in events:
-        start_time = get_time(event["start_time"]).strftime(format_string)
-        end_time = get_time(event["end_time"]).strftime(format_string)
-        event_name = event["event_name"]
+        start_time = get_time(event.start).strftime(format_string)
+        end_time = get_time(event.end).strftime(format_string)
 
         formatted_events.append(
-            {"event_name": event_name, "start_time": start_time, "end_time": end_time}
+            CalendarEvent(name=event.name, start=start_time, end=end_time)
         )
 
     return formatted_events
@@ -55,13 +56,9 @@ def format_google_events(events_list):
     filtered_events = []
 
     for event in events_list:
-        event_dict = {
-            "event_name": event["summary"],
-            "start_time": event["start"],
-            "end_time": event["end"],
-        }
-
-        filtered_events.append(event_dict)
+        filtered_events.append(
+            CalendarEvent(name=event["summary"], start=event["start"], end=event["end"])
+        )
 
     return filtered_events
 
@@ -73,13 +70,10 @@ def create_google_event(event, timezone):
     """
 
     return {
-        "summary": event["event_name"],
+        "summary": event.name,
         "start": {
             "timeZone": timezone,
-            "dateTime": parser.parse(event["start_time"]).isoformat(),
+            "dateTime": parser.parse(event.start).isoformat(),
         },
-        "end": {
-            "timeZone": timezone,
-            "dateTime": parser.parse(event["end_time"]).isoformat(),
-        },
+        "end": {"timeZone": timezone, "dateTime": parser.parse(event.end).isoformat()},
     }

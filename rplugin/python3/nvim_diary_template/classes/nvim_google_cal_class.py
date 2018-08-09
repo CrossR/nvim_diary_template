@@ -223,8 +223,8 @@ class SimpleNvimGoogleCal:
 
         if target_calendar == "primary":
             return "primary"
-        else:
-            try:
-                return self.all_calendars[target_calendar]
-            except KeyError:
-                self.nvim.err_write(f"No calendar named {target_calendar} exists.\n")
+
+        try:
+            return self.all_calendars[target_calendar]
+        except KeyError:
+            self.nvim.err_write(f"No calendar named {target_calendar} exists.\n")
