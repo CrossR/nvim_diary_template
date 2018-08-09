@@ -7,20 +7,18 @@ import re
 from datetime import date
 
 from dateutil import parser
+from typing import List
 
-from nvim_diary_template.classes.calendar_event_class import CalendarEvent
-from nvim_diary_template.classes.github_issue_class import (
-    GitHubIssue,
-    GitHubIssueComment,
-)
-from nvim_diary_template.helpers.event_helpers import format_event
-from nvim_diary_template.helpers.google_calendar_helpers import convert_events
-from nvim_diary_template.helpers.neovim_helpers import (
+from ..classes.calendar_event_class import CalendarEvent
+from ..classes.github_issue_class import GitHubIssue, GitHubIssueComment
+from ..helpers.event_helpers import format_event
+from ..helpers.google_calendar_helpers import convert_events
+from ..helpers.neovim_helpers import (
     get_buffer_contents,
     get_section_line,
     set_line_content,
 )
-from nvim_diary_template.utils.constants import (
+from ..utils.constants import (
     DATETIME_REGEX,
     EVENT_REGEX,
     ISO_FORMAT,
@@ -43,7 +41,7 @@ def parse_buffer_events(events, format_string):
     Given a list of events, parse the buffer lines and create event objects.
     """
 
-    formatted_events = []
+    formatted_events: List[CalendarEvent] = []
 
     for event in events:
         if event == "":

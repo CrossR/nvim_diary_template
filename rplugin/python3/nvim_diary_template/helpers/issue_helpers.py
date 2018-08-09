@@ -7,16 +7,16 @@ import re
 from dateutil import tz
 from dataclasses import is_dataclass
 
-from nvim_diary_template.classes.github_issue_class import (
+from ..classes.github_issue_class import (
     GitHubIssue,
     GitHubIssueComment,
 )
-from nvim_diary_template.helpers.neovim_helpers import (
+from ..helpers.neovim_helpers import (
     get_buffer_contents,
     get_section_line,
     set_line_content,
 )
-from nvim_diary_template.utils.constants import (
+from ..utils.constants import (
     EMPTY_TODO,
     GITHUB_TODO,
     HEADING_2,

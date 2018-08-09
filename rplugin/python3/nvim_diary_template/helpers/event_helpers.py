@@ -5,7 +5,7 @@ Simple helpers to deal with parsed events.
 
 from dateutil import parser
 
-from nvim_diary_template.classes.calendar_event_class import CalendarEvent
+from ..classes.calendar_event_class import CalendarEvent
 
 
 def sort_events(events):

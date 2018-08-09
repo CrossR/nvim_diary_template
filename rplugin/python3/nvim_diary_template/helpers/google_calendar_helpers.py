@@ -5,7 +5,7 @@ Simple helpers to deal with Google calendar, and the replies it sends.
 
 from dateutil import parser
 
-from nvim_diary_template.classes.calendar_event_class import CalendarEvent
+from ..classes.calendar_event_class import CalendarEvent
 
 
 def convert_events(events, format_string):

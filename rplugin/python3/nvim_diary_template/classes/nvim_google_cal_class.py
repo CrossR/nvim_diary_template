@@ -11,13 +11,13 @@ from googleapiclient import discovery
 from httplib2 import Http
 from oauth2client import file
 
-from nvim_diary_template.helpers.file_helpers import check_cache, set_cache
-from nvim_diary_template.helpers.google_calendar_helpers import (
+from ..helpers.file_helpers import check_cache, set_cache
+from ..helpers.google_calendar_helpers import (
     convert_events,
     create_google_event,
     format_google_events,
 )
-from nvim_diary_template.utils.constants import (
+from ..utils.constants import (
     CALENDAR_CACHE_DURATION,
     EVENT_CACHE_DURATION,
     ISO_FORMAT,

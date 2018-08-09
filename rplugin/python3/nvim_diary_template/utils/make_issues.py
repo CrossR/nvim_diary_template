@@ -6,16 +6,16 @@ from typing import List
 
 from neovim import Nvim
 
-from nvim_diary_template.classes.github_issue_class import (
+from ..classes.github_issue_class import (
     GitHubIssue,
     GitHubIssueComment,
 )
-from nvim_diary_template.helpers.issue_helpers import check_markdown_style, sort_issues
-from nvim_diary_template.helpers.neovim_helpers import (
+from ..helpers.issue_helpers import check_markdown_style, sort_issues
+from ..helpers.neovim_helpers import (
     get_buffer_contents,
     get_section_line,
 )
-from nvim_diary_template.utils.constants import (
+from ..utils.constants import (
     EMPTY_TODO,
     HEADING_2,
     HEADING_3,

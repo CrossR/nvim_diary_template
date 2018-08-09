@@ -10,8 +10,8 @@ import time as t
 from datetime import datetime
 from os import makedirs, path, remove
 
-from nvim_diary_template.utils.constants import CACHE_EPOCH_REGEX, DIARY_FOLDER
-from nvim_diary_template.classes.data_class_json import EnhancedJSONEncoder
+from ..utils.constants import CACHE_EPOCH_REGEX, DIARY_FOLDER
+from ..classes.data_class_json import EnhancedJSONEncoder
 
 
 def get_file_content(file_path):

@@ -3,23 +3,23 @@ from functools import wraps
 
 import neovim
 
-from nvim_diary_template.classes.nvim_github_class import SimpleNvimGithub
-from nvim_diary_template.classes.nvim_google_cal_class import SimpleNvimGoogleCal
-from nvim_diary_template.classes.plugin_options import PluginOptions
-from nvim_diary_template.helpers.issue_helpers import (
+from .classes.nvim_github_class import SimpleNvimGithub
+from .classes.nvim_google_cal_class import SimpleNvimGoogleCal
+from .classes.plugin_options import PluginOptions
+from .helpers.issue_helpers import (
     insert_edit_tag,
     insert_new_comment,
     insert_new_issue,
 )
-from nvim_diary_template.helpers.markdown_helpers import sort_markdown_events
-from nvim_diary_template.utils.constants import FILE_TYPE_WILDCARD, ISO_FORMAT
-from nvim_diary_template.utils.make_issues import (
+from .helpers.markdown_helpers import sort_markdown_events
+from .utils.constants import FILE_TYPE_WILDCARD, ISO_FORMAT
+from .utils.make_issues import (
     remove_tag_from_issues,
     set_issues_from_issues_list,
 )
-from nvim_diary_template.utils.make_markdown_file import make_todays_diary
-from nvim_diary_template.utils.make_schedule import set_schedule_from_events_list
-from nvim_diary_template.utils.parse_markdown import (
+from .utils.make_markdown_file import make_todays_diary
+from .utils.make_schedule import set_schedule_from_events_list
+from .utils.parse_markdown import (
     combine_events,
     parse_markdown_file_for_events,
     parse_markdown_file_for_issues,
