@@ -3,6 +3,9 @@ from functools import wraps
 
 import neovim
 
+from nvim_diary_template.classes.nvim_github_class import SimpleNvimGithub
+from nvim_diary_template.classes.nvim_google_cal_class import SimpleNvimGoogleCal
+from nvim_diary_template.classes.plugin_options import PluginOptions
 from nvim_diary_template.helpers.issue_helpers import (
     insert_edit_tag,
     insert_new_comment,
@@ -16,15 +19,12 @@ from nvim_diary_template.utils.make_issues import (
 )
 from nvim_diary_template.utils.make_markdown_file import make_todays_diary
 from nvim_diary_template.utils.make_schedule import set_schedule_from_events_list
-from nvim_diary_template.utils.nvim_github_class import SimpleNvimGithub
-from nvim_diary_template.utils.nvim_google_cal_class import SimpleNvimGoogleCal
 from nvim_diary_template.utils.parse_markdown import (
     combine_events,
     parse_markdown_file_for_events,
     parse_markdown_file_for_issues,
     remove_events_not_from_today,
 )
-from nvim_diary_template.utils.plugin_options import PluginOptions
 
 
 def if_active(function):
@@ -46,7 +46,7 @@ def if_active(function):
 
 
 @neovim.plugin
-class DiaryTemplatePlugin(object):
+class DiaryTemplatePlugin():
     def __init__(self, nvim):
         self._nvim = nvim
         self._options = None
