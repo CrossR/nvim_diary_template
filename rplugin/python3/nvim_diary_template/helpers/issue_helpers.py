@@ -43,7 +43,7 @@ def insert_edit_tag(nvim, location):
     schedule_header_index = get_section_line(current_buffer, SCHEDULE_HEADING) - 1
 
     inside_issues_section = (
-        current_line >= issues_header_index and current_line <= schedule_header_index
+            issues_header_index <= current_line <= schedule_header_index
     )
 
     # If we are outside the issues section, return.
@@ -124,7 +124,7 @@ def insert_new_comment(nvim):
     schedule_header_index = get_section_line(current_buffer, SCHEDULE_HEADING) - 1
 
     inside_issues_section = (
-        current_line >= issues_header_index and current_line <= schedule_header_index
+            issues_header_index <= current_line <= schedule_header_index
     )
 
     # If we are outside the issues section, return.
@@ -184,7 +184,7 @@ def check_markdown_style(line, desired_style):
     elif desired_style == "github":
         return vimwiki_to_github_process(line)
     else:
-        raise "Unknown style."
+        raise Exception("Unknown style.")
 
 
 def vimwiki_to_github_process(line):

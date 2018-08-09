@@ -49,10 +49,7 @@ def produce_schedule_markdown(event_list: List[CalendarEvent]) -> List[str]:
     to display that event.
     """
 
-    markdown_lines: List[str] = []
-
-    markdown_lines.append(SCHEDULE_HEADING)
-    markdown_lines.append("")
+    markdown_lines: List[str] = [SCHEDULE_HEADING, ""]
 
     converted_events: List[CalendarEvent] = convert_events(event_list, TIME_FORMAT)
     schedule_lines: List[str] = format_events_lines(converted_events)

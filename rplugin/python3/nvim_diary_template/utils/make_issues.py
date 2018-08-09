@@ -113,10 +113,7 @@ def produce_issue_markdown(issue_list: List[GitHubIssue]) -> List[str]:
     to display those issues.
     """
 
-    markdown_lines: List[str] = []
-
-    markdown_lines.append(ISSUE_HEADING)
-    markdown_lines.append("")
+    markdown_lines: List[str] = [ISSUE_HEADING, ""]
 
     issue_lines: List[str] = format_issues(issue_list)
     markdown_lines.extend(issue_lines)

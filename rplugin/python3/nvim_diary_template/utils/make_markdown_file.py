@@ -87,9 +87,7 @@ def generate_markdown_metadata(metadata_obj: Dict[str, str]) -> List[str]:
     in HTML tags.
     """
 
-    metadata: List[str] = []
-
-    metadata.append("<!---")
+    metadata: List[str] = ["<!---"]
 
     passed_metadata: List[str] = [f"    {key}: {value}" for key, value in metadata_obj.items()]
 
