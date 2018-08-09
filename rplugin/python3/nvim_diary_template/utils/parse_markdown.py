@@ -83,13 +83,9 @@ def parse_buffer_issues(issue_lines):
     comment_number = -1
 
     for line in issue_lines:
-        is_issue_start = re.findall(ISSUE_START, line)
-        is_issue_title = re.findall(ISSUE_TITLE, line)
-        is_comment_start = re.findall(ISSUE_COMMENT, line)
-
         # If its the start of a new issue, add a new object.
         # Reset the comment number.
-        if is_issue_start:
+        if re.findall(ISSUE_START, line):
             issue_number += 1
             comment_number = -1
             metadata = re.findall(ISSUE_METADATA, line)
@@ -115,7 +111,7 @@ def parse_buffer_issues(issue_lines):
             continue
 
         # If its the issue title, then add that to the empty object.
-        if is_issue_title:
+        if re.findall(ISSUE_TITLE, line):
             issue_title = re.sub(ISSUE_TITLE, "", line).strip()
 
             formatted_issues[issue_number].title = issue_title
@@ -123,7 +119,7 @@ def parse_buffer_issues(issue_lines):
             continue
 
         # If this is a comment, start to add it to the existing object.
-        if is_comment_start:
+        if re.findall(ISSUE_COMMENT, line):
             comment_number = int(re.findall(r"\d+", line)[0])
             comment_date = re.match(ISSUE_COMMENT, line).group(1)
             comment_metadata = re.findall(ISSUE_METADATA, line)

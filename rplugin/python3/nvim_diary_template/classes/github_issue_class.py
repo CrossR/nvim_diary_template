@@ -1,3 +1,4 @@
+# pylint: disable=all
 """github_issue_class
 
 A simple Dataclass to store GitHub issues.
