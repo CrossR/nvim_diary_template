@@ -1,4 +1,4 @@
-# pylint: disable=too-few-public-methods
+# pylint: disable=too-few-public-methods, R0902
 """plugin_options
 
 Store the plugin options for the nvim_diary_template class, as
@@ -7,6 +7,7 @@ well as any associated helpers.
 
 import os
 from pathlib import Path
+from typing import List
 
 
 class PluginOptions:
@@ -34,6 +35,19 @@ class PluginOptions:
     }
 
     def __init__(self, nvim):
+
+        self.active: bool = True
+        self.notes_path: str = os.path.join(str(Path.home()), "vimwiki")
+        self.config_path: str = os.path.join(str(Path.home()), "vimwiki", "config")
+        self.daily_headings: List[str] = ["Notes"]
+        self.use_google_calendar: bool = True
+        self.calendar_filter_list: List[str] = []
+        self.add_to_google_cal: bool = False
+        self.google_cal_name: str = "primary"
+        self.timezone: str = "Europe/London"
+        self.use_github_repo: bool = True
+        self.repo_name: str = ""
+
         for key, default_value in PluginOptions._defaults.items():
             value = nvim.vars.get(f"nvim_diary_template#{key}", default_value)
             nvim.vars[f"nvim_diary_template#{key}"] = value

@@ -5,7 +5,13 @@ they don't exist.
 """
 
 from datetime import date
+from typing import Dict, List
 
+from neovim import Nvim
+
+from nvim_diary_template.classes.nvim_github_class import SimpleNvimGithub
+from nvim_diary_template.classes.nvim_google_cal_class import SimpleNvimGoogleCal
+from nvim_diary_template.classes.plugin_options import PluginOptions
 from nvim_diary_template.helpers.neovim_helpers import (
     is_buffer_empty,
     set_buffer_contents,
@@ -14,7 +20,13 @@ from nvim_diary_template.utils.make_issues import produce_issue_markdown
 from nvim_diary_template.utils.make_schedule import produce_schedule_markdown
 
 
-def make_todays_diary(nvim, options, gcal_service, github_service, auto_command=False):
+def make_todays_diary(
+    nvim: Nvim,
+    options: PluginOptions,
+    gcal_service: SimpleNvimGoogleCal,
+    github_service: SimpleNvimGithub,
+    auto_command: bool = False,
+):
     """make_todays_diary
 
     Make the actual diary markdown file.
@@ -35,9 +47,9 @@ def make_todays_diary(nvim, options, gcal_service, github_service, auto_command=
         nvim.err_write("Options weren't initialised, aborting.\n")
         return
 
-    full_markdown = []
+    full_markdown: List[str] = []
 
-    diary_metadata = {"Date": str(date.today())}
+    diary_metadata: Dict[str, str] = {"Date": str(date.today())}
 
     full_markdown.extend(generate_markdown_metadata(diary_metadata))
 
