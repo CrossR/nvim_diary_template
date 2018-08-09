@@ -290,7 +290,7 @@ def get_github_objects(issues):
     if is_dataclass(issues[0]):
         return issues
 
-    issues = []
+    issue_objects = []
 
     for issue in issues:
         current_comments = []
@@ -298,7 +298,7 @@ def get_github_objects(issues):
         for comment in issue["all_comments"]:
             current_comments.append(GitHubIssueComment(**comment))
 
-        issues.append(
+        issue_objects.append(
             GitHubIssue(
                 number=issue["number"],
                 title=issue["title"],
@@ -309,4 +309,4 @@ def get_github_objects(issues):
             )
         )
 
-    return issues
+    return issue_objects
