@@ -138,18 +138,21 @@ class SimpleNvimGithub:
 
             initial_comment = GitHubIssueComment(
                 number=0,
-                body=issue.body,
+                body=issue.body.splitlines(),
                 tags=[],
                 updated_at=convert_utc_timezone(
                     issue.updated_at, self.options.timezone
                 ),
             )
+
+            all_comments = self.format_comments(issue.get_comments())
+
             issue_list.append(
                 GitHubIssue(
                     number=issue.number,
                     complete=False,
                     title=issue.title,
-                    all_comments=[initial_comment],
+                    all_comments=[initial_comment, *all_comments],
                     labels=[label.name for label in issue.labels],
                     metadata=[],
                 )
@@ -157,46 +160,32 @@ class SimpleNvimGithub:
 
         return issue_list
 
-    def get_comments_for_issue(self, issue_number):
-        """get_comments_for_issue
+    def format_comments(self, comments):
+        """format_comments
 
-        Gets all the comments for a given issue.
+        Format all the comments that are passed into GitHubIssueComment
+        objects.
         """
 
-        issue = self.service.get_repo(self.repo_name).get_issue(issue_number)
-        comments = issue.get_comments()
-
-        new_line = [""]
-        comment_dicts = []
-
-        # Add the issue body first
-        comment_dicts.append(
-            GitHubIssueComment(
-                number=0,
-                body=issue.body.splitlines() + new_line,
-                tags=[],
-                updated_at=convert_utc_timezone(
-                    issue.updated_at, self.options.timezone
-                ),
-            )
-        )
+        comment_objs = []
 
         current_comment = 1
 
         for comment in comments:
-            comment_dicts.append(
+            comment_objs.append(
                 GitHubIssueComment(
                     number=current_comment,
-                    body=comment.body.splitlines() + new_line,
+                    body=comment.body.splitlines(),
                     tags=[],
                     updated_at=convert_utc_timezone(
                         comment.updated_at, self.options.timezone
                     ),
                 )
             )
+
             current_comment += 1
 
-        return comment_dicts
+        return comment_objs
 
     @staticmethod
     def filter_comments(issues, tag):
