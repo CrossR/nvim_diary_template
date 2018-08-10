@@ -21,7 +21,7 @@ fi
 
 echo "Running mypy on code base..."
 echo "TODO: Once fully updated, check the error code here."
-if [ "${FULL_TYPING}" -eq 1 ]; then
+if [ $FULL_TYPING -eq 1 ]; then
     mypy rplugin/python3/nvim_diary_template --strict
     false # Should return 0 every time, meaning the CI doesn't stop
 else
