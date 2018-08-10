@@ -15,7 +15,8 @@ matrix:
 cache: pip
 
 install:
-  - pip install -r ci/ci_requirements.txt
+  - pip install pipenv
+  - pipenv install --dev
 
 script:
   - ci/ci_test.sh

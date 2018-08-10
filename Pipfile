@@ -1,0 +1,19 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+neovim = "*"
+google-api-python-client = "*"
+dataclasses = "*"
+python-dateutil = "*"
+pygithub = "*"
+
+[dev-packages]
+black = "*"
+mypy = "*"
+pylint = "*"
+
+[requires]
+python_version = "3.6"

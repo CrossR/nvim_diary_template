@@ -1,8 +1,0 @@
-black==18.6b4
-dataclasses==0.6
-google-api-python-client==1.6.7
-mypy==0.620
-neovim==0.2.6
-PyGithub==1.40
-pylint==1.9.1
-python-dateutil==2.7.3
