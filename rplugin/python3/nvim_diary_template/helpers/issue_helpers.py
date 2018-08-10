@@ -3,9 +3,12 @@
 Simple helpers to deal with Github issues.
 """
 import re
+from datetime import datetime
+from typing import Any, Dict, List, Tuple, Union
 
-from dateutil import tz
 from dataclasses import is_dataclass
+from dateutil import tz
+from neovim import Nvim
 
 from ..classes.github_issue_class import GitHubIssue, GitHubIssueComment
 from ..helpers.neovim_helpers import (
@@ -27,29 +30,29 @@ from ..utils.constants import (
 )
 
 
-def insert_edit_tag(nvim, location):
+def insert_edit_tag(nvim: Nvim, location: str) -> None:
     """insert_edit_tag
 
     Insert an edit tag for the current issue or comment, so it can be updated.
     """
 
     # Grab the indexes needed to find the issue we are in.
-    current_line = nvim.current.window.cursor[0]
-    current_buffer = get_buffer_contents(nvim)
-    issues_header_index = get_section_line(current_buffer, ISSUE_HEADING)
-    schedule_header_index = get_section_line(current_buffer, SCHEDULE_HEADING) - 1
+    current_line: int = nvim.current.window.cursor[0]
+    current_buffer: List[str] = get_buffer_contents(nvim)
+    issues_header_index: int = get_section_line(current_buffer, ISSUE_HEADING)
+    schedule_header_index: int = get_section_line(current_buffer, SCHEDULE_HEADING) - 1
 
-    inside_issues_section = issues_header_index <= current_line <= schedule_header_index
+    inside_issues_section: bool = issues_header_index <= current_line <= schedule_header_index
 
     # If we are outside the issues section, return.
     if not inside_issues_section:
         return
 
-    relevant_buffer = current_buffer[issues_header_index:current_line]
-    line_index = -1
+    relevant_buffer: List[str] = current_buffer[issues_header_index:current_line]
+    line_index: int = -1
 
     if location == "issue":
-        target_line = ISSUE_START
+        target_line: str = ISSUE_START
     elif location == "comment":
         target_line = ISSUE_COMMENT
     else:
@@ -58,7 +61,7 @@ def insert_edit_tag(nvim, location):
     # Search the buffer backwards and find the start of the current comment, to
     # get its line index.
     for index in range(len(relevant_buffer) - 1, 0, -1):
-        line = relevant_buffer[index]
+        line: str = relevant_buffer[index]
         if re.findall(target_line, line):
             line_index = index
 
@@ -70,15 +73,15 @@ def insert_edit_tag(nvim, location):
 
     # If we did find a line, we want to append +edit to the end, and set it.
     # We need to update the line index to be relative to the full buffer.
-    updated_line = relevant_buffer[line_index]
+    updated_line: str = relevant_buffer[line_index]
     updated_line += " +edit"
 
-    insert_index = issues_header_index + line_index + 1
+    insert_index: int = issues_header_index + line_index + 1
 
     set_line_content(nvim, [updated_line], line_index=insert_index, line_offset=1)
 
 
-def insert_new_issue(nvim):
+def insert_new_issue(nvim: Nvim) -> None:
     """insert_new_issue
 
     Find the issue that the cursor is currently inside of, and get the next
@@ -87,24 +90,24 @@ def insert_new_issue(nvim):
     """
 
     # Grab the indexes needed to find the issue we are in.
-    current_buffer = get_buffer_contents(nvim)
-    schedule_header_index = get_section_line(current_buffer, SCHEDULE_HEADING) - 1
+    current_buffer: List[str] = get_buffer_contents(nvim)
+    schedule_header_index: int = get_section_line(current_buffer, SCHEDULE_HEADING) - 1
 
-    new_line_number = schedule_header_index
+    new_line_number: int = schedule_header_index
 
-    issue_start = f"{HEADING_2} {EMPTY_TODO} Issue {{00}}: +new"
-    title_line = f"{HEADING_3} Title: "
-    comment_line = f"{HEADING_3} Comment {{0}} - 0000-00-00 00:00: +new"
+    issue_start: str = f"{HEADING_2} {EMPTY_TODO} Issue {{00}}: +new"
+    title_line: str = f"{HEADING_3} Title: "
+    comment_line: str = f"{HEADING_3} Comment {{0}} - 0000-00-00 00:00: +new"
 
-    new_comment = ["", issue_start, "", title_line, "", comment_line]
+    new_comment: List[str] = ["", issue_start, "", title_line, "", comment_line]
 
     set_line_content(nvim, new_comment, line_index=new_line_number)
 
-    new_cursor_pos = (new_line_number + 3, len(title_line) - 1)
+    new_cursor_pos: Tuple[int, int] = (new_line_number + 3, len(title_line) - 1)
     nvim.current.window.cursor = new_cursor_pos
 
 
-def insert_new_comment(nvim):
+def insert_new_comment(nvim: Nvim) -> None:
     """insert_new_comment
 
     Find the issue that the cursor is currently inside of, and get the next
@@ -113,19 +116,19 @@ def insert_new_comment(nvim):
     """
 
     # Grab the indexes needed to find the issue we are in.
-    current_line = nvim.current.window.cursor[0]
-    current_buffer = get_buffer_contents(nvim)
-    issues_header_index = get_section_line(current_buffer, ISSUE_HEADING)
-    schedule_header_index = get_section_line(current_buffer, SCHEDULE_HEADING) - 1
+    current_line: int = nvim.current.window.cursor[0]
+    current_buffer: List[str] = get_buffer_contents(nvim)
+    issues_header_index: int = get_section_line(current_buffer, ISSUE_HEADING)
+    schedule_header_index: int = get_section_line(current_buffer, SCHEDULE_HEADING) - 1
 
-    inside_issues_section = issues_header_index <= current_line <= schedule_header_index
+    inside_issues_section: bool = issues_header_index <= current_line <= schedule_header_index
 
     # If we are outside the issues section, return.
     if not inside_issues_section:
         return
 
-    relevant_buffer = current_buffer[current_line:schedule_header_index]
-    new_line_number = 0
+    relevant_buffer: List[str] = current_buffer[current_line:schedule_header_index]
+    new_line_number: int = 0
 
     # Search the buffer forwards and find the start of the next issue, to
     # insert before it. Then, find the last comment number and increment it.
@@ -141,7 +144,7 @@ def insert_new_comment(nvim):
         new_line_number = schedule_header_index
 
     relevant_buffer = current_buffer[issues_header_index:new_line_number]
-    comment_number = 99
+    comment_number: int = 99
 
     # Search back to find the latest comment number, so we can increment it.
     for line in reversed(relevant_buffer):
@@ -152,18 +155,18 @@ def insert_new_comment(nvim):
 
     # Add a new issue comment line, and set the line, before moving the cursor
     # there.
-    header_line = (
+    header_line: str = (
         f"{HEADING_3} Comment {{{comment_number + 1}}} - 0000-00-00 00:00: +new"
     )
-    new_comment = ["", header_line, ""]
+    new_comment: List[str] = ["", header_line, ""]
 
     set_line_content(nvim, new_comment, line_index=new_line_number)
 
-    new_cursor_pos = (new_line_number + 2, 0)
+    new_cursor_pos: Tuple[int, int] = (new_line_number + 2, 0)
     nvim.current.window.cursor = new_cursor_pos
 
 
-def check_markdown_style(line, desired_style):
+def check_markdown_style(line: str, desired_style: str) -> str:
     """check_markdown_style
 
     Given a line, check that the style is consistent with what that platform expects.
@@ -174,13 +177,14 @@ def check_markdown_style(line, desired_style):
 
     if desired_style == "vimwiki":
         return github_to_vimwiki_process(line)
-    elif desired_style == "github":
+
+    if desired_style == "github":
         return vimwiki_to_github_process(line)
-    else:
-        raise Exception("Unknown style.")
+
+    raise Exception("Unknown style.")
 
 
-def vimwiki_to_github_process(line):
+def vimwiki_to_github_process(line: str) -> str:
     """vimwiki_to_github_process
 
     Convert VimWiki markdown to Github style.
@@ -200,7 +204,7 @@ def vimwiki_to_github_process(line):
     return line
 
 
-def github_to_vimwiki_process(line):
+def github_to_vimwiki_process(line: str) -> str:
     """github_to_vimwiki_process
 
     Convert Github markdown to Vimwiki style.
@@ -215,19 +219,19 @@ def github_to_vimwiki_process(line):
     return line
 
 
-def convert_utc_timezone(datetime, target):
+def convert_utc_timezone(passed_datetime: datetime, target: str) -> str:
     """convert_utc_timezone
 
     Converts the UTC timezone Object into the correct timezone string.
     The target should be a timezone string.
     """
 
-    utc_time = datetime.replace(tzinfo=tz.tzutc())
+    utc_time: datetime = passed_datetime.replace(tzinfo=tz.tzutc())
 
     return utc_time.astimezone(tz.gettz(target)).strftime("%Y-%m-%d %H:%M")
 
 
-def sort_issues(issues):
+def sort_issues(issues: List[GitHubIssue]) -> List[GitHubIssue]:
     """sort_issues
 
     A helper function to sort the given issues.
@@ -249,7 +253,7 @@ def sort_issues(issues):
     )
 
 
-def sort_completion_state(issue):
+def sort_completion_state(issue: GitHubIssue) -> int:
     """sort_completion_state
 
     Simple helper function to return a value for the issue current state for
@@ -270,7 +274,9 @@ def sort_completion_state(issue):
     return 100
 
 
-def get_github_objects(issues):
+def get_github_objects(
+    issues: Union[List[GitHubIssue], List[Dict[Any, Any]]]
+) -> List[GitHubIssue]:
     """get_github_objects
 
     Convert the loaded dicts to Objects, if they are not already.
@@ -283,10 +289,10 @@ def get_github_objects(issues):
     if is_dataclass(issues[0]):
         return issues
 
-    issue_objects = []
+    issue_objects: List[GitHubIssue] = []
 
     for issue in issues:
-        current_comments = []
+        current_comments: List[GitHubIssueComment] = []
 
         for comment in issue["all_comments"]:
             current_comments.append(GitHubIssueComment(**comment))
