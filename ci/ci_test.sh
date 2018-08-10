@@ -24,7 +24,7 @@ if [ "${FULL_TYPING:-0}" -eq 1 ]; then
     pipenv run mypy rplugin/python3/nvim_diary_template --strict --ignore-missing-imports
     false # Should return 0 every time, meaning the CI doesn't stop
 else
-    pipenv run mypy rplugin/python3/nvim_diary_template --strict --allow-untyped-calls --allow-untyped-decorators --ignore-missing-imports
+    pipenv run mypy --config-file mypy.ini rplugin/python3/nvim_diary_template
 fi
 
 echo "Script finished!"
