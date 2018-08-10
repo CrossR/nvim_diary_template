@@ -10,4 +10,5 @@ from nvim_diary_template.plugin import DiaryTemplatePlugin
 PIPES: List[str] = os.listdir("\\\\.\\pipe")
 CURRENT_PIPE: str = [pipe for pipe in PIPES if pipe.startswith("nvim")][0]
 NVIM: neovim.Nvim = neovim.attach("socket", path=f"\\\\.\\pipe\\{CURRENT_PIPE}")
+
 DiaryTemplatePlugin(NVIM).grab_from_calendar()

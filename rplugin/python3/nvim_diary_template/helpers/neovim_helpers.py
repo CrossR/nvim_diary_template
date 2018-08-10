@@ -3,8 +3,9 @@
 Simple helpers to help interfacing with NeoVim.
 """
 
+from typing import List
+
 from neovim import Nvim
-from typing import List, Optional
 
 
 def is_buffer_empty(nvim: Nvim) -> bool:
@@ -59,10 +60,7 @@ def get_line_content(nvim: Nvim, line_offset: int = -1) -> str:
 
 
 def set_line_content(
-    nvim: Nvim,
-    data: List[str],
-    line_index: int = -1,
-    line_offset: int = -1,
+    nvim: Nvim, data: List[str], line_index: int = -1, line_offset: int = -1
 ) -> None:
     """set_line_content
 

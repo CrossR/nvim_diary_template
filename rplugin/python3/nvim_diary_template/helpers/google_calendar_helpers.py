@@ -105,11 +105,7 @@ def get_calendar_objects(
 
     for event in events_to_convert:
         event_objects.append(
-            CalendarEvent(
-                name=event["name"],
-                start=event["start"],
-                end=event["end"],
-            )
+            CalendarEvent(name=event["name"], start=event["start"], end=event["end"])
         )
 
     return event_objects
