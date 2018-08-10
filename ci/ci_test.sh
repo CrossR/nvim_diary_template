@@ -27,10 +27,5 @@ else
     pipenv run mypy rplugin/python3/nvim_diary_template --strict --allow-untyped-calls --allow-untyped-decorators --ignore-missing-imports
 fi
 
-if [ $? -ne 0 ]; then
-    echo "Failed typing checks..."
-    exit ${FAIL}
-fi
-
 echo "Script finished!"
 exit ${SUCCESS}
