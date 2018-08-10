@@ -2,7 +2,7 @@ SUCCESS=0
 FAIL=1
 
 echo "Linting code..."
-pipenv Running pylint rplugin/python3/nvim_diary_template 
+pipenv run pylint rplugin/python3/nvim_diary_template 
 
 echo "Checking code syntax with Black..."
 pipenv run black rplugin/python3/deoplete --check
@@ -21,10 +21,10 @@ fi
 
 echo "Running mypy on code base..."
 if [ "${FULL_TYPING:-0}" -eq 1 ]; then
-    pipenv run mypy rplugin/python3/nvim_diary_template -s --strict
+    pipenv run mypy rplugin/python3/nvim_diary_template --strict --ignore-missing-imports
     false # Should return 0 every time, meaning the CI doesn't stop
 else
-    pipenv run mypy rplugin/python3/nvim_diary_template -s --strict --allow-untyped-calls --allow-untyped-decorators
+    pipenv run mypy rplugin/python3/nvim_diary_template --strict --allow-untyped-calls --allow-untyped-decorators --ignore-missing-imports
 fi
 
 if [ $? -ne 0 ]; then
