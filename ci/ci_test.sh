@@ -21,10 +21,10 @@ fi
 
 echo "Running mypy on code base..."
 if [ "${FULL_TYPING:-0}" -eq 1 ]; then
-    pipenv run mypy rplugin/python3/nvim_diary_template --strict
+    pipenv run mypy rplugin/python3/nvim_diary_template -s --strict
     false # Should return 0 every time, meaning the CI doesn't stop
 else
-    pipenv run mypy rplugin/python3/nvim_diary_template --strict --allow-untyped-calls --allow-untyped-decorators
+    pipenv run mypy rplugin/python3/nvim_diary_template -s --strict --allow-untyped-calls --allow-untyped-decorators
 fi
 
 if [ $? -ne 0 ]; then
