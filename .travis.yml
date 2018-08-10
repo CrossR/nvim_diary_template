@@ -1,11 +1,21 @@
 language: python
+dist: trusty
+sudo: false
 
 python:
   - "3.6"
+
+matrix:
+  include:
+    - os: linux
+    allow_failures:
+      - os: linux
+        env: FULL_TYPING=1
 
 cache: pip
 
 install:
   - pip install -r ci/ci_requirements.txt
 
-script: ci/ci_test.sh
+script:
+  - ci/ci_test.sh
