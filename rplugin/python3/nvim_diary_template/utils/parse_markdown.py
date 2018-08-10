@@ -161,7 +161,7 @@ def parse_buffer_issues(issue_lines: List[str]) -> List[GitHubIssue]:
     return formatted_issues
 
 
-def remove_events_not_from_today(nvim: Nvim):
+def remove_events_not_from_today(nvim: Nvim) -> None:
     """remove_events_not_from_today
 
     Remove events from the file if they are not for the correct date.
@@ -182,18 +182,20 @@ def remove_events_not_from_today(nvim: Nvim):
         set_line_content(nvim, [""], event_index)
 
 
-def parse_markdown_file_for_events(nvim, format_string):
+def parse_markdown_file_for_events(
+    nvim: Nvim, format_string: str
+) -> List[CalendarEvent]:
     """parse_markdown_file_for_events
 
     Gets the contents of the current NeoVim buffer,
     and parses the schedule section into events.
     """
 
-    current_buffer = get_buffer_contents(nvim)
+    current_buffer: List[str] = get_buffer_contents(nvim)
 
-    buffer_events_index = get_section_line(current_buffer, SCHEDULE_HEADING)
-    events = current_buffer[buffer_events_index:]
-    formatted_events = parse_buffer_events(events, format_string)
+    buffer_events_index: int = get_section_line(current_buffer, SCHEDULE_HEADING)
+    events: List[str] = current_buffer[buffer_events_index:]
+    formatted_events: List[CalendarEvent] = parse_buffer_events(events, format_string)
 
     return formatted_events
 
@@ -220,7 +222,9 @@ def parse_markdown_file_for_issues(nvim: Nvim) -> List[GitHubIssue]:
     return formatted_issues
 
 
-def combine_events(markdown_events: List[str], google_events) -> List[CalendarEvent]:
+def combine_events(
+    markdown_events: List[CalendarEvent], google_events: List[CalendarEvent]
+) -> List[CalendarEvent]:
     """combine_events
 
     Takes both markdown and google events and combines them into a single list,

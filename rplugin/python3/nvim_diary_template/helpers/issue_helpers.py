@@ -275,7 +275,7 @@ def sort_completion_state(issue: GitHubIssue) -> int:
 
 
 def get_github_objects(
-    issues: Union[List[GitHubIssue], List[Dict[Any, Any]]]
+    issues: Union[List[GitHubIssue], List[Dict[str, Any]]]
 ) -> List[GitHubIssue]:
     """get_github_objects
 
@@ -285,13 +285,14 @@ def get_github_objects(
     careful usage.
     """
 
-    # If the first object is a dataclass, they must all be.
-    if is_dataclass(issues[0]):
-        return issues
+    issues_to_convert: List[Dict[str, Any]] = [
+        issue for issue in issues if not is_dataclass(issue)
+    ]
+    issue_objects: List[GitHubIssue] = [
+        issue for issue in issues if is_dataclass(issues)
+    ]
 
-    issue_objects: List[GitHubIssue] = []
-
-    for issue in issues:
+    for issue in issues_to_convert:
         current_comments: List[GitHubIssueComment] = []
 
         for comment in issue["all_comments"]:

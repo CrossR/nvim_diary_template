@@ -53,7 +53,7 @@ def produce_schedule_markdown(event_list: List[CalendarEvent]) -> List[str]:
 
 def set_schedule_from_events_list(
     nvim: Nvim, events: List[CalendarEvent], strict_indexing: bool
-):
+) -> None:
     """set_schedule_from_events_list
 
     Update the schedule for the current buffer with a new list of events.

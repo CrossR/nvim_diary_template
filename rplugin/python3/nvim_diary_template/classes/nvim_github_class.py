@@ -39,12 +39,12 @@ class SimpleNvimGithub:
         self.repo_name: str = options.repo_name
         self.options: PluginOptions = options
 
-        self.service: Github = self.setup_github_api()
+        self.service: Any = self.setup_github_api()
 
         if self.service_not_valid():
             return
 
-        loaded_issues: Union[List[Dict[Any, Any]], List[GitHubIssue]] = check_cache(
+        loaded_issues: Union[List[Dict[str, Any]], List[GitHubIssue]] = check_cache(
             self.config_path,
             "open_issues",
             ISSUE_CACHE_DURATION,
@@ -164,7 +164,7 @@ class SimpleNvimGithub:
 
         return issue_list
 
-    def format_comments(self, comments) -> List[GitHubIssueComment]:
+    def format_comments(self, comments: List[Any]) -> List[GitHubIssueComment]:
         """format_comments
 
         Format all the comments that are passed into GitHubIssueComment

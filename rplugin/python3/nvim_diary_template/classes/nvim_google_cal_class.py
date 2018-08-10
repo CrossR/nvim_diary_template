@@ -20,6 +20,7 @@ from ..helpers.google_calendar_helpers import (
     convert_events,
     create_google_event,
     format_google_events,
+    get_calendar_objects,
 )
 from ..utils.constants import CALENDAR_CACHE_DURATION, EVENT_CACHE_DURATION, ISO_FORMAT
 
@@ -39,7 +40,7 @@ class SimpleNvimGoogleCal:
         if self.service_is_not_ready():
             return
 
-        self.all_calendars: List[Dict[str, str]] = check_cache(
+        self.all_calendars: Dict[str, str] = check_cache(
             self.config_path,
             "calendars",
             CALENDAR_CACHE_DURATION,
@@ -49,9 +50,11 @@ class SimpleNvimGoogleCal:
         self.filter_list: List[str] = options.calendar_filter_list
         self.filtered_calendars: Dict[str, str] = self.filter_calendars()
 
-        self.events: Union[List[Dict[Any, Any]], List[CalendarEvent]] = check_cache(
+        loaded_events: Union[List[Dict[str, Any]], List[CalendarEvent]] = check_cache(
             self.config_path, "events", EVENT_CACHE_DURATION, self.get_events_for_today
         )
+
+        self.events = get_calendar_objects(loaded_events)
 
     @property
     def config_path(self) -> str:
@@ -172,7 +175,7 @@ class SimpleNvimGoogleCal:
 
         return format_google_events(events_in_timeframe)
 
-    def upload_to_calendar(self, markdown_events) -> None:
+    def upload_to_calendar(self, markdown_events: List[CalendarEvent]) -> None:
         """upload_to_calendar
 
         Given a set of events that are missing from Google calendar, will upload

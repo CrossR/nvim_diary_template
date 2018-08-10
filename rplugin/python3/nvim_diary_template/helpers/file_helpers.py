@@ -9,14 +9,11 @@ import re
 import time as t
 from datetime import datetime, timedelta
 from os import makedirs, path, remove
-from typing import Any, Callable, Dict, List, Match, Optional, Union
+from typing import Any, Callable, List, Union
 
 from ..classes.data_class_json import EnhancedJSONEncoder
 from ..classes.plugin_options import PluginOptions
 from ..utils.constants import CACHE_EPOCH_REGEX, DIARY_FOLDER
-
-
-DictOrObjList = Union[List[Dict[Any, Any]], List[Any]]
 
 
 def get_file_content(file_path: str) -> List[str]:
@@ -43,8 +40,8 @@ def check_cache(
     config_path: str,
     data_name: str,
     data_age: timedelta,
-    fallback_function: Callable[[], List[Any]],
-) -> DictOrObjList:
+    fallback_function: Callable[[], Any],
+) -> Any:
     """check_cache
 
     A function to check for valid cache files.
@@ -71,7 +68,7 @@ def check_cache(
 
         if difference <= data_age:
             with open(cache_file_name) as cache_file:
-                data: DictOrObjList = json.load(cache_file)
+                data: Any = json.load(cache_file)
         else:
             data = fallback_function()
             set_cache(config_path, data, data_name)

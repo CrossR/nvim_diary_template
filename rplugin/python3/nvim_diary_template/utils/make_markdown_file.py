@@ -25,7 +25,7 @@ def make_todays_diary(
     gcal_service: SimpleNvimGoogleCal,
     github_service: SimpleNvimGithub,
     auto_command: bool = False,
-):
+) -> None:
     """make_todays_diary
 
     Make the actual diary markdown file.

@@ -1,5 +1,6 @@
 # pylint: disable=missing-docstring
 from functools import wraps
+from typing import Any, Callable
 
 import neovim
 
@@ -20,60 +21,41 @@ from .utils.parse_markdown import (
 )
 
 
-def if_active(function):
-    """if_active
-
-    A decorator for a function, such that it is only run when
-    nvim_diary_template is ready.
-
-    Taken from numirias/semshi
-    """
-
-    @wraps(function)
-    def wrapper(self):
-        if not self.options.active:
-            return
-        function(self)
-
-    return wrapper
-
-
 @neovim.plugin
 class DiaryTemplatePlugin:
-    def __init__(self, nvim):
-        self._nvim = nvim
-        self._options = None
-        self._gcal_service = None
-        self._github_service = None
+    def __init__(self, nvim: neovim.Nvim) -> None:
+        self._nvim: neovim.Nvim = nvim
+        self._gcal_service: Any = None
+        self._github_service: Any = None
+        self.options: Any = None
 
     @neovim.autocmd("BufEnter", pattern=FILE_TYPE_WILDCARD, sync=True)
-    def event_buf_enter(self):
-        if self._options is None:
-            self._options = PluginOptions(self._nvim)
-            self._gcal_service = SimpleNvimGoogleCal(self._nvim, self._options)
-            self._github_service = SimpleNvimGithub(self._nvim, self._options)
+    def event_buf_enter(self) -> None:
+        if self.options is None:
+            self.options = PluginOptions(self._nvim)
+            self._gcal_service = SimpleNvimGoogleCal(self._nvim, self.options)
+            self._github_service = SimpleNvimGithub(self._nvim, self.options)
         self.make_diary(called_from_autocommand=True)
 
     @neovim.command("DiaryMake")
-    # @if_active
-    def make_diary(self, called_from_autocommand=False):
+    def make_diary(self, called_from_autocommand: bool = False) -> None:
         make_todays_diary(
             self._nvim,
-            self._options,
+            self.options,
             self._gcal_service,
             self._github_service,
             auto_command=called_from_autocommand,
         )
 
     @neovim.command("DiaryUploadCalendar")
-    def upload_to_calendar(self):
+    def upload_to_calendar(self) -> None:
         markdown_events = parse_markdown_file_for_events(self._nvim, ISO_FORMAT)
 
         self._gcal_service.upload_to_calendar(markdown_events)
         remove_events_not_from_today(self._nvim)
 
     @neovim.command("DiaryGrabCalendar")
-    def grab_from_calendar(self):
+    def grab_from_calendar(self) -> None:
         markdown_events = parse_markdown_file_for_events(self._nvim, ISO_FORMAT)
         cal_events = self._gcal_service.get_events_for_today()
 
@@ -82,32 +64,32 @@ class DiaryTemplatePlugin:
         self.sort_calendar()
 
     @neovim.command("DiaryUpdateCalendar")
-    def update_calendar(self):
+    def update_calendar(self) -> None:
         self.upload_to_calendar()
         self.grab_from_calendar()
 
     @neovim.command("DiarySortCalendar")
-    def sort_calendar(self):
+    def sort_calendar(self) -> None:
         sort_markdown_events(self._nvim)
 
     @neovim.command("DiaryInsertIssue")
-    def insert_issue(self):
+    def insert_issue(self) -> None:
         insert_new_issue(self._nvim)
 
     @neovim.command("DiaryInsertComment")
-    def insert_comment(self):
+    def insert_comment(self) -> None:
         insert_new_comment(self._nvim)
 
     @neovim.command("DiaryEditComment")
-    def edit_comment(self):
+    def edit_comment(self) -> None:
         insert_edit_tag(self._nvim, "comment")
 
     @neovim.command("DiaryEditIssue")
-    def edit_issue(self):
+    def edit_issue(self) -> None:
         insert_edit_tag(self._nvim, "issue")
 
     @neovim.command("DiaryUploadNew")
-    def upload_new_issues(self, buffered=False):
+    def upload_new_issues(self, buffered: bool = False) -> None:
         issues = parse_markdown_file_for_issues(self._nvim)
 
         issues = self._github_service.upload_issues(issues, "new")
@@ -121,7 +103,7 @@ class DiaryTemplatePlugin:
             self.flush_messages()
 
     @neovim.command("DiaryUploadEdits")
-    def upload_edited_issues(self, buffered=False):
+    def upload_edited_issues(self, buffered: bool = False) -> None:
         issues = parse_markdown_file_for_issues(self._nvim)
         issues = self._github_service.update_comments(issues, "edit")
         issues = self._github_service.update_issues(issues, "edit")
@@ -133,7 +115,7 @@ class DiaryTemplatePlugin:
             self.flush_messages()
 
     @neovim.command("DiaryUploadCompletion")
-    def upload_issue_completions(self, buffered=False):
+    def upload_issue_completions(self, buffered: bool = False) -> None:
         issues = parse_markdown_file_for_issues(self._nvim)
         self._github_service.complete_issues(issues)
 
@@ -145,12 +127,30 @@ class DiaryTemplatePlugin:
             self.flush_messages()
 
     @neovim.command("DiaryUploadIssues")
-    def upload_all_issues(self):
+    def upload_all_issues(self) -> None:
         self.upload_new_issues(True)
         self.upload_edited_issues(True)
         self.upload_issue_completions(True)
 
         self.flush_messages()
 
-    def flush_messages(self):
+    def flush_messages(self) -> None:
         self._nvim.out_write("\n")
+
+
+def if_active(function: Callable) -> Callable:
+    """if_active
+
+    A decorator for a function, such that it is only run when
+    nvim_diary_template is ready.
+
+    Taken from numirias/semshi
+    """
+
+    @wraps(function)
+    def wrapper(self: DiaryTemplatePlugin) -> None:
+        if not self.options.active:
+            return
+        function(self)
+
+    return wrapper

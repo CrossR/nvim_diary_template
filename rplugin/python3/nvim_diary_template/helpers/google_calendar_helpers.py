@@ -3,8 +3,9 @@
 Simple helpers to deal with Google calendar, and the replies it sends.
 """
 from datetime import datetime
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Union
 
+from dataclasses import is_dataclass
 from dateutil import parser
 
 from ..classes.calendar_event_class import CalendarEvent
@@ -32,7 +33,7 @@ def convert_events(
     return formatted_events
 
 
-def get_time(time_dict: Dict[str, str]) -> datetime:
+def get_time(time_to_convert: str) -> datetime:
     """get_time
 
     Time object parser for Google Calendar responses.
@@ -42,15 +43,12 @@ def get_time(time_dict: Dict[str, str]) -> datetime:
     we need to parse and return the object differently for each.
     """
 
-    try:
-        datetime_obj: datetime = parser.parse(time_dict["dateTime"])
-    except KeyError:
-        datetime_obj = parser.parse(time_dict["date"])
+    parsed_datetime: datetime = parser.parse(time_to_convert)
 
-    return datetime_obj
+    return parsed_datetime
 
 
-def format_google_events(events_list: List[Dict[str, str]]) -> List[CalendarEvent]:
+def format_google_events(events_list: List[Dict[str, Any]]) -> List[CalendarEvent]:
     """format_google_events
 
     Formats a list of GCal events down to the event name, and the
@@ -61,7 +59,11 @@ def format_google_events(events_list: List[Dict[str, str]]) -> List[CalendarEven
 
     for event in events_list:
         filtered_events.append(
-            CalendarEvent(name=event["summary"], start=event["start"], end=event["end"])
+            CalendarEvent(
+                name=event["summary"],
+                start=event["start"]["dateTime"],
+                end=event["end"]["dateTime"],
+            )
         )
 
     return filtered_events
@@ -81,3 +83,33 @@ def create_google_event(event: CalendarEvent, timezone: str) -> Dict[str, Any]:
         },
         "end": {"timeZone": timezone, "dateTime": parser.parse(event.end).isoformat()},
     }
+
+
+def get_calendar_objects(
+    events: Union[List[CalendarEvent], List[Dict[str, Any]]]
+) -> List[CalendarEvent]:
+    """get_calendar_objects
+
+    Convert the loaded dicts to Objects, if they are not already.
+    This is easier for a number of reasons, the main of which is
+    that naming is kept consistent, versus dicts which require more
+    careful usage.
+    """
+
+    events_to_convert: List[Dict[str, Any]] = [
+        event for event in events if not is_dataclass(event)
+    ]
+    event_objects: List[CalendarEvent] = [
+        event for event in events if is_dataclass(event)
+    ]
+
+    for event in events_to_convert:
+        event_objects.append(
+            CalendarEvent(
+                name=event["name"],
+                start=event["start"],
+                end=event["end"],
+            )
+        )
+
+    return event_objects
