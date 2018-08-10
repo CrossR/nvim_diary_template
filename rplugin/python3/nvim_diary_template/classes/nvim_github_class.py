@@ -1,3 +1,4 @@
+# pylint: disable=invalid-name
 """nvim_github_class
 
 The Github class, with Neovim options to log information
@@ -6,9 +7,9 @@ back to the user.
 
 import json
 from os import path
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Tuple, Union
 
-from github import Github, GithubObject, Issue, IssueComment, Label
+from github import Github
 from neovim import Nvim
 
 from ..classes.github_issue_class import GitHubIssue, GitHubIssueComment
@@ -38,7 +39,7 @@ class SimpleNvimGithub:
         self.repo_name: str = options.repo_name
         self.options: PluginOptions = options
 
-        self.service: GithubObject = self.setup_github_api()
+        self.service: Github = self.setup_github_api()
 
         if self.service_not_valid():
             return
@@ -67,7 +68,7 @@ class SimpleNvimGithub:
         """
         return not self.service_not_valid()
 
-    def setup_github_api(self) -> Optional[GithubObject]:
+    def setup_github_api(self):
         """setup_github_api
 
             Sets up the initial Github service, which can then be used
@@ -87,7 +88,7 @@ class SimpleNvimGithub:
             )
             return None
 
-        service: GithubObject = Github(access_token)
+        service: Github = Github(access_token)
 
         return service
 
@@ -115,7 +116,7 @@ class SimpleNvimGithub:
             return []
 
         # TODO: Add a wrapper for all GitHub calls.
-        repo_labels: List[Label] = self.service.get_repo(self.repo_name).get_labels()
+        repo_labels: Any = self.service.get_repo(self.repo_name).get_labels()
 
         return [label.name for label in repo_labels]
 
@@ -130,9 +131,7 @@ class SimpleNvimGithub:
             self.nvim.err_write("Github service not currently running...\n")
             return []
 
-        issues: List[Issue] = self.service.get_repo(self.repo_name).get_issues(
-            state="open"
-        )
+        issues: Any = self.service.get_repo(self.repo_name).get_issues(state="open")
 
         issue_list: List[GitHubIssue] = []
 
@@ -277,7 +276,7 @@ class SimpleNvimGithub:
             issue_number: int = comment["issue_number"]
             comment_body: List[str] = comment["comment"]
 
-            new_comment: IssueComment = (
+            new_comment: Any = (
                 self.service.get_repo(self.repo_name)
                 .get_issue(issue_number)
                 .create_comment(comment_body)
@@ -310,7 +309,7 @@ class SimpleNvimGithub:
             issue_body: List[str] = issue["body"]
             issue_labels: List[str] = issue["labels"]
 
-            new_issue: Issue = self.service.get_repo(self.repo_name).create_issue(
+            new_issue: Any = self.service.get_repo(self.repo_name).create_issue(
                 title=issue_title, body=issue_body, labels=issue_labels
             )
 
@@ -346,7 +345,7 @@ class SimpleNvimGithub:
 
                 continue
 
-            github_comment: IssueComment = (
+            github_comment: Any = (
                 self.service.get_repo(self.repo_name)
                 .get_issue(issue_number)
                 .get_comments()[comment_number - 1]
@@ -389,7 +388,7 @@ class SimpleNvimGithub:
             issue_body: List[str] = issue["body"]
             issue_labels: List[str] = issue["labels"]
 
-            github_issue: Issue = self.service.get_repo(self.repo_name).get_issue(
+            github_issue: Any = self.service.get_repo(self.repo_name).get_issue(
                 issue_number
             )
 
@@ -419,7 +418,7 @@ class SimpleNvimGithub:
         change_counter: int = 0
 
         for issue in issues:
-            github_issue: Issue = self.service.get_repo(self.repo_name).get_issue(
+            github_issue: Any = self.service.get_repo(self.repo_name).get_issue(
                 issue.number
             )
 

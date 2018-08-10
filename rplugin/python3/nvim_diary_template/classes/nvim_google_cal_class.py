@@ -6,12 +6,12 @@ back to the user.
 
 from datetime import date, datetime, time
 from os import path
-from typing import List, Optional, Dict, Union
+from typing import Any, Dict, List, Optional, Union
 
 from googleapiclient import discovery
 from httplib2 import Http
 from neovim import Nvim
-from oauth2client import file, client
+from oauth2client import client, file
 
 from ..classes.calendar_event_class import CalendarEvent
 from ..classes.plugin_options import PluginOptions
@@ -34,7 +34,7 @@ class SimpleNvimGoogleCal:
         self.nvim: Nvim = nvim
         self.options: PluginOptions = options
 
-        self.service: discovery.Resource = self.setup_google_calendar_api()
+        self.service: Any = self.setup_google_calendar_api()
 
         if self.service_is_not_ready():
             return
@@ -71,7 +71,7 @@ class SimpleNvimGoogleCal:
 
         return not self.service_is_not_ready()
 
-    def setup_google_calendar_api(self) -> discovery.Resource:
+    def setup_google_calendar_api(self):
         """setup_google_calendar_api
 
             Sets up the initial Google calendar service, which can then be used
@@ -81,7 +81,7 @@ class SimpleNvimGoogleCal:
         store: file.Storage = file.Storage(
             path.join(self.config_path, "credentials.json")
         )
-        credentials: client.Credentials = store.get()
+        credentials: Any = store.get()
 
         if not credentials or credentials.invalid:
             self.nvim.err_write(
@@ -89,7 +89,7 @@ class SimpleNvimGoogleCal:
             )
             return None
 
-        service: discovery.Resource = discovery.build(
+        service: Any = discovery.build(
             "calendar", "v3", http=credentials.authorize(Http())
         )
 
