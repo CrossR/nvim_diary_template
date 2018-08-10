@@ -4,7 +4,7 @@ python:
   - "3.6"
 
 env:
-  - MYPYPATH=~/virtualenv/python${TRAVIS_PYTHON_VERSION}/lib/python3.6/site-packages
+  - MYPYPATH=~/virtualenv/python3.6.3/lib/python3.6/site-packages
 
 cache: pip
 
