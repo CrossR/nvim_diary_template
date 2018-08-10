@@ -3,6 +3,9 @@ language: python
 python:
   - "3.6"
 
+env:
+  - MYPYPATH=~/virtualenv/python3.6.3/lib/python3.6/site-packages
+
 cache: pip
 
 install:

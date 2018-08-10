@@ -21,7 +21,7 @@ fi
 
 echo "Running mypy on code base..."
 echo "TODO: Once fully updated, check the error code here."
-mypy rplugin/python3/nvim_diary_template
+mypy rplugin/python3/nvim_diary_template --strict
 
 echo "Script finished!"
 exit ${SUCCESS}
