@@ -19,5 +19,9 @@ if [ $? -ne 0 ]; then
     exit ${FAIL}
 fi
 
+echo "Running mypy on code base..."
+echo "TODO: Once fully updated, check the error code here."
+mypy rplugin/python3/nvim_diary_template
+
 echo "Script finished!"
 exit ${SUCCESS}
