@@ -44,7 +44,7 @@ class SimpleNvimGithub:
         if self.service_not_valid():
             return
 
-        loaded_issues: Union[Dict[str, str], List[GitHubIssue]] = check_cache(
+        loaded_issues: Union[List[Dict[Any, Any]], List[GitHubIssue]] = check_cache(
             self.config_path,
             "open_issues",
             ISSUE_CACHE_DURATION,

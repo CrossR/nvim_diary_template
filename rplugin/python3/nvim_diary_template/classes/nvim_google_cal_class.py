@@ -39,7 +39,7 @@ class SimpleNvimGoogleCal:
         if self.service_is_not_ready():
             return
 
-        self.all_calendars: Dict[str, str] = check_cache(
+        self.all_calendars: List[Dict[str, str]] = check_cache(
             self.config_path,
             "calendars",
             CALENDAR_CACHE_DURATION,
@@ -49,7 +49,7 @@ class SimpleNvimGoogleCal:
         self.filter_list: List[str] = options.calendar_filter_list
         self.filtered_calendars: Dict[str, str] = self.filter_calendars()
 
-        self.events: List[CalendarEvent] = check_cache(
+        self.events: Union[List[Dict[Any, Any]], List[CalendarEvent]] = check_cache(
             self.config_path, "events", EVENT_CACHE_DURATION, self.get_events_for_today
         )
 
