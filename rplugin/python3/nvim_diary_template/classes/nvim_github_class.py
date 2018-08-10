@@ -7,7 +7,7 @@ back to the user.
 
 import json
 from os import path
-from typing import Any, Dict, List, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 from github import Github
 from neovim import Nvim
@@ -68,7 +68,7 @@ class SimpleNvimGithub:
         """
         return not self.service_not_valid()
 
-    def setup_github_api(self):
+    def setup_github_api(self) -> Optional[Any]:
         """setup_github_api
 
             Sets up the initial Github service, which can then be used

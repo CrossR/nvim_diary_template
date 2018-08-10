@@ -11,7 +11,7 @@ from typing import Any, Dict, List, Optional, Union
 from googleapiclient import discovery
 from httplib2 import Http
 from neovim import Nvim
-from oauth2client import client, file
+from oauth2client import file
 
 from ..classes.calendar_event_class import CalendarEvent
 from ..classes.plugin_options import PluginOptions
@@ -71,7 +71,7 @@ class SimpleNvimGoogleCal:
 
         return not self.service_is_not_ready()
 
-    def setup_google_calendar_api(self):
+    def setup_google_calendar_api(self) -> Optional[Any]:
         """setup_google_calendar_api
 
             Sets up the initial Google calendar service, which can then be used
