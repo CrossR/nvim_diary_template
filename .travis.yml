@@ -6,13 +6,17 @@ matrix:
   include:
   - name: "Lint Code"
     python: 3.6
-    env: LINT_CODE=1
+    env: >
+      LINT_CODE=1
   - name: "Basic Type Check"
     python: 3.6
-    env: BASIC_TYPING=1
+    env: >
+      BASIC_TYPING=1
+      PIPENV_IGNORE_VIRTUALENVS=1
   - name: "Full Type Check"
     python: 3.6
-    env: FULL_TYPING=1
+    env: >
+      FULL_TYPING=1
   allow_failures:
     - name: "Full Type Check"
 
