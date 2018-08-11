@@ -133,7 +133,7 @@ def insert_new_comment(nvim: Nvim) -> None:
     # insert before it. Then, find the last comment number and increment it.
     for index, line in enumerate(relevant_buffer):
         if re.findall(ISSUE_START, line):
-            new_line_number = index - 1
+            new_line_number = index
 
             break
 
@@ -142,8 +142,9 @@ def insert_new_comment(nvim: Nvim) -> None:
     if new_line_number == 0:
         new_line_number = schedule_header_index
 
-    relevant_buffer = current_buffer[issues_header_index:new_line_number]
-    comment_number: int = 99
+    relative_line: int = current_line + new_line_number
+    relevant_buffer = current_buffer[issues_header_index:relative_line]
+    comment_number: int = -1
 
     # Search back to find the latest comment number, so we can increment it.
     for line in reversed(relevant_buffer):
@@ -152,6 +153,10 @@ def insert_new_comment(nvim: Nvim) -> None:
 
             break
 
+    # If we didn't find a comment number to use, we should probably quit.
+    if comment_number == -1:
+        return
+
     # Add a new issue comment line, and set the line, before moving the cursor
     # there.
     header_line: str = (
@@ -159,9 +164,9 @@ def insert_new_comment(nvim: Nvim) -> None:
     )
     new_comment: List[str] = ["", header_line, ""]
 
-    set_line_content(nvim, new_comment, line_index=new_line_number)
+    set_line_content(nvim, new_comment, line_index=relative_line)
 
-    new_cursor_pos: Tuple[int, int] = (new_line_number + 2, 0)
+    new_cursor_pos: Tuple[int, int] = (relative_line + 2, 0)
     nvim.current.window.cursor = new_cursor_pos
 
 
