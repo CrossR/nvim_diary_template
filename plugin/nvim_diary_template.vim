@@ -83,7 +83,7 @@ function! GetDiaryFold(lnum)
   let l:line = getline(a:lnum)
   let l:indent_level = IndentLevel(a:lnum)
 
-  let l:heading = '^# '
+  let l:heading = '^## '
 
   " If its a top level heading, it shouldn't be folded.
   if l:line =~? l:heading
