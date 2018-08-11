@@ -127,13 +127,13 @@ def remove_tag_from_issues(
 
     for issue in issues:
 
-        if scope == "all" or "issues":
+        if scope in ("all", "issues"):
             if tag in issue.metadata:
                 issue.metadata.remove(tag)
                 if tag in issue.all_comments[0].tags:
                     issue.all_comments[0].tags.remove(tag)
 
-        if scope == "all" or "comments":
+        if scope in ("all", "comments"):
             for comment in issue.all_comments:
                 if tag in comment.tags:
                     comment.tags.remove(tag)
