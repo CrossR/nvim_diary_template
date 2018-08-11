@@ -1,11 +1,24 @@
 language: python
+python: 3.7
+dist: xenial
+sudo: true
 
-python:
-  - "3.6"
+matrix:
+  include:
+  - name: "Lint Code"
+    env: LINT_CODE=1
+  - name: "Basic Type Check"
+    env: BASIC_TYPING=1
+  - name: "Full Type Check"
+    env: FULL_TYPING=1
+  allow_failures:
+    - name: "Full Type Check"
 
 cache: pip
 
 install:
-  - pip install -r ci/ci_requirements.txt
+  - pip install pipenv
+  - pipenv install --dev
 
-script: ci/ci_test.sh
+script:
+  - ci/ci_test.sh

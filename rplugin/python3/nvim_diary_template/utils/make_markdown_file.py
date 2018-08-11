@@ -5,16 +5,27 @@ they don't exist.
 """
 
 from datetime import date
+from typing import Dict, List
 
-from nvim_diary_template.helpers.neovim_helpers import (
-    is_buffer_empty,
-    set_buffer_contents,
-)
-from nvim_diary_template.utils.make_issues import produce_issue_markdown
-from nvim_diary_template.utils.make_schedule import produce_schedule_markdown
+from neovim import Nvim
+
+from ..classes.calendar_event_class import CalendarEvent
+from ..classes.github_issue_class import GitHubIssue
+from ..classes.nvim_github_class import SimpleNvimGithub
+from ..classes.nvim_google_cal_class import SimpleNvimGoogleCal
+from ..classes.plugin_options import PluginOptions
+from ..helpers.neovim_helpers import is_buffer_empty, set_buffer_contents
+from ..utils.make_issues import produce_issue_markdown
+from ..utils.make_schedule import produce_schedule_markdown
 
 
-def make_todays_diary(nvim, options, gcal_service, github_service, auto_command=False):
+def make_todays_diary(
+    nvim: Nvim,
+    options: PluginOptions,
+    gcal_service: SimpleNvimGoogleCal,
+    github_service: SimpleNvimGithub,
+    auto_command: bool = False,
+) -> None:
     """make_todays_diary
 
     Make the actual diary markdown file.
@@ -35,9 +46,9 @@ def make_todays_diary(nvim, options, gcal_service, github_service, auto_command=
         nvim.err_write("Options weren't initialised, aborting.\n")
         return
 
-    full_markdown = []
+    full_markdown: List[str] = []
 
-    diary_metadata = {"Date": str(date.today())}
+    diary_metadata: Dict[str, str] = {"Date": str(date.today())}
 
     full_markdown.extend(generate_markdown_metadata(diary_metadata))
 
@@ -46,39 +57,38 @@ def make_todays_diary(nvim, options, gcal_service, github_service, auto_command=
         full_markdown.append("")
 
     # Add in issues section
-    if not options.use_github_repo or not github_service or not github_service.active:
-        issues = []
-    else:
+    issues: List[GitHubIssue] = []
+    if options.use_github_repo and github_service and github_service.active:
         issues = github_service.issues
 
-    issue_markdown = produce_issue_markdown(issues)
+    issue_markdown: List[str] = produce_issue_markdown(issues)
     full_markdown.extend(issue_markdown)
 
     # Add in Todays Calendar Entries
-    if not options.use_google_calendar or not gcal_service or not gcal_service.active:
-        todays_events = []
-    else:
-        todays_events = gcal_service.todays_events
+    todays_events: List[CalendarEvent] = []
+    if options.use_google_calendar and gcal_service and gcal_service.active:
+        todays_events = gcal_service.events
 
-    schedule_markdown = produce_schedule_markdown(todays_events)
+    schedule_markdown: List[str] = produce_schedule_markdown(todays_events)
     full_markdown.extend(schedule_markdown)
 
+    # Set the buffer contents and save the file.
     set_buffer_contents(nvim, full_markdown)
     nvim.command(":w")
 
 
-def generate_markdown_metadata(metadata_obj):
+def generate_markdown_metadata(metadata_obj: Dict[str, str]) -> List[str]:
     """generate_markdown_metadata
 
     Add some basic metadata to the top of the file
     in HTML tags.
     """
 
-    metadata = []
+    metadata: List[str] = ["<!---"]
 
-    metadata.append("<!---")
-
-    passed_metadata = [f"    {key}: {value}" for key, value in metadata_obj.items()]
+    passed_metadata: List[str] = [
+        f"    {key}: {value}" for key, value in metadata_obj.items()
+    ]
 
     metadata.extend(passed_metadata)
     metadata.append(f"    Tags:")

@@ -35,11 +35,11 @@ def generate_credentials():
         print("Credentials are valid, exiting.")
         print("Set FORCE in the script to re-generate.")
         return
-    else:
-        flow = client.flow_from_clientsecrets(
-            path.join(CREDENTIALS_PATH, "client_secret.json"), SCOPES
-        )
-        creds = tools.run_flow(flow, store)
+
+    flow = client.flow_from_clientsecrets(
+        path.join(CREDENTIALS_PATH, "client_secret.json"), SCOPES
+    )
+    creds = tools.run_flow(flow, store)
 
     return
 

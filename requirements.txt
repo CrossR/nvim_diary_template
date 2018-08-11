@@ -1,5 +1,0 @@
-google-api-python-client==1.6.7
-dataclasses==0.6
-neovim==0.2.6
-python-dateutil==2.7.3
-PyGithub==1.40

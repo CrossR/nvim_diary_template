@@ -5,22 +5,22 @@ Functions for the parsing of the document markdown.
 
 import re
 from datetime import date
+from typing import List, Match, Optional
 
 from dateutil import parser
 
-from nvim_diary_template.classes.calendar_event_class import CalendarEvent
-from nvim_diary_template.classes.github_issue_class import (
-    GitHubIssue,
-    GitHubIssueComment,
-)
-from nvim_diary_template.helpers.event_helpers import format_event
-from nvim_diary_template.helpers.google_calendar_helpers import convert_events
-from nvim_diary_template.helpers.neovim_helpers import (
+from neovim import Nvim
+
+from ..classes.calendar_event_class import CalendarEvent
+from ..classes.github_issue_class import GitHubIssue, GitHubIssueComment
+from ..helpers.event_helpers import format_event
+from ..helpers.google_calendar_helpers import convert_events
+from ..helpers.neovim_helpers import (
     get_buffer_contents,
     get_section_line,
     set_line_content,
 )
-from nvim_diary_template.utils.constants import (
+from ..utils.constants import (
     DATETIME_REGEX,
     EVENT_REGEX,
     ISO_FORMAT,
@@ -37,29 +37,34 @@ from nvim_diary_template.utils.constants import (
 )
 
 
-def parse_buffer_events(events, format_string):
+def parse_buffer_events(
+    event_lines: List[str], format_string: str
+) -> List[CalendarEvent]:
     """parse_buffer_events
 
-    Given a list of events, parse the buffer lines and create event objects.
+    Given a list of event buffer lines, create event objects from them.
     """
 
-    formatted_events = []
+    formatted_events: List[CalendarEvent] = []
 
-    for event in events:
+    for event in event_lines:
         if event == "":
             continue
 
-        matches_date_time = re.findall(DATETIME_REGEX, event)
+        matches_date_time: List[str] = re.findall(DATETIME_REGEX, event)
 
         if not matches_date_time:
-            matches_time = re.findall(TIME_REGEX, event)
-            start_date = parser.parse(matches_time[0]).strftime(format_string)
-            end_date = parser.parse(matches_time[1]).strftime(format_string)
+            matches_time: List[str] = re.findall(TIME_REGEX, event)
+            start_date: str = parser.parse(matches_time[0]).strftime(format_string)
+            end_date: str = parser.parse(matches_time[1]).strftime(format_string)
         else:
             start_date = parser.parse(matches_date_time[0]).strftime(format_string)
             end_date = parser.parse(matches_date_time[1]).strftime(format_string)
 
-        event_details = re.search(EVENT_REGEX, event)[0]
+        event_name_search: Optional[Match[str]] = re.search(EVENT_REGEX, event)
+        event_details: str = event_name_search[
+            0
+        ] if event_name_search is not None else ""
 
         formatted_events.append(
             CalendarEvent(name=event_details, start=start_date, end=end_date)
@@ -68,16 +73,16 @@ def parse_buffer_events(events, format_string):
     return formatted_events
 
 
-def parse_buffer_issues(issue_lines):
+def parse_buffer_issues(issue_lines: List[str]) -> List[GitHubIssue]:
     """parse_buffer_issues
 
     Given a list of issue markdown lines, parse the issue lines and create
     issue objects.
     """
 
-    formatted_issues = []
-    issue_number = -1
-    comment_number = -1
+    formatted_issues: List[GitHubIssue] = []
+    issue_number: int = -1
+    comment_number: int = -1
 
     for line in issue_lines:
         # If its the start of a new issue, add a new object.
@@ -85,8 +90,8 @@ def parse_buffer_issues(issue_lines):
         if re.findall(ISSUE_START, line):
             issue_number += 1
             comment_number = -1
-            metadata = re.findall(ISSUE_METADATA, line)
-            labels = re.findall(ISSUE_LABELS, line)
+            metadata: List[str] = re.findall(ISSUE_METADATA, line)
+            labels: List[str] = re.findall(ISSUE_LABELS, line)
 
             # Strip the leading '+' from the metadata.
             metadata = [tag[1:] for tag in metadata if not tag.startswith("+label")]
@@ -109,7 +114,7 @@ def parse_buffer_issues(issue_lines):
 
         # If its the issue title, then add that to the empty object.
         if re.findall(ISSUE_TITLE, line):
-            issue_title = re.sub(ISSUE_TITLE, "", line).strip()
+            issue_title: str = re.sub(ISSUE_TITLE, "", line).strip()
 
             formatted_issues[issue_number].title = issue_title
 
@@ -118,8 +123,11 @@ def parse_buffer_issues(issue_lines):
         # If this is a comment, start to add it to the existing object.
         if re.findall(ISSUE_COMMENT, line):
             comment_number = int(re.findall(r"\d+", line)[0])
-            comment_date = re.match(ISSUE_COMMENT, line).group(1)
-            comment_metadata = re.findall(ISSUE_METADATA, line)
+            update_search: Optional[Match[str]] = re.match(ISSUE_COMMENT, line)
+            updated_at: str = update_search.group(
+                1
+            ) if update_search is not None else ""
+            comment_metadata: List[str] = re.findall(ISSUE_METADATA, line)
 
             # Strip the leading '+' from the tags.
             comment_metadata = [tag[1:] for tag in comment_metadata]
@@ -128,7 +136,7 @@ def parse_buffer_issues(issue_lines):
                 GitHubIssueComment(
                     number=comment_number,
                     tags=comment_metadata,
-                    updated_at=comment_date,
+                    updated_at=updated_at,
                     body=[],
                 )
             )
@@ -138,8 +146,10 @@ def parse_buffer_issues(issue_lines):
         # Finally, if there is an issue and comment ongoing, we can add to the
         # current comment.
         if issue_number != -1 and comment_number != -1:
-            current_issue = formatted_issues[issue_number].all_comments
-            current_comment = current_issue[comment_number].body
+            current_issue: List[GitHubIssueComment] = formatted_issues[
+                issue_number
+            ].all_comments
+            current_comment: List[str] = current_issue[comment_number].body
             current_comment.append(line)
 
     # Strip any trailing new lines from the comments
@@ -151,7 +161,7 @@ def parse_buffer_issues(issue_lines):
     return formatted_issues
 
 
-def remove_events_not_from_today(nvim):
+def remove_events_not_from_today(nvim: Nvim) -> None:
     """remove_events_not_from_today
 
     Remove events from the file if they are not for the correct date.
@@ -172,45 +182,49 @@ def remove_events_not_from_today(nvim):
         set_line_content(nvim, [""], event_index)
 
 
-def parse_markdown_file_for_events(nvim, format_string):
+def parse_markdown_file_for_events(
+    nvim: Nvim, format_string: str
+) -> List[CalendarEvent]:
     """parse_markdown_file_for_events
 
     Gets the contents of the current NeoVim buffer,
     and parses the schedule section into events.
     """
 
-    current_buffer = get_buffer_contents(nvim)
+    current_buffer: List[str] = get_buffer_contents(nvim)
 
-    buffer_events_index = get_section_line(current_buffer, SCHEDULE_HEADING)
-    events = current_buffer[buffer_events_index:]
-    formatted_events = parse_buffer_events(events, format_string)
+    buffer_events_index: int = get_section_line(current_buffer, SCHEDULE_HEADING)
+    events: List[str] = current_buffer[buffer_events_index:]
+    formatted_events: List[CalendarEvent] = parse_buffer_events(events, format_string)
 
     return formatted_events
 
 
-def parse_markdown_file_for_issues(nvim):
+def parse_markdown_file_for_issues(nvim: Nvim) -> List[GitHubIssue]:
     """parse_markdown_file_for_issues
 
     Gets the contents of the current NeoVim buffer,
     and parses the issues section into issues.
     """
 
-    current_buffer = get_buffer_contents(nvim)
+    current_buffer: List[str] = get_buffer_contents(nvim)
 
     # Get the start of each section, to grab the lines between. We plus one to
     # the issues header, to skip the empty line there. We remove two from the
     # events header to remove both the Events header itself, as well as the
     # empty line at the end of the issues section.
-    buffer_issues_index = get_section_line(current_buffer, ISSUE_HEADING) + 1
-    buffer_events_index = get_section_line(current_buffer, SCHEDULE_HEADING) - 2
+    buffer_issues_index: int = get_section_line(current_buffer, ISSUE_HEADING) + 1
+    buffer_events_index: int = get_section_line(current_buffer, SCHEDULE_HEADING) - 2
 
-    issues = current_buffer[buffer_issues_index:buffer_events_index]
-    formatted_issues = parse_buffer_issues(issues)
+    issue_lines: List[str] = current_buffer[buffer_issues_index:buffer_events_index]
+    formatted_issues: List[GitHubIssue] = parse_buffer_issues(issue_lines)
 
     return formatted_issues
 
 
-def combine_events(markdown_events, google_events):
+def combine_events(
+    markdown_events: List[CalendarEvent], google_events: List[CalendarEvent]
+) -> List[CalendarEvent]:
     """combine_events
 
     Takes both markdown and google events and combines them into a single list,
@@ -219,12 +233,14 @@ def combine_events(markdown_events, google_events):
     The markdown is taken to be the ground truth, as there is no online copy.
     """
 
-    buffer_events = [format_event(event, ISO_FORMAT) for event in markdown_events]
+    buffer_events: List[CalendarEvent] = [
+        format_event(event, ISO_FORMAT) for event in markdown_events
+    ]
 
-    formatted_calendar = convert_events(google_events, ISO_FORMAT)
+    formatted_calendar: List[CalendarEvent] = convert_events(google_events, ISO_FORMAT)
     calendar_events = [format_event(event, ISO_FORMAT) for event in formatted_calendar]
 
-    combined_events = buffer_events
+    combined_events: List[CalendarEvent] = buffer_events
     combined_events.extend(
         event for event in calendar_events if event not in buffer_events
     )
