@@ -7,7 +7,12 @@ import neovim
 from .classes.nvim_github_class import SimpleNvimGithub
 from .classes.nvim_google_cal_class import SimpleNvimGoogleCal
 from .classes.plugin_options import PluginOptions
-from .helpers.issue_helpers import insert_edit_tag, insert_new_comment, insert_new_issue
+from .helpers.issue_helpers import (
+    insert_edit_tag,
+    insert_new_comment,
+    insert_new_issue,
+    toggle_issue_completion,
+)
 from .helpers.markdown_helpers import sort_markdown_events
 from .utils.constants import FILE_TYPE_WILDCARD, ISO_FORMAT
 from .utils.make_issues import remove_tag_from_issues, set_issues_from_issues_list
@@ -113,6 +118,10 @@ class DiaryTemplatePlugin:
 
         if not buffered:
             self.flush_messages()
+
+    @neovim.command("DiaryCompleteIssue")
+    def toggle_completion(self) -> None:
+        toggle_issue_completion(self._nvim)
 
     @neovim.command("DiaryUploadCompletion")
     def upload_issue_completions(self, buffered: bool = False) -> None:

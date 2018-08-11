@@ -57,7 +57,7 @@ def insert_edit_tag(nvim: Nvim, location: str) -> None:
     else:
         raise ValueError(f"{location} is not a recognised target.")
 
-    # Search the buffer backwards and find the start of the current comment, to
+    # Search the buffer backwards and find the start of the current target, to
     # get its line index.
     for index in range(len(relevant_buffer) - 1, 0, -1):
         line: str = relevant_buffer[index]
@@ -66,7 +66,7 @@ def insert_edit_tag(nvim: Nvim, location: str) -> None:
 
             break
 
-    # If we found no comment, return since we can't update it.
+    # If we didn't find the target, return since we can't update it.
     if line_index == -1:
         return
 
@@ -163,6 +163,56 @@ def insert_new_comment(nvim: Nvim) -> None:
 
     new_cursor_pos: Tuple[int, int] = (new_line_number + 2, 0)
     nvim.current.window.cursor = new_cursor_pos
+
+
+def toggle_issue_completion(nvim: Nvim) -> None:
+    """toggle_issue_completion
+
+    Finds the current issue, and toggles its completion status.
+    """
+
+    # Grab the indexes needed to find the issue we are in.
+    current_line: int = nvim.current.window.cursor[0]
+    current_buffer: List[str] = get_buffer_contents(nvim)
+    issues_header_index: int = get_section_line(current_buffer, ISSUE_HEADING)
+    schedule_header_index: int = get_section_line(current_buffer, SCHEDULE_HEADING) - 1
+
+    inside_issues_section: bool = issues_header_index <= current_line <= schedule_header_index
+
+    # If we are outside the issues section, return.
+    if not inside_issues_section:
+        return
+
+    relevant_buffer: List[str] = current_buffer[issues_header_index:current_line]
+    line_index: int = -1
+
+    target_line: str = ISSUE_START
+
+    # Search the buffer backwards and find the start of the current issue, to
+    # get its line index.
+    for index in range(len(relevant_buffer) - 1, 0, -1):
+        line: str = relevant_buffer[index]
+        if re.findall(target_line, line):
+            line_index = index
+
+            break
+
+    # If we didn't find the target, return since we can't update it.
+    if line_index == -1:
+        return
+
+    # If we did find an issue, we want to toggle the completion status.
+    # We need to update the line index to be relative to the full buffer.
+    current_issue: str = relevant_buffer[line_index]
+
+    if re.findall(re.escape(EMPTY_TODO), current_issue):
+        updated_line: str = current_issue.replace(EMPTY_TODO, VIMWIKI_TODO)
+    elif re.findall(re.escape(VIMWIKI_TODO), current_issue):
+        updated_line = current_issue.replace(VIMWIKI_TODO, EMPTY_TODO)
+
+    insert_index: int = issues_header_index + line_index + 1
+
+    set_line_content(nvim, [updated_line], line_index=insert_index, line_offset=1)
 
 
 def check_markdown_style(line: str, desired_style: str) -> str:

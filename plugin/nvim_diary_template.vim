@@ -9,6 +9,7 @@ augroup nvim_diary_template_keybinds
     " Edit existing issue/comments binds
     autocmd FileType vimwiki nnoremap <buffer> <leader>wec :DiaryEditComment<CR>
     autocmd FileType vimwiki nnoremap <buffer> <leader>wei :DiaryEditIssue<CR>
+    autocmd FileType vimwiki nnoremap <buffer> <leader>wci :DiaryCompleteIssue<CR>
 
     " Insert new issue/comments binds
     autocmd FileType vimwiki nnoremap <buffer> <leader>wic :DiaryInsertComment<CR>
