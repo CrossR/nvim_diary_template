@@ -17,6 +17,7 @@ pygithub = "*"
 black = "*"
 mypy = "*"
 pylint = "*"
+typed-ast = "*"
 
 [requires]
 python_version = "3.7"
