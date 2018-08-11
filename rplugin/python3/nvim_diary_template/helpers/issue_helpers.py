@@ -236,7 +236,8 @@ def sort_issues(issues: List[GitHubIssue]) -> List[GitHubIssue]:
     A helper function to sort the given issues.
     The sorting works as follows:
     - Complete issues have the lowest priority.
-    - Blocked Issues have low priority.
+    - Backlog issues have low priority.
+    - Blocked issues have low priority.
     - In-progress issues have the highest priority.
     - The latest edit is used for any ties, with issue number being used in
     the case of a tie there.
@@ -263,6 +264,9 @@ def sort_completion_state(issue: GitHubIssue) -> int:
 
     if issue.complete:
         return 10000
+
+    if "backlog" in issue.labels:
+        return 5000
 
     if "blocked" in issue.labels:
         return 1000
