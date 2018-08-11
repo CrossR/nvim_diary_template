@@ -25,7 +25,7 @@ achieve this.
 
 ## Screenshot:
 
-![The basic setup with GitHub and GCal integration](./docs/screenshot.png)
+![The basic setup with GitHub and GCal integration](./docs/screenshot.PNG)
 
 ## Config:
 
