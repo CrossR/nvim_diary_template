@@ -97,11 +97,13 @@ class DiaryTemplatePlugin:
     def upload_new_issues(self, buffered: bool = False) -> None:
         issues = parse_markdown_file_for_issues(self._nvim)
 
-        issues = self._github_service.upload_issues(issues, "new")
-        issues = remove_tag_from_issues(issues, "new", "issues")
-        issues = self._github_service.upload_comments(issues, "new")
+        issues, ignore_list = self._github_service.upload_issues(issues, "new")
+        issues = remove_tag_from_issues(issues, "new", "issues", ignore_list)
+        issues, ignore_list = self._github_service.upload_comments(issues, "new")
 
-        issues_without_new_tag = remove_tag_from_issues(issues, "new")
+        issues_without_new_tag = remove_tag_from_issues(
+            issues, "new", "comments", ignore_list
+        )
         set_issues_from_issues_list(self._nvim, issues_without_new_tag)
 
         if not buffered:

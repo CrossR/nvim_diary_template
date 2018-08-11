@@ -155,6 +155,13 @@ def parse_buffer_issues(issue_lines: List[str]) -> List[GitHubIssue]:
     # Strip any trailing new lines from the comments
     for issue in formatted_issues:
         for comment in issue.all_comments:
+
+            # If the comment has no body, add a single line, to give space to
+            # type.
+            if comment.body == []:
+                comment.body = [""]
+                continue
+
             if comment.body[-1] == "":
                 comment.body = comment.body[:-1]
 

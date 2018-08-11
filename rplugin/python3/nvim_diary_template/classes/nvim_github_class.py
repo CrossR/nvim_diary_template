@@ -264,17 +264,26 @@ class SimpleNvimGithub:
 
         return issues_to_upload, change_indexes
 
-    def upload_comments(self, issues: List[GitHubIssue], tag: str) -> List[GitHubIssue]:
+    def upload_comments(
+        self, issues: List[GitHubIssue], tag: str
+    ) -> Tuple[List[GitHubIssue], List[Dict[str, int]]]:
         """upload_comments
 
         Upload comments with the specific tag to GitHub.
         """
 
         comments_to_upload, change_indexes = self.filter_comments(issues, tag)
+        comments_to_ignore: List[Dict[str, int]] = []
+        change_count: int = 0
 
         for comment, change_index in zip(comments_to_upload, change_indexes):
             issue_number: int = comment["issue_number"]
             comment_body: List[str] = comment["comment"]
+
+            # We don't want to try and upload an empty comment.
+            if comment_body == "":
+                comments_to_ignore.append(change_index)
+                continue
 
             new_comment: Any = (
                 self.service.get_repo(self.repo_name)
@@ -290,24 +299,35 @@ class SimpleNvimGithub:
                 new_comment.updated_at, self.options.timezone
             )
 
+            change_count += 1
+
         buffered_info_message(
-            self.nvim, f"Uploaded {len(comments_to_upload)} comments to GitHub. "
+            self.nvim, f"Uploaded {change_count} comments to GitHub. "
         )
 
-        return issues
+        return issues, comments_to_ignore
 
-    def upload_issues(self, issues: List[GitHubIssue], tag: str) -> List[GitHubIssue]:
+    def upload_issues(
+        self, issues: List[GitHubIssue], tag: str
+    ) -> Tuple[List[GitHubIssue], List[int]]:
         """upload_issues
 
         Upload issues with the specific tag to GitHub.
         """
 
         issues_to_upload, change_indexes = self.filter_issues(issues, tag)
+        issues_to_ignore: List[int] = []
+        change_count: int = 0
 
         for issue, index in zip(issues_to_upload, change_indexes):
             issue_title: str = issue["title"]
             issue_body: List[str] = issue["body"]
             issue_labels: List[str] = issue["labels"]
+
+            # We don't want to try and upload an empty issue/title.
+            if issue_title == "" or issue_body == "":
+                issues_to_ignore.append(index)
+                continue
 
             new_issue: Any = self.service.get_repo(self.repo_name).create_issue(
                 title=issue_title, body=issue_body, labels=issue_labels
@@ -318,11 +338,11 @@ class SimpleNvimGithub:
                 new_issue.updated_at, self.options.timezone
             )
 
-        buffered_info_message(
-            self.nvim, f"Uploaded {len(issues_to_upload)} issues to GitHub. "
-        )
+            change_count += 1
 
-        return issues
+        buffered_info_message(self.nvim, f"Uploaded {change_count} issues to GitHub. ")
+
+        return issues, issues_to_ignore
 
     def update_comments(self, issues: List[GitHubIssue], tag: str) -> List[GitHubIssue]:
         """update_comments
@@ -343,22 +363,26 @@ class SimpleNvimGithub:
                     body=comment_body
                 )
 
-                continue
+                # Grab the comment again, to sort the update time.
+                github_comment: Any = self.service.get_repo(self.repo_name).get_issue(
+                    issue_number
+                )
+            else:
 
-            github_comment: Any = (
-                self.service.get_repo(self.repo_name)
-                .get_issue(issue_number)
-                .get_comments()[comment_number - 1]
-            )
+                github_comment = (
+                    self.service.get_repo(self.repo_name)
+                    .get_issue(issue_number)
+                    .get_comments()[comment_number - 1]
+                )
 
-            github_comment.edit(comment_body)
+                github_comment.edit(comment_body)
 
-            # Grab the comment again, to sort the update time.
-            github_comment = (
-                self.service.get_repo(self.repo_name)
-                .get_issue(issue_number)
-                .get_comments()[comment_number - 1]
-            )
+                # Grab the comment again, to sort the update time.
+                github_comment = (
+                    self.service.get_repo(self.repo_name)
+                    .get_issue(issue_number)
+                    .get_comments()[comment_number - 1]
+                )
 
             current_issue: GitHubIssue = issues[change_index["issue"]]
             current_comment: GitHubIssueComment = current_issue.all_comments[
