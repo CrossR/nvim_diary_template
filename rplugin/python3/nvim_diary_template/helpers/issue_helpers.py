@@ -286,10 +286,12 @@ def get_github_objects(
     """
 
     issues_to_convert: List[Dict[str, Any]] = [
-        issue for issue in issues if not is_dataclass(issue)
+        issue for issue in issues if isinstance(issue, dict)
     ]
+
+    # TODO: Update this to use `is_dataclass` when we swap to Python 3.7
     issue_objects: List[GitHubIssue] = [
-        issue for issue in issues if is_dataclass(issues)
+        issue for issue in issues if not isinstance(issue, dict)
     ]
 
     for issue in issues_to_convert:
@@ -310,3 +312,4 @@ def get_github_objects(
         )
 
     return issue_objects
+
