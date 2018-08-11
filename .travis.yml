@@ -3,6 +3,12 @@ python: 3.7
 dist: xenial
 sudo: true
 
+# Build only the master branch. PRs are handled differently, this just stops
+# building branches that are pushed.
+branches:
+  only:
+  - master
+
 env:
   global:
     - PIPENV_QUIET=1
