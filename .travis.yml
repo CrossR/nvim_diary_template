@@ -3,6 +3,10 @@ python: 3.7
 dist: xenial
 sudo: true
 
+env:
+  global:
+    - PIPENV_QUIET=1
+
 matrix:
   include:
   - name: "Lint Code"
