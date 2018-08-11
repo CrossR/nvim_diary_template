@@ -24,8 +24,8 @@ augroup nvim_diary_template_keybinds
     autocmd FileType vimwiki setlocal foldexpr=GetDiaryFold(v:lnum)
 augroup END
 
-let s:issue_start = '^## \[[ X]\] Issue {\d\{1,}}:'
-let s:comment_start = '^### Comment {\d\{1,}} - '
+let s:issue_start = '^### \[[ X]\] Issue {\d\{1,}}:'
+let s:comment_start = '^#### Comment {\d\{1,}} - '
 let s:date_time_regex = '\d\{4}-\d\{2}-\d\{2} \d\{2}:\d\{2}'
 let s:label = '+label:\a\{1,}'
 
@@ -37,7 +37,7 @@ function! DiaryFoldText()
   " If we are folding a comment, instead include the first line and
   if l:start_line =~? s:issue_start
     let l:issue_topic_line = getline(v:foldstart + 2)
-    let l:issue_title_regex = '^### Title: '
+    let l:issue_title_regex = '^#### Title: '
     let l:issue_topic = substitute(l:issue_topic_line, l:issue_title_regex, '', "")
 
     let l:labels = filter(map(split(l:start_line), 'matchstr(v:val, s:label)'), {idx, val -> val != ''})
@@ -53,7 +53,7 @@ function! DiaryFoldText()
 
     " Add the completion status, then the issue number, then title.
     " Finally append each label
-    let l:issue_fold_text = "## " . l:completed_status
+    let l:issue_fold_text = "### " . l:completed_status
     let l:issue_fold_text = l:issue_fold_text . " Issue {" . l:issue_number . "} - Title: "
     let l:issue_fold_text = l:issue_fold_text . l:issue_topic . "."
 
@@ -73,7 +73,7 @@ function! DiaryFoldText()
     let l:comment_number = matchstr(l:start_line, '\d\{1,}')
     let l:comment_date_time = matchstr(l:start_line, s:date_time_regex)
 
-    return '### Comment {' . l:comment_number . "} - " . l:comment_date_time . ": " . l:comment_brief . "."
+    return '#### Comment {' . l:comment_number . "} - " . l:comment_date_time . ": " . l:comment_brief . "."
   else
     return l:start_line
 

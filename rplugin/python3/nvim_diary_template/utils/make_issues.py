@@ -11,8 +11,8 @@ from ..helpers.issue_helpers import check_markdown_style, sort_issues
 from ..helpers.neovim_helpers import get_buffer_contents, get_section_line
 from ..utils.constants import (
     EMPTY_TODO,
-    HEADING_2,
     HEADING_3,
+    HEADING_4,
     ISSUE_HEADING,
     VIMWIKI_TODO,
 )
@@ -38,11 +38,11 @@ def format_issues(issues: List[GitHubIssue]) -> List[str]:
         issue_tags: List[str] = issue.metadata
 
         if issue_complete:
-            issue_start = f"{HEADING_2} {VIMWIKI_TODO} Issue {{{issue_number}}}: "
+            issue_start = f"{HEADING_3} {VIMWIKI_TODO} Issue {{{issue_number}}}: "
         else:
-            issue_start = f"{HEADING_2} {EMPTY_TODO} Issue {{{issue_number}}}: "
+            issue_start = f"{HEADING_3} {EMPTY_TODO} Issue {{{issue_number}}}: "
 
-        title_line = f"{HEADING_3} Title: {issue_title}"
+        title_line = f"{HEADING_4} Title: {issue_title}"
 
         # Apply the labels, and tags.
         for label in issue_labels:
@@ -78,7 +78,7 @@ def format_issue_comments(comments: List[GitHubIssueComment]) -> List[str]:
         tags: List[str] = comment.tags
         comment_edit_time: str = comment.updated_at
 
-        header_line = f"{HEADING_3} Comment {{{comment_num}}} - {comment_edit_time}:"
+        header_line = f"{HEADING_4} Comment {{{comment_num}}} - {comment_edit_time}:"
 
         # Apply the tags if there are any.
         for tag in tags:
