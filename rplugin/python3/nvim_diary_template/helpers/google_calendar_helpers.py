@@ -5,7 +5,6 @@ Simple helpers to deal with Google calendar, and the replies it sends.
 from datetime import datetime
 from typing import Any, Dict, List, Union
 
-from dataclasses import is_dataclass
 from dateutil import parser
 
 from ..classes.calendar_event_class import CalendarEvent

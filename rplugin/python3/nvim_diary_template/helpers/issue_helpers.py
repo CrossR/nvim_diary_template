@@ -6,7 +6,6 @@ import re
 from datetime import datetime
 from typing import Any, Dict, List, Tuple, Union
 
-from dataclasses import is_dataclass
 from dateutil import tz
 from neovim import Nvim
 
@@ -312,4 +311,3 @@ def get_github_objects(
         )
 
     return issue_objects
-
