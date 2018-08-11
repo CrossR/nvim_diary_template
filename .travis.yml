@@ -1,13 +1,17 @@
 language: python
-os: linux
-dist: trusty
-sudo: false
-python: "3.6"
+dist: xenial
+sudo: required
 
 matrix:
   include:
-  - name: "Main Test"
+  - name: "Lint Code"
+    python: 3.6
+    env: LINT_CODE=1
+  - name: "Basic Type Check"
+    python: 3.6
+    env: BASIC_TYPING=1
   - name: "Full Type Check"
+    python: 3.6
     env: FULL_TYPING=1
   allow_failures:
     - name: "Full Type Check"
