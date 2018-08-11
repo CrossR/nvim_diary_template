@@ -9,6 +9,7 @@ google-api-python-client = "*"
 dataclasses = "*"
 python-dateutil = "*"
 pygithub = "*"
+"oauth2client" = "*"
 
 [dev-packages]
 black = "*"
