@@ -6,7 +6,6 @@ name = "pypi"
 [packages]
 neovim = "*"
 google-api-python-client = "*"
-dataclasses = "*"
 python-dateutil = "*"
 pygithub = "*"
 "oauth2client" = "*"
@@ -17,4 +16,4 @@ mypy = "*"
 pylint = "*"
 
 [requires]
-python_version = "3.6"
+python_version = "3.7"
