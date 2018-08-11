@@ -3,6 +3,9 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 name = "pypi"
 
+[pipenv]
+allow_prereleases = true
+
 [packages]
 neovim = "*"
 google-api-python-client = "*"
