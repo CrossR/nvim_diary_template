@@ -46,7 +46,7 @@ def make_todays_diary(
         nvim.err_write("Options weren't initialised, aborting.\n")
         return
 
-    full_markdown: List[str] = [f"Diary for {str(date.today)}", ""]
+    full_markdown: List[str] = []
 
     diary_metadata: Dict[str, str] = {"Date": str(date.today())}
 
@@ -93,6 +93,7 @@ def generate_markdown_metadata(metadata_obj: Dict[str, str]) -> List[str]:
     metadata.extend(passed_metadata)
     metadata.append(f"    Tags:")
     metadata.append("--->")
+    metadata.append(f"# Diary for {metadata_obj['Date']}")
     metadata.append("")
 
     return metadata
