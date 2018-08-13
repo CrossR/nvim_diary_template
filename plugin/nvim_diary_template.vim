@@ -117,11 +117,6 @@ function! GetDiaryFold(lnum)
     return '1'
   endif
 
-  " If its between issues, close the current issue fold so the issues are seperate.
-  if getline(a:lnum + 1) =~? s:issue_start && indent_level == 0 && foldlevel(a:lnum - 2) == 2
-    return '0'
-  endif
-
   " If we've gotten here.... return the existing level.
   return '='
 endfunction
