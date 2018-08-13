@@ -305,7 +305,7 @@ def combine_issues(
 
             # If we've got an edited comment, where the online is newer than the
             # markdown version, add the markdown comment, but label it as conflicted.
-            if "edit" in comment.tags and comment.updated_at == api_comment.updated_at:
+            if "edit" in comment.tags and comment.updated_at < api_comment.updated_at:
                 comment.number = len(api_issue.all_comments)
                 comment.tags.append("conflict")
 
