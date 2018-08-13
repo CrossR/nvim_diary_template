@@ -370,3 +370,20 @@ def get_github_objects(
         )
 
     return issue_objects
+
+def split_comment(comment: str) -> List[str]:
+    """split_comment
+
+    Splits a comment into an array of lines.
+    Broadly, this just wraps the .splitlines() function,
+    such that the leading and trailing newlines can be removed.
+    """
+
+    lines: List[str] = comment.splitlines()
+
+    while lines and not lines[0].strip():
+        lines.pop(0)
+    while lines and not lines[-1].strip():
+        lines.pop()
+
+    return lines

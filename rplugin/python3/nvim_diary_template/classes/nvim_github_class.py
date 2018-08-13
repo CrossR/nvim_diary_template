@@ -19,6 +19,7 @@ from ..helpers.issue_helpers import (
     check_markdown_style,
     convert_utc_timezone,
     get_github_objects,
+    split_comment,
 )
 from ..helpers.neovim_helpers import buffered_info_message
 from ..utils.constants import CALENDAR_CACHE_DURATION, ISSUE_CACHE_DURATION
@@ -139,7 +140,7 @@ class SimpleNvimGithub:
 
             initial_comment: GitHubIssueComment = GitHubIssueComment(
                 number=0,
-                body=issue.body.splitlines(),
+                body=split_comment(issue.body),
                 tags=[],
                 updated_at=convert_utc_timezone(
                     issue.updated_at, self.options.timezone
@@ -179,7 +180,7 @@ class SimpleNvimGithub:
             comment_objs.append(
                 GitHubIssueComment(
                     number=current_comment,
-                    body=comment.body.splitlines(),
+                    body=split_comment(comment.body),
                     tags=[],
                     updated_at=convert_utc_timezone(
                         comment.updated_at, self.options.timezone
