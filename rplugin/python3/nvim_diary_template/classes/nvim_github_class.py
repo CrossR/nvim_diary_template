@@ -233,13 +233,13 @@ class SimpleNvimGithub:
     @staticmethod
     def filter_issues(
         issues: List[GitHubIssue], tag: str
-    ) -> Tuple[List[Dict], List[int]]:
+    ) -> Tuple[List[GitHubIssue], List[int]]:
         """filter_issues
 
         Filter issues for uploading, by a specific tag.
         """
 
-        issues_to_upload: List[IntStrListDict] = []
+        issues_to_upload: List[GitHubIssue] = []
         change_indexes: List[int] = []
 
         # For every issue, check the metadata to see if it contains the target
@@ -247,19 +247,27 @@ class SimpleNvimGithub:
         # storing the index of the issue, so it can be updated later.
         for index, issue in enumerate(issues):
             if tag in issue.metadata:
-                issue_comment: GitHubIssueComment = issue.all_comments[0]
+                comment: GitHubIssueComment = issue.all_comments[0]
                 processed_body: List[str] = [
-                    check_markdown_style(line, "github") for line in issue_comment.body
+                    check_markdown_style(line, "github") for line in comment.body
                 ]
 
+                body_comment: GitHubIssueComment = GitHubIssueComment(
+                    number=comment.number,
+                    body=processed_body,
+                    tags=comment.tags,
+                    updated_at=comment.updated_at,
+                )
+
                 issues_to_upload.append(
-                    {
-                        "number": issue.number,
-                        "title": issue.title,
-                        "labels": issue.labels,
-                        "body": "\r\n".join(processed_body),
-                        "updated_at": issue_comment.updated_at,
-                    }
+                    GitHubIssue(
+                        number=issue.number,
+                        title=issue.title,
+                        complete=False,
+                        labels=issue.labels,
+                        all_comments=[body_comment],
+                        metadata=issue.metadata,
+                    )
                 )
 
                 change_indexes.append(index)
@@ -322,17 +330,13 @@ class SimpleNvimGithub:
         change_count: int = 0
 
         for issue, index in zip(issues_to_upload, change_indexes):
-            issue_title: str = issue["title"]
-            issue_body: List[str] = issue["body"]
-            issue_labels: List[str] = issue["labels"]
-
             # We don't want to try and upload an empty issue/title.
-            if issue_title == "" or issue_body == "":
+            if issue.title == "" or issue.all_comments[0].body == "":
                 issues_to_ignore.append(index)
                 continue
 
             new_issue: Any = self.service.get_repo(self.repo_name).create_issue(
-                title=issue_title, body=issue_body, labels=issue_labels
+                title=issue.title, body=issue.all_comments[0].body, labels=issue.labels
             )
 
             issues[index].number = new_issue.number
@@ -434,31 +438,27 @@ class SimpleNvimGithub:
         issues_to_upload, change_indexes = self.filter_issues(issues, tag)
 
         for issue, change_index in zip(issues_to_upload, change_indexes):
-            issue_number: int = issue["number"]
-            issue_title: str = issue["title"]
-            issue_body: List[str] = issue["body"]
-            issue_labels: List[str] = issue["labels"]
-            issue_edit_time: str = issue["updated_at"]
 
             github_issue: Any = self.service.get_repo(self.repo_name).get_issue(
-                issue_number
+                issue.number
             )
 
             github_edit_time = convert_utc_timezone(
                 github_issue.updated_at, self.options.timezone
             )
 
-            if github_edit_time != issue_edit_time:
+            if github_edit_time != issue.all_comments[0].updated_at:
                 buffered_info_message(
-                    self.nvim,
-                    f"Mismatch with issue {issue_number}. ",
+                    self.nvim, f"Mismatch with issue {issue.number}. "
                 )
                 continue
 
-            github_issue.edit(title=issue_title, body=issue_body, labels=issue_labels)
+            github_issue.edit(
+                title=issue.title, body=issue.all_comments[0].body, labels=issue.labels
+            )
 
             # Grab the issue again, to sort the update time.
-            github_issue = self.service.get_repo(self.repo_name).get_issue(issue_number)
+            github_issue = self.service.get_repo(self.repo_name).get_issue(issue.number)
             current_issue: GitHubIssue = issues[change_index]
             issue_body_comment: GitHubIssueComment = current_issue.all_comments[0]
             issue_body_comment.updated_at = convert_utc_timezone(
