@@ -11,7 +11,7 @@ branches:
 
 env:
   global:
-    - PIPENV_QUIET=1
+    - PIPENV_VERBOSITY=-1
 
 matrix:
   include:

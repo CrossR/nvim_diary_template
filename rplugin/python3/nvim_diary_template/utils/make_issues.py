@@ -2,7 +2,7 @@
 
 Functions to build and parse the issue section of the markdown.
 """
-from typing import List
+from typing import Dict, List, Optional
 
 from neovim import Nvim
 
@@ -11,8 +11,8 @@ from ..helpers.issue_helpers import check_markdown_style, sort_issues
 from ..helpers.neovim_helpers import get_buffer_contents, get_section_line
 from ..utils.constants import (
     EMPTY_TODO,
-    HEADING_2,
     HEADING_3,
+    HEADING_4,
     ISSUE_HEADING,
     VIMWIKI_TODO,
 )
@@ -38,11 +38,11 @@ def format_issues(issues: List[GitHubIssue]) -> List[str]:
         issue_tags: List[str] = issue.metadata
 
         if issue_complete:
-            issue_start = f"{HEADING_2} {VIMWIKI_TODO} Issue {{{issue_number}}}: "
+            issue_start = f"{HEADING_3} {VIMWIKI_TODO} Issue {{{issue_number}}}: "
         else:
-            issue_start = f"{HEADING_2} {EMPTY_TODO} Issue {{{issue_number}}}: "
+            issue_start = f"{HEADING_3} {EMPTY_TODO} Issue {{{issue_number}}}: "
 
-        title_line = f"{HEADING_3} Title: {issue_title}"
+        title_line = f"{HEADING_4} Title: {issue_title}"
 
         # Apply the labels, and tags.
         for label in issue_labels:
@@ -78,7 +78,7 @@ def format_issue_comments(comments: List[GitHubIssueComment]) -> List[str]:
         tags: List[str] = comment.tags
         comment_edit_time: str = comment.updated_at
 
-        header_line = f"{HEADING_3} Comment {{{comment_num}}} - {comment_edit_time}:"
+        header_line = f"{HEADING_4} Comment {{{comment_num}}} - {comment_edit_time}:"
 
         # Apply the tags if there are any.
         for tag in tags:
@@ -116,7 +116,10 @@ def produce_issue_markdown(issue_list: List[GitHubIssue]) -> List[str]:
 
 
 def remove_tag_from_issues(
-    issues: List[GitHubIssue], tag: str, scope: str = "all"
+    issues: List[GitHubIssue],
+    tag: str,
+    scope: str = "all",
+    ignore_list: Optional[List[Dict[str, int]]] = None,
 ) -> List[GitHubIssue]:
     """remove_tag_from_issues
 
@@ -125,17 +128,32 @@ def remove_tag_from_issues(
     comment is the issue body.
     """
 
-    for issue in issues:
+    if ignore_list is None:
+        ignore_list = []
 
-        if scope == "all" or "issues":
+    for index, issue in enumerate(issues):
+
+        if scope in ("all", "issues"):
             if tag in issue.metadata:
+
+                # If the comment is one we should ignore, continue.
+                # This is usually due to the comment being empty.
+                if index in ignore_list:
+                    continue
+
                 issue.metadata.remove(tag)
                 if tag in issue.all_comments[0].tags:
                     issue.all_comments[0].tags.remove(tag)
 
-        if scope == "all" or "comments":
+        if scope in ("all", "comments"):
             for comment in issue.all_comments:
                 if tag in comment.tags:
+
+                    # If the comment is one we should ignore, continue.
+                    # This is usually due to the comment being empty.
+                    if {"issue": index, "comment": comment.number} in ignore_list:
+                        continue
+
                     comment.tags.remove(tag)
 
     return issues

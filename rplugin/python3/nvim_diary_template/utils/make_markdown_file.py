@@ -53,7 +53,7 @@ def make_todays_diary(
     full_markdown.extend(generate_markdown_metadata(diary_metadata))
 
     for heading in options.daily_headings:
-        full_markdown.append(f"# {heading}")
+        full_markdown.append(f"## {heading}")
         full_markdown.append("")
 
     # Add in issues section
@@ -93,6 +93,7 @@ def generate_markdown_metadata(metadata_obj: Dict[str, str]) -> List[str]:
     metadata.extend(passed_metadata)
     metadata.append(f"    Tags:")
     metadata.append("--->")
+    metadata.append(f"# Diary for {metadata_obj['Date']}")
     metadata.append("")
 
     return metadata

@@ -18,8 +18,8 @@ from ..helpers.neovim_helpers import (
 from ..utils.constants import (
     EMPTY_TODO,
     GITHUB_TODO,
-    HEADING_2,
     HEADING_3,
+    HEADING_4,
     ISSUE_COMMENT,
     ISSUE_HEADING,
     ISSUE_START,
@@ -57,7 +57,7 @@ def insert_edit_tag(nvim: Nvim, location: str) -> None:
     else:
         raise ValueError(f"{location} is not a recognised target.")
 
-    # Search the buffer backwards and find the start of the current comment, to
+    # Search the buffer backwards and find the start of the current target, to
     # get its line index.
     for index in range(len(relevant_buffer) - 1, 0, -1):
         line: str = relevant_buffer[index]
@@ -66,7 +66,7 @@ def insert_edit_tag(nvim: Nvim, location: str) -> None:
 
             break
 
-    # If we found no comment, return since we can't update it.
+    # If we didn't find the target, return since we can't update it.
     if line_index == -1:
         return
 
@@ -94,9 +94,9 @@ def insert_new_issue(nvim: Nvim) -> None:
 
     new_line_number: int = schedule_header_index
 
-    issue_start: str = f"{HEADING_2} {EMPTY_TODO} Issue {{00}}: +new"
-    title_line: str = f"{HEADING_3} Title: "
-    comment_line: str = f"{HEADING_3} Comment {{0}} - 0000-00-00 00:00: +new"
+    issue_start: str = f"{HEADING_3} {EMPTY_TODO} Issue {{00}}: +new"
+    title_line: str = f"{HEADING_4} Title: "
+    comment_line: str = f"{HEADING_4} Comment {{0}} - 0000-00-00 00:00: +new"
 
     new_comment: List[str] = ["", issue_start, "", title_line, "", comment_line]
 
@@ -133,7 +133,7 @@ def insert_new_comment(nvim: Nvim) -> None:
     # insert before it. Then, find the last comment number and increment it.
     for index, line in enumerate(relevant_buffer):
         if re.findall(ISSUE_START, line):
-            new_line_number = index - 1
+            new_line_number = index
 
             break
 
@@ -142,8 +142,9 @@ def insert_new_comment(nvim: Nvim) -> None:
     if new_line_number == 0:
         new_line_number = schedule_header_index
 
-    relevant_buffer = current_buffer[issues_header_index:new_line_number]
-    comment_number: int = 99
+    relative_line: int = current_line + new_line_number
+    relevant_buffer = current_buffer[issues_header_index:relative_line]
+    comment_number: int = -1
 
     # Search back to find the latest comment number, so we can increment it.
     for line in reversed(relevant_buffer):
@@ -152,17 +153,71 @@ def insert_new_comment(nvim: Nvim) -> None:
 
             break
 
+    # If we didn't find a comment number to use, we should probably quit.
+    if comment_number == -1:
+        return
+
     # Add a new issue comment line, and set the line, before moving the cursor
     # there.
     header_line: str = (
-        f"{HEADING_3} Comment {{{comment_number + 1}}} - 0000-00-00 00:00: +new"
+        f"{HEADING_4} Comment {{{comment_number + 1}}} - 0000-00-00 00:00: +new"
     )
     new_comment: List[str] = ["", header_line, ""]
 
-    set_line_content(nvim, new_comment, line_index=new_line_number)
+    set_line_content(nvim, new_comment, line_index=relative_line)
 
-    new_cursor_pos: Tuple[int, int] = (new_line_number + 2, 0)
+    new_cursor_pos: Tuple[int, int] = (relative_line + 2, 0)
     nvim.current.window.cursor = new_cursor_pos
+
+
+def toggle_issue_completion(nvim: Nvim) -> None:
+    """toggle_issue_completion
+
+    Finds the current issue, and toggles its completion status.
+    """
+
+    # Grab the indexes needed to find the issue we are in.
+    current_line: int = nvim.current.window.cursor[0]
+    current_buffer: List[str] = get_buffer_contents(nvim)
+    issues_header_index: int = get_section_line(current_buffer, ISSUE_HEADING)
+    schedule_header_index: int = get_section_line(current_buffer, SCHEDULE_HEADING) - 1
+
+    inside_issues_section: bool = issues_header_index <= current_line <= schedule_header_index
+
+    # If we are outside the issues section, return.
+    if not inside_issues_section:
+        return
+
+    relevant_buffer: List[str] = current_buffer[issues_header_index:current_line]
+    line_index: int = -1
+
+    target_line: str = ISSUE_START
+
+    # Search the buffer backwards and find the start of the current issue, to
+    # get its line index.
+    for index in range(len(relevant_buffer) - 1, 0, -1):
+        line: str = relevant_buffer[index]
+        if re.findall(target_line, line):
+            line_index = index
+
+            break
+
+    # If we didn't find the target, return since we can't update it.
+    if line_index == -1:
+        return
+
+    # If we did find an issue, we want to toggle the completion status.
+    # We need to update the line index to be relative to the full buffer.
+    current_issue: str = relevant_buffer[line_index]
+
+    if re.findall(re.escape(EMPTY_TODO), current_issue):
+        updated_line: str = current_issue.replace(EMPTY_TODO, VIMWIKI_TODO)
+    elif re.findall(re.escape(VIMWIKI_TODO), current_issue):
+        updated_line = current_issue.replace(VIMWIKI_TODO, EMPTY_TODO)
+
+    insert_index: int = issues_header_index + line_index + 1
+
+    set_line_content(nvim, [updated_line], line_index=insert_index, line_offset=1)
 
 
 def check_markdown_style(line: str, desired_style: str) -> str:
@@ -236,7 +291,8 @@ def sort_issues(issues: List[GitHubIssue]) -> List[GitHubIssue]:
     A helper function to sort the given issues.
     The sorting works as follows:
     - Complete issues have the lowest priority.
-    - Blocked Issues have low priority.
+    - Backlog issues have low priority.
+    - Blocked issues have low priority.
     - In-progress issues have the highest priority.
     - The latest edit is used for any ties, with issue number being used in
     the case of a tie there.
@@ -263,6 +319,9 @@ def sort_completion_state(issue: GitHubIssue) -> int:
 
     if issue.complete:
         return 10000
+
+    if "backlog" in issue.labels:
+        return 5000
 
     if "blocked" in issue.labels:
         return 1000
@@ -311,3 +370,21 @@ def get_github_objects(
         )
 
     return issue_objects
+
+
+def split_comment(comment: str) -> List[str]:
+    """split_comment
+
+    Splits a comment into an array of lines.
+    Broadly, this just wraps the .splitlines() function,
+    such that the leading and trailing newlines can be removed.
+    """
+
+    lines: List[str] = comment.splitlines()
+
+    while lines and not lines[0].strip():
+        lines.pop(0)
+    while lines and not lines[-1].strip():
+        lines.pop()
+
+    return lines

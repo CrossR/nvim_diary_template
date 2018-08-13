@@ -1,13 +1,20 @@
 # pylint: disable=missing-docstring
 from functools import wraps
-from typing import Any, Callable
+from typing import Any, Callable, List
 
 import neovim
 
+from .classes.calendar_event_class import CalendarEvent
+from .classes.github_issue_class import GitHubIssue
 from .classes.nvim_github_class import SimpleNvimGithub
 from .classes.nvim_google_cal_class import SimpleNvimGoogleCal
 from .classes.plugin_options import PluginOptions
-from .helpers.issue_helpers import insert_edit_tag, insert_new_comment, insert_new_issue
+from .helpers.issue_helpers import (
+    insert_edit_tag,
+    insert_new_comment,
+    insert_new_issue,
+    toggle_issue_completion,
+)
 from .helpers.markdown_helpers import sort_markdown_events
 from .utils.constants import FILE_TYPE_WILDCARD, ISO_FORMAT
 from .utils.make_issues import remove_tag_from_issues, set_issues_from_issues_list
@@ -29,12 +36,15 @@ class DiaryTemplatePlugin:
         self._github_service: Any = None
         self.options: Any = None
 
-    @neovim.autocmd("BufEnter", pattern=FILE_TYPE_WILDCARD, sync=True)
-    def event_buf_enter(self) -> None:
+    def check_options(self) -> None:
         if self.options is None:
             self.options = PluginOptions(self._nvim)
             self._gcal_service = SimpleNvimGoogleCal(self._nvim, self.options)
             self._github_service = SimpleNvimGithub(self._nvim, self.options)
+
+    @neovim.autocmd("BufEnter", pattern=FILE_TYPE_WILDCARD, sync=True)
+    def event_buf_enter(self) -> None:
+        self.check_options()
         self.make_diary(called_from_autocommand=True)
 
     @neovim.command("DiaryMake")
@@ -49,17 +59,23 @@ class DiaryTemplatePlugin:
 
     @neovim.command("DiaryUploadCalendar")
     def upload_to_calendar(self) -> None:
-        markdown_events = parse_markdown_file_for_events(self._nvim, ISO_FORMAT)
+        markdown_events: List[CalendarEvent] = parse_markdown_file_for_events(
+            self._nvim, ISO_FORMAT
+        )
 
         self._gcal_service.upload_to_calendar(markdown_events)
         remove_events_not_from_today(self._nvim)
 
     @neovim.command("DiaryGrabCalendar")
     def grab_from_calendar(self) -> None:
-        markdown_events = parse_markdown_file_for_events(self._nvim, ISO_FORMAT)
-        cal_events = self._gcal_service.get_events_for_today()
+        markdown_events: List[CalendarEvent] = parse_markdown_file_for_events(
+            self._nvim, ISO_FORMAT
+        )
+        cal_events: List[CalendarEvent] = self._gcal_service.get_events_for_today()
 
-        combined_events = combine_events(markdown_events, cal_events)
+        combined_events: List[CalendarEvent] = combine_events(
+            markdown_events, cal_events
+        )
         set_schedule_from_events_list(self._nvim, combined_events, False)
         self.sort_calendar()
 
@@ -90,13 +106,15 @@ class DiaryTemplatePlugin:
 
     @neovim.command("DiaryUploadNew")
     def upload_new_issues(self, buffered: bool = False) -> None:
-        issues = parse_markdown_file_for_issues(self._nvim)
+        issues: List[GitHubIssue] = parse_markdown_file_for_issues(self._nvim)
 
-        issues = self._github_service.upload_issues(issues, "new")
-        issues = remove_tag_from_issues(issues, "new", "issues")
-        issues = self._github_service.upload_comments(issues, "new")
+        issues, ignore_list = self._github_service.upload_issues(issues, "new")
+        issues = remove_tag_from_issues(issues, "new", "issues", ignore_list)
+        issues, ignore_list = self._github_service.upload_comments(issues, "new")
 
-        issues_without_new_tag = remove_tag_from_issues(issues, "new")
+        issues_without_new_tag: List[GitHubIssue] = remove_tag_from_issues(
+            issues, "new", "comments", ignore_list
+        )
         set_issues_from_issues_list(self._nvim, issues_without_new_tag)
 
         if not buffered:
@@ -104,19 +122,25 @@ class DiaryTemplatePlugin:
 
     @neovim.command("DiaryUploadEdits")
     def upload_edited_issues(self, buffered: bool = False) -> None:
-        issues = parse_markdown_file_for_issues(self._nvim)
+        issues: List[GitHubIssue] = parse_markdown_file_for_issues(self._nvim)
         issues = self._github_service.update_comments(issues, "edit")
         issues = self._github_service.update_issues(issues, "edit")
 
-        issues_without_edit_tag = remove_tag_from_issues(issues, "edit")
+        issues_without_edit_tag: List[GitHubIssue] = remove_tag_from_issues(
+            issues, "edit"
+        )
         set_issues_from_issues_list(self._nvim, issues_without_edit_tag)
 
         if not buffered:
             self.flush_messages()
 
+    @neovim.command("DiaryCompleteIssue")
+    def toggle_completion(self) -> None:
+        toggle_issue_completion(self._nvim)
+
     @neovim.command("DiaryUploadCompletion")
     def upload_issue_completions(self, buffered: bool = False) -> None:
-        issues = parse_markdown_file_for_issues(self._nvim)
+        issues: List[GitHubIssue] = parse_markdown_file_for_issues(self._nvim)
         self._github_service.complete_issues(issues)
 
         # Despite no changes happening here, we want to set the issues again to

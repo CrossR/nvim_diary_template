@@ -10,8 +10,16 @@ if [ "${LINT_CODE:-0}" -eq 1 ]; then
     pipenv run pylint --version
     pipenv run black --version
 
-    echo "Linting code..."
-    pipenv run pylint rplugin/python3/nvim_diary_template 
+    echo "Running full lint of code..."
+    pipenv run pylint rplugin/python3/nvim_diary_template -j 0
+
+    echo "Linting code ignoring TODO warnings..."
+    pipenv run pylint rplugin/python3/nvim_diary_template -j 0 -d W0511
+
+    if [ $? -ne 0 ]; then
+        echo "pylint failed check..."
+        exit ${FAIL}
+    fi
 
     echo "Checking code syntax with Black..."
     pipenv run black rplugin/python3/deoplete --check
