@@ -311,5 +311,4 @@ def combine_issues(
 
                 api_issue.all_comments.append(comment)
 
-
     return combined_issues
