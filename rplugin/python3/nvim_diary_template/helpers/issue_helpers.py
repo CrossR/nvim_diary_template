@@ -371,6 +371,7 @@ def get_github_objects(
 
     return issue_objects
 
+
 def split_comment(comment: str) -> List[str]:
     """split_comment
 
