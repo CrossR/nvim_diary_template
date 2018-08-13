@@ -14,6 +14,7 @@ from ..utils.constants import (
     HEADING_3,
     HEADING_4,
     ISSUE_HEADING,
+    SCHEDULE_HEADING,
     VIMWIKI_TODO,
 )
 
@@ -175,7 +176,7 @@ def set_issues_from_issues_list(nvim: Nvim, issues: List[GitHubIssue]) -> None:
     # Then add one to the end to replace the newline, as we add one.
     old_issues_start_line: int = get_section_line(current_buffer, ISSUE_HEADING) + 1
 
-    old_issues_end_line: int = old_issues_start_line + len(issue_lines)
+    old_issues_end_line: int = get_section_line(current_buffer, SCHEDULE_HEADING) - 1
 
     nvim.api.buf_set_lines(
         buffer_number, old_issues_start_line, old_issues_end_line, True, issue_lines
