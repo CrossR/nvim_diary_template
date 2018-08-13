@@ -21,6 +21,9 @@ augroup nvim_diary_template_keybinds
     autocmd FileType vimwiki nnoremap <buffer> <leader>wuc :DiaryUploadCompletion<CR>
     autocmd FileType vimwiki nnoremap <buffer> <leader>wua :DiaryUploadIssues<CR>
 
+    " Grab Issues
+    autocmd FileType vimwiki nnoremap <buffer> <leader>wgi :DiaryGetIssues<CR>
+
     autocmd FileType vimwiki setlocal foldtext=DiaryFoldText()
     autocmd FileType vimwiki setlocal foldmethod=expr
     autocmd FileType vimwiki setlocal foldexpr=GetDiaryFold(v:lnum)
