@@ -220,6 +220,7 @@ class SimpleNvimGithub:
                             "issue_number": issue.number,
                             "comment_number": comment.number,
                             "comment": "\r\n".join(processed_comment_lines),
+                            "updated_at": comment.updated_at,
                         }
                     )
 
@@ -246,9 +247,9 @@ class SimpleNvimGithub:
         # storing the index of the issue, so it can be updated later.
         for index, issue in enumerate(issues):
             if tag in issue.metadata:
-                issue_body: List[str] = issue.all_comments[0].body
+                issue_comment: GitHubIssueComment = issue.all_comments[0]
                 processed_body: List[str] = [
-                    check_markdown_style(line, "github") for line in issue_body
+                    check_markdown_style(line, "github") for line in issue_comment.body
                 ]
 
                 issues_to_upload.append(
@@ -257,6 +258,7 @@ class SimpleNvimGithub:
                         "title": issue.title,
                         "labels": issue.labels,
                         "body": "\r\n".join(processed_body),
+                        "updated_at": issue_comment.updated_at,
                     }
                 )
 
@@ -356,15 +358,29 @@ class SimpleNvimGithub:
             issue_number: int = comment["issue_number"]
             comment_number: int = comment["comment_number"]
             comment_body: List[str] = comment["comment"]
+            comment_updated_at: str = comment["updated_at"]
 
             # Comment 0 is actually the issue body, not a comment.
             if comment_number == 0:
-                self.service.get_repo(self.repo_name).get_issue(issue_number).edit(
-                    body=comment_body
+                github_comment: Any = self.service.get_repo(self.repo_name).get_issue(
+                    issue_number
                 )
 
+                github_edit_time: str = convert_utc_timezone(
+                    github_comment.updated_at, self.options.timezone
+                )
+
+                if github_edit_time != comment_updated_at:
+                    buffered_info_message(
+                        self.nvim,
+                        f"Mismatch with comment {issue_number}:{comment_number}.",
+                    )
+                    continue
+
+                github_comment.edit(body=comment_body)
+
                 # Grab the comment again, to sort the update time.
-                github_comment: Any = self.service.get_repo(self.repo_name).get_issue(
+                github_comment = self.service.get_repo(self.repo_name).get_issue(
                     issue_number
                 )
             else:
@@ -374,6 +390,17 @@ class SimpleNvimGithub:
                     .get_issue(issue_number)
                     .get_comments()[comment_number - 1]
                 )
+
+                github_edit_time = convert_utc_timezone(
+                    github_comment.updated_at, self.options.timezone
+                )
+
+                if github_edit_time != comment_updated_at:
+                    buffered_info_message(
+                        self.nvim,
+                        f"Mismatch with comment {issue_number}:{comment_number}. ",
+                    )
+                    continue
 
                 github_comment.edit(comment_body)
 
@@ -411,10 +438,22 @@ class SimpleNvimGithub:
             issue_title: str = issue["title"]
             issue_body: List[str] = issue["body"]
             issue_labels: List[str] = issue["labels"]
+            issue_edit_time: str = issue["updated_at"]
 
             github_issue: Any = self.service.get_repo(self.repo_name).get_issue(
                 issue_number
             )
+
+            github_edit_time = convert_utc_timezone(
+                github_issue.updated_at, self.options.timezone
+            )
+
+            if github_edit_time != issue_edit_time:
+                buffered_info_message(
+                    self.nvim,
+                    f"Mismatch with issue {issue_number}. ",
+                )
+                continue
 
             github_issue.edit(title=issue_title, body=issue_body, labels=issue_labels)
 
