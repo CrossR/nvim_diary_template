@@ -4,7 +4,7 @@ Simple helpers to deal with Github issues.
 """
 import re
 from datetime import datetime
-from typing import Any, Dict, List, Tuple, Union
+from typing import Any, Dict, List, Tuple, Union, Optional
 
 from dateutil import tz
 from neovim import Nvim
@@ -388,3 +388,18 @@ def split_comment(comment: str) -> List[str]:
         lines.pop()
 
     return lines
+
+
+def get_issue_index(issues: List[GitHubIssue], target_number: int) -> Optional[int]:
+    """get_issue_index
+
+    Get the index of a given issue in a list, or return None if it does not exist.
+    """
+
+    target_index: Optional[int] = None
+
+    for index, issue in enumerate(issues):
+        if issue.number == target_number:
+            target_index = index
+
+    return target_index
