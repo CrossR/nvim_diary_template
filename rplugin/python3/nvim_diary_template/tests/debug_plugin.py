@@ -15,5 +15,7 @@ CURRENT_PIPE: str = [pipe for pipe in PIPES if pipe.startswith("nvim")][0]
 NVIM: neovim.Nvim = neovim.attach("socket", path=f"\\\\.\\pipe\\{CURRENT_PIPE}")
 
 # Initialise the options, then run the required function.
-DiaryTemplatePlugin(NVIM).check_options()
-DiaryTemplatePlugin(NVIM).grab_from_calendar()
+plugin: DiaryTemplatePlugin = DiaryTemplatePlugin(NVIM)
+
+plugin.check_options()
+plugin.make_diary()
