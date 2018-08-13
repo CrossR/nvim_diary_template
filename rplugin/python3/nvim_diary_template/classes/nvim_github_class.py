@@ -124,8 +124,7 @@ class SimpleNvimGithub:
     def get_all_open_issues(self) -> List[GitHubIssue]:
         """get_all_open_issues
 
-        Returns a list of all the open issues, which will include ones that
-        are in the exclude list.
+        Returns a list of all the open issues, including all comments.
         """
 
         if self.service_not_valid():

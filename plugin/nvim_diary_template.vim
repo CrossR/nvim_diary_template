@@ -19,6 +19,10 @@ augroup nvim_diary_template_keybinds
     autocmd FileType vimwiki nnoremap <buffer> <leader>wun :DiaryUploadNew<CR>
     autocmd FileType vimwiki nnoremap <buffer> <leader>wue :DiaryUploadEdits<CR>
     autocmd FileType vimwiki nnoremap <buffer> <leader>wuc :DiaryUploadCompletion<CR>
+    autocmd FileType vimwiki nnoremap <buffer> <leader>wua :DiaryUploadIssues<CR>
+
+    " Grab Issues
+    autocmd FileType vimwiki nnoremap <buffer> <leader>wgi :DiaryGetIssues<CR>
 
     autocmd FileType vimwiki setlocal foldtext=DiaryFoldText()
     autocmd FileType vimwiki setlocal foldmethod=expr
@@ -111,11 +115,6 @@ function! GetDiaryFold(lnum)
   " close the previous comment fold.
   if getline(a:lnum + 1) =~? s:comment_start && indent_level == 0 && foldlevel(a:lnum - 1) != 1
     return '1'
-  endif
-
-  " If its between issues, close the current issue fold so the issues are seperate.
-  if getline(a:lnum + 1) =~? s:issue_start && indent_level == 0 && foldlevel(a:lnum - 2) == 2
-    return '0'
   endif
 
   " If we've gotten here.... return the existing level.

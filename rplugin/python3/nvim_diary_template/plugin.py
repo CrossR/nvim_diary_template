@@ -22,6 +22,7 @@ from .utils.make_markdown_file import make_todays_diary
 from .utils.make_schedule import set_schedule_from_events_list
 from .utils.parse_markdown import (
     combine_events,
+    combine_issues,
     parse_markdown_file_for_events,
     parse_markdown_file_for_issues,
     remove_events_not_from_today,
@@ -66,7 +67,7 @@ class DiaryTemplatePlugin:
         self._gcal_service.upload_to_calendar(markdown_events)
         remove_events_not_from_today(self._nvim)
 
-    @neovim.command("DiaryGrabCalendar")
+    @neovim.command("DiaryGetCalendar")
     def grab_from_calendar(self) -> None:
         markdown_events: List[CalendarEvent] = parse_markdown_file_for_events(
             self._nvim, ISO_FORMAT
@@ -87,6 +88,17 @@ class DiaryTemplatePlugin:
     @neovim.command("DiarySortCalendar")
     def sort_calendar(self) -> None:
         sort_markdown_events(self._nvim)
+
+    @neovim.command("DiaryGetIssues")
+    def get_issues(self) -> None:
+        markdown_issues: List[GitHubIssue] = parse_markdown_file_for_issues(self._nvim)
+        github_issues: List[GitHubIssue] = self._github_service.get_all_open_issues()
+
+        combined_issues: List[GitHubIssue] = combine_issues(
+            markdown_issues, github_issues
+        )
+
+        set_issues_from_issues_list(self._nvim, combined_issues)
 
     @neovim.command("DiaryInsertIssue")
     def insert_issue(self) -> None:

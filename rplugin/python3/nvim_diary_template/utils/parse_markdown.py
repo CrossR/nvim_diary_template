@@ -8,13 +8,13 @@ from datetime import date
 from typing import List, Match, Optional
 
 from dateutil import parser
-
 from neovim import Nvim
 
 from ..classes.calendar_event_class import CalendarEvent
 from ..classes.github_issue_class import GitHubIssue, GitHubIssueComment
 from ..helpers.event_helpers import format_event
 from ..helpers.google_calendar_helpers import convert_events
+from ..helpers.issue_helpers import get_issue_index
 from ..helpers.neovim_helpers import (
     get_buffer_contents,
     get_section_line,
@@ -253,3 +253,62 @@ def combine_events(
     )
 
     return [format_event(event, TIME_FORMAT) for event in combined_events]
+
+
+def combine_issues(
+    markdown_issues: List[GitHubIssue], api_issues: List[GitHubIssue]
+) -> List[GitHubIssue]:
+    """combine_issues
+
+    Takes both markdown and GitHub API issues and combines them.
+
+    Treats the GitHub version as the truth, and keeps around any issues with an
+    edit or new tag.
+    """
+
+    # Default to using the API version.
+    combined_issues: List[GitHubIssue] = api_issues
+
+    # Then, copy over any issues/comments with a new/edit tag, or that are missing.
+    for issue in markdown_issues:
+        api_issue_index: Optional[int] = get_issue_index(api_issues, issue.number)
+
+        # If the issue doesn't exist at all, we need to add the whole thing.
+        if api_issue_index is None:
+            combined_issues.append(issue)
+            continue
+
+        api_issue: GitHubIssue = combined_issues[api_issue_index]
+
+        # Add the new/edited comments
+        for index, comment in enumerate(issue.all_comments):
+            if len(api_issue.all_comments) <= index:
+                api_issue.all_comments.append(comment)
+
+                continue
+
+            api_comment: GitHubIssueComment = api_issue.all_comments[index]
+
+            # If we've got a new comment in the markdown, add it.
+            if "new" in comment.tags:
+                comment.number = len(api_issue.all_comments)
+                api_issue.all_comments.append(comment)
+
+                continue
+
+            # If we've got an edited comment, where the online matches the
+            # markdown version, keep the markdown comment around.
+            if "edit" in comment.tags and comment.updated_at == api_comment.updated_at:
+                api_comment = comment
+
+                continue
+
+            # If we've got an edited comment, where the online is newer than the
+            # markdown version, add the markdown comment, but label it as conflicted.
+            if "edit" in comment.tags and comment.updated_at < api_comment.updated_at:
+                comment.number = len(api_issue.all_comments)
+                comment.tags.append("conflict")
+
+                api_issue.all_comments.append(comment)
+
+    return combined_issues
