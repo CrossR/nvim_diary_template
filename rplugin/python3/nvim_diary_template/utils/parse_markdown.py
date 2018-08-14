@@ -186,7 +186,7 @@ def remove_events_not_from_today(nvim: Nvim) -> None:
 
         event_index = schedule_index + index + 1
 
-        set_line_content(nvim, [""], event_index)
+        set_line_content(nvim, [], event_index, line_offset=1)
 
 
 def parse_markdown_file_for_events(
