@@ -362,14 +362,13 @@ class SimpleNvimGithub:
         """
 
         comments_to_upload, change_indexes = self.filter_comments(issues, tag)
+        update_count: int = 0
 
         for issue, change_index in zip(comments_to_upload, change_indexes):
-            comment_number: int = issue.all_comments[0].number
-            comment_body: List[str] = issue.all_comments[0].body
-            comment_updated_at: str = issue.all_comments[0].updated_at
+            comment: GitHubIssueComment = issue.all_comments[0]
 
             # Comment 0 is actually the issue body, not a comment.
-            if comment_number == 0:
+            if comment.number == 0:
                 github_comment: Any = self.service.get_repo(self.repo_name).get_issue(
                     issue.number
                 )
@@ -378,14 +377,14 @@ class SimpleNvimGithub:
                     github_comment.updated_at, self.options.timezone
                 )
 
-                if github_edit_time != comment_updated_at:
+                if github_edit_time != comment.updated_at:
                     buffered_info_message(
                         self.nvim,
-                        f"Mismatch with comment {issue.number}:{comment_number}.",
+                        f"Mismatch with comment {issue.number}:{comment.number}.",
                     )
                     continue
 
-                github_comment.edit(body=comment_body)
+                github_comment.edit(body=comment.body)
 
                 # Grab the comment again, to sort the update time.
                 github_comment = self.service.get_repo(self.repo_name).get_issue(
@@ -396,27 +395,27 @@ class SimpleNvimGithub:
                 github_comment = (
                     self.service.get_repo(self.repo_name)
                     .get_issue(issue.number)
-                    .get_comments()[comment_number - 1]
+                    .get_comments()[comment.number - 1]
                 )
 
                 github_edit_time = convert_utc_timezone(
                     github_comment.updated_at, self.options.timezone
                 )
 
-                if github_edit_time != comment_updated_at:
+                if github_edit_time != comment.updated_at:
                     buffered_info_message(
                         self.nvim,
-                        f"Mismatch with comment {issue.number}:{comment_number}. ",
+                        f"Mismatch with comment {issue.number}:{comment.number}. ",
                     )
                     continue
 
-                github_comment.edit(comment_body)
+                github_comment.edit(comment.body)
 
                 # Grab the comment again, to sort the update time.
                 github_comment = (
                     self.service.get_repo(self.repo_name)
                     .get_issue(issue.number)
-                    .get_comments()[comment_number - 1]
+                    .get_comments()[comment.number - 1]
                 )
 
             current_issue: GitHubIssue = issues[change_index["issue"]]
@@ -426,9 +425,10 @@ class SimpleNvimGithub:
             current_comment.updated_at = convert_utc_timezone(
                 github_comment.updated_at, self.options.timezone
             )
+            update_count += 1
 
         buffered_info_message(
-            self.nvim, f"Updated {len(comments_to_upload)} comments on GitHub. "
+            self.nvim, f"Updated {update_count} comments on GitHub. "
         )
 
         return issues
@@ -440,6 +440,7 @@ class SimpleNvimGithub:
         """
 
         issues_to_upload, change_indexes = self.filter_issues(issues, tag)
+        update_count: int = 0
 
         for issue, change_index in zip(issues_to_upload, change_indexes):
 
@@ -468,9 +469,10 @@ class SimpleNvimGithub:
             issue_body_comment.updated_at = convert_utc_timezone(
                 github_issue.updated_at, self.options.timezone
             )
+            update_count += 1
 
         buffered_info_message(
-            self.nvim, f"Updated {len(issues_to_upload)} issues on GitHub. "
+            self.nvim, f"Updated {update_count} issues on GitHub. "
         )
 
         return issues
