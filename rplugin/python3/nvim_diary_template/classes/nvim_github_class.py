@@ -55,7 +55,7 @@ class SimpleNvimGithub:
             self.config_path,
             "repo_labels",
             CALENDAR_CACHE_DURATION,
-            self.get_repo_issues,
+            self.get_repo_labels,
         )
 
     @property
@@ -103,8 +103,8 @@ class SimpleNvimGithub:
 
         return False
 
-    def get_repo_issues(self) -> List[str]:
-        """get_repo_issues
+    def get_repo_labels(self) -> List[str]:
+        """get_repo_labels
 
         Get the labels for the current repo.
         """
