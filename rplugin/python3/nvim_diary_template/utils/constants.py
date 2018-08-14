@@ -12,6 +12,8 @@ DIARY_FOLDER = "diary"
 # Google Calendar Constants
 CACHE_EPOCH_REGEX = "([0-9])+"
 CALENDAR_CACHE_DURATION = timedelta(days=31)
+LABELS_CACHE_DURATION = timedelta(days=31)
+REPO_CACHE_DURATION = timedelta(days=1)
 EVENT_CACHE_DURATION = timedelta(minutes=30)
 ISSUE_CACHE_DURATION = timedelta(minutes=30)
 

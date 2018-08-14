@@ -22,7 +22,11 @@ from ..helpers.issue_helpers import (
     split_comment,
 )
 from ..helpers.neovim_helpers import buffered_info_message
-from ..utils.constants import CALENDAR_CACHE_DURATION, ISSUE_CACHE_DURATION
+from ..utils.constants import (
+    ISSUE_CACHE_DURATION,
+    LABELS_CACHE_DURATION,
+    REPO_CACHE_DURATION,
+)
 
 
 class SimpleNvimGithub:
@@ -51,11 +55,15 @@ class SimpleNvimGithub:
 
         self.issues: List[GitHubIssue] = get_github_objects(loaded_issues)
 
-        self.repo_labels: List[str] = check_cache(
+        check_cache(
+            self.config_path, "repo_labels", LABELS_CACHE_DURATION, self.get_repo_labels
+        )
+
+        check_cache(
             self.config_path,
-            "repo_labels",
-            CALENDAR_CACHE_DURATION,
-            self.get_repo_labels,
+            "user_repos",
+            REPO_CACHE_DURATION,
+            self.get_associated_repos,
         )
 
     @property
@@ -116,6 +124,23 @@ class SimpleNvimGithub:
         repo_labels: Any = self.service.get_repo(self.repo_name).get_labels()
 
         return [label.name for label in repo_labels]
+
+    def get_associated_repos(self) -> List[str]:
+        """get_associated_repos
+
+        Get all the repos the current user is associated with.
+        """
+
+        if self.service is None:
+            self.nvim.err_write("Github service not currently running...\n")
+            return []
+
+        if self.options.user_name == "":
+            return []
+
+        repos: Any = self.service.get_user(self.options.user_name).get_repos(type="all")
+
+        return [repo.full_name for repo in repos]
 
     def get_all_open_issues(self) -> List[GitHubIssue]:
         """get_all_open_issues

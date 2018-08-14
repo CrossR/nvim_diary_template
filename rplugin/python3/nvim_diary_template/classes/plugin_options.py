@@ -34,6 +34,7 @@ class PluginOptions:
         self.timezone: str = "Europe/London"
         self.use_github_repo: bool = True
         self.repo_name: str = ""
+        self.user_name: str = ""
 
         for key, default_value in self.__dict__.items():
             value: Any = nvim.vars.get(f"nvim_diary_template#{key}", default_value)
