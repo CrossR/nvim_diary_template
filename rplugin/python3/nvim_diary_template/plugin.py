@@ -95,7 +95,7 @@ class DiaryTemplatePlugin:
         github_issues: List[GitHubIssue] = self._github_service.get_all_open_issues()
 
         combined_issues: List[GitHubIssue] = combine_issues(
-            markdown_issues, github_issues
+            self._nvim, markdown_issues, github_issues
         )
 
         set_issues_from_issues_list(self._nvim, combined_issues)

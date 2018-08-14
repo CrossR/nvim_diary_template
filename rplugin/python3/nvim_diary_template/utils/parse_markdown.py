@@ -256,7 +256,7 @@ def combine_events(
 
 
 def combine_issues(
-    markdown_issues: List[GitHubIssue], api_issues: List[GitHubIssue]
+    nvim: Nvim, markdown_issues: List[GitHubIssue], api_issues: List[GitHubIssue]
 ) -> List[GitHubIssue]:
     """combine_issues
 
@@ -310,5 +310,7 @@ def combine_issues(
                 comment.tags.append("conflict")
 
                 api_issue.all_comments.append(comment)
+
+    nvim.out_write(f"Updated {len(combined_issues) - len(markdown_issues)} issues.\n")
 
     return combined_issues
