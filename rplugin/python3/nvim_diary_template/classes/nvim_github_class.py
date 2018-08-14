@@ -37,7 +37,7 @@ class SimpleNvimGithub:
         self.repo_name: str = options.repo_name
         self.options: PluginOptions = options
 
-        self.service: Any = self.setup_github_api()
+        self.service: Optional[Github] = self.setup_github_api()
 
         if self.service_not_valid():
             return
@@ -66,7 +66,7 @@ class SimpleNvimGithub:
         """
         return not self.service_not_valid()
 
-    def setup_github_api(self) -> Optional[Any]:
+    def setup_github_api(self) -> Optional[Github]:
         """setup_github_api
 
             Sets up the initial Github service, which can then be used
@@ -109,11 +109,10 @@ class SimpleNvimGithub:
         Get the labels for the current repo.
         """
 
-        if self.service_not_valid():
+        if self.service is None:
             self.nvim.err_write("Github service not currently running...\n")
             return []
 
-        # TODO: Add a wrapper for all GitHub calls.
         repo_labels: Any = self.service.get_repo(self.repo_name).get_labels()
 
         return [label.name for label in repo_labels]
@@ -124,7 +123,7 @@ class SimpleNvimGithub:
         Returns a list of all the open issues, including all comments.
         """
 
-        if self.service_not_valid():
+        if self.service is None:
             self.nvim.err_write("Github service not currently running...\n")
             return []
 
@@ -289,6 +288,10 @@ class SimpleNvimGithub:
         Upload comments with the specific tag to GitHub.
         """
 
+        if self.service is None:
+            self.nvim.err_write("Github service not currently running...\n")
+            return [], []
+
         comments_to_upload, change_indexes = self.filter_comments(issues, tag)
         comments_to_ignore: List[Dict[str, int]] = []
         change_count: int = 0
@@ -330,6 +333,10 @@ class SimpleNvimGithub:
         Upload issues with the specific tag to GitHub.
         """
 
+        if self.service is None:
+            self.nvim.err_write("Github service not currently running...\n")
+            return [], []
+
         issues_to_upload, change_indexes = self.filter_issues(issues, tag)
         issues_to_ignore: List[int] = []
         change_count: int = 0
@@ -362,6 +369,10 @@ class SimpleNvimGithub:
 
         Update existing comments with the specific tag on GitHub.
         """
+
+        if self.service is None:
+            self.nvim.err_write("Github service not currently running...\n")
+            return [], []
 
         comments_to_upload, change_indexes = self.filter_comments(issues, tag)
         comments_to_ignore: List[Dict[str, int]] = []
@@ -444,6 +455,10 @@ class SimpleNvimGithub:
         Update existing issues with the specific tag on GitHub.
         """
 
+        if self.service is None:
+            self.nvim.err_write("Github service not currently running...\n")
+            return [], []
+
         issues_to_upload, change_indexes = self.filter_issues(issues, tag)
         issues_to_ignore: List[int] = []
         update_count: int = 0
@@ -488,6 +503,10 @@ class SimpleNvimGithub:
         Sort the complete status of the issues in the current buffer.
         We assume the buffer is always correct.
         """
+
+        if self.service is None:
+            self.nvim.err_write("Github service not currently running...\n")
+            return
 
         change_counter: int = 0
 
