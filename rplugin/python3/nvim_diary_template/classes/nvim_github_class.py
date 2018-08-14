@@ -355,13 +355,16 @@ class SimpleNvimGithub:
 
         return issues, issues_to_ignore
 
-    def update_comments(self, issues: List[GitHubIssue], tag: str) -> List[GitHubIssue]:
+    def update_comments(
+        self, issues: List[GitHubIssue], tag: str
+    ) -> Tuple[List[GitHubIssue], List[Dict[str, int]]]:
         """update_comments
 
         Update existing comments with the specific tag on GitHub.
         """
 
         comments_to_upload, change_indexes = self.filter_comments(issues, tag)
+        comments_to_ignore: List[Dict[str, int]] = []
         update_count: int = 0
 
         for issue, change_index in zip(comments_to_upload, change_indexes):
@@ -382,6 +385,7 @@ class SimpleNvimGithub:
                         self.nvim,
                         f"Mismatch with comment {issue.number}:{comment.number}.",
                     )
+                    comments_to_ignore.append(change_index)
                     continue
 
                 github_comment.edit(body=comment.body)
@@ -407,6 +411,7 @@ class SimpleNvimGithub:
                         self.nvim,
                         f"Mismatch with comment {issue.number}:{comment.number}. ",
                     )
+                    comments_to_ignore.append(change_index)
                     continue
 
                 github_comment.edit(comment.body)
@@ -427,19 +432,20 @@ class SimpleNvimGithub:
             )
             update_count += 1
 
-        buffered_info_message(
-            self.nvim, f"Updated {update_count} comments on GitHub. "
-        )
+        buffered_info_message(self.nvim, f"Updated {update_count} comments on GitHub. ")
 
-        return issues
+        return issues, comments_to_ignore
 
-    def update_issues(self, issues: List[GitHubIssue], tag: str) -> List[GitHubIssue]:
+    def update_issues(
+        self, issues: List[GitHubIssue], tag: str
+    ) -> Tuple[List[GitHubIssue], List[int]]:
         """update_issues
 
         Update existing issues with the specific tag on GitHub.
         """
 
         issues_to_upload, change_indexes = self.filter_issues(issues, tag)
+        issues_to_ignore: List[int] = []
         update_count: int = 0
 
         for issue, change_index in zip(issues_to_upload, change_indexes):
@@ -456,6 +462,7 @@ class SimpleNvimGithub:
                 buffered_info_message(
                     self.nvim, f"Mismatch with issue {issue.number}. "
                 )
+                issues_to_ignore.append(change_index)
                 continue
 
             github_issue.edit(
@@ -471,11 +478,9 @@ class SimpleNvimGithub:
             )
             update_count += 1
 
-        buffered_info_message(
-            self.nvim, f"Updated {update_count} issues on GitHub. "
-        )
+        buffered_info_message(self.nvim, f"Updated {update_count} issues on GitHub. ")
 
-        return issues
+        return issues, issues_to_ignore
 
     def complete_issues(self, issues: List[GitHubIssue]) -> None:
         """complete_issues

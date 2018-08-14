@@ -122,11 +122,12 @@ class DiaryTemplatePlugin:
 
         issues, ignore_list = self._github_service.upload_issues(issues, "new")
         issues = remove_tag_from_issues(issues, "new", "issues", ignore_list)
-        issues, ignore_list = self._github_service.upload_comments(issues, "new")
 
+        issues, ignore_list = self._github_service.upload_comments(issues, "new")
         issues_without_new_tag: List[GitHubIssue] = remove_tag_from_issues(
             issues, "new", "comments", ignore_list
         )
+
         set_issues_from_issues_list(self._nvim, issues_without_new_tag)
 
         if not buffered:
@@ -135,12 +136,15 @@ class DiaryTemplatePlugin:
     @neovim.command("DiaryUploadEdits")
     def upload_edited_issues(self, buffered: bool = False) -> None:
         issues: List[GitHubIssue] = parse_markdown_file_for_issues(self._nvim)
-        issues = self._github_service.update_comments(issues, "edit")
-        issues = self._github_service.update_issues(issues, "edit")
 
+        issues, ignore_list = self._github_service.update_comments(issues, "edit")
+        issues = remove_tag_from_issues(issues, "edit", "comments", ignore_list)
+
+        issues, ignore_list = self._github_service.update_issues(issues, "edit")
         issues_without_edit_tag: List[GitHubIssue] = remove_tag_from_issues(
-            issues, "edit"
+            issues, "edit", "issues", ignore_list
         )
+
         set_issues_from_issues_list(self._nvim, issues_without_edit_tag)
 
         if not buffered:
