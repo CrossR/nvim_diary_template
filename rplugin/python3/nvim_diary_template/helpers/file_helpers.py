@@ -9,7 +9,7 @@ import re
 import time as t
 from datetime import datetime, timedelta
 from os import makedirs, path, remove
-from typing import Any, Callable, Dict, List, Union
+from typing import Any, Callable, List, Union
 
 from dateutil import parser
 
