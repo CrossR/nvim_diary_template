@@ -158,4 +158,4 @@ def generate_diary_index(options: PluginOptions) -> None:
         full_markdown.append(f"{BULLET_POINT} [Diary for {date}]({date}.md)")
 
     with open(diary_index_file, "w") as diary_index:
-        diary_index.write('\n'.join(full_markdown))
+        diary_index.write("\n".join(full_markdown))
