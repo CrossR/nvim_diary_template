@@ -30,8 +30,8 @@ cache:
 - $HOME/.cache/pypoetry
 
 install:
-  - pip install pipenv
-  - pipenv install --dev
+  - pip install poetry
+  - poetry install
 
 script:
   - ci/ci_test.sh
