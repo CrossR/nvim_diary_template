@@ -341,7 +341,9 @@ class SimpleNvimGithub:
                 continue
 
             new_issue: Any = self.service.get_repo(self.repo_name).create_issue(
-                title=issue.title, body=issue.all_comments[0].body[0], labels=issue.labels
+                title=issue.title,
+                body=issue.all_comments[0].body[0],
+                labels=issue.labels,
             )
 
             issues[index].number = new_issue.number
@@ -466,7 +468,9 @@ class SimpleNvimGithub:
                 continue
 
             github_issue.edit(
-                title=issue.title, body=issue.all_comments[0].body[0], labels=issue.labels
+                title=issue.title,
+                body=issue.all_comments[0].body[0],
+                labels=issue.labels,
             )
 
             # Grab the issue again, to sort the update time.
