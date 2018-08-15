@@ -3,18 +3,18 @@ FAIL=1
 
 echo "Starting testing script..."
 
-pipenv run python --version
+poetry run python --version
 
 if [ "${LINT_CODE:-0}" -eq 1 ]; then
 
-    pipenv run pylint --version
-    pipenv run black --version
+    poetry run pylint --version
+    poetry run black --version
 
     echo "Running full lint of code..."
-    pipenv run pylint rplugin/python3/nvim_diary_template -j 0
+    poetry run pylint rplugin/python3/nvim_diary_template -j 0
 
     echo "Linting code ignoring TODO warnings..."
-    pipenv run pylint rplugin/python3/nvim_diary_template -j 0 -d W0511
+    poetry run pylint rplugin/python3/nvim_diary_template -j 0 -d W0511
 
     if [ $? -ne 0 ]; then
         echo "pylint failed check..."
@@ -22,14 +22,14 @@ if [ "${LINT_CODE:-0}" -eq 1 ]; then
     fi
 
     echo "Checking code syntax with Black..."
-    pipenv run black rplugin/python3/deoplete --check
+    poetry run black rplugin/python3/deoplete --check
 
     if [ $? -ne 0 ]; then
         echo "Deoplete failed black check..."
         exit ${FAIL}
     fi
 
-    pipenv run black rplugin/python3/nvim_diary_template --check
+    poetry run black rplugin/python3/nvim_diary_template --check
 
     if [ $? -ne 0 ]; then
         echo "Main code failed black check..."
@@ -39,10 +39,10 @@ fi
 
 if [ "${FULL_TYPING:-0}" -eq 1 ]; then
 
-    pipenv run mypy --version
+    poetry run mypy --version
 
     echo "Running full mypy on code base..."
-    pipenv run mypy rplugin/python3/nvim_diary_template --strict
+    poetry run mypy rplugin/python3/nvim_diary_template --strict
 
     if [ $? -ne 0 ]; then
         echo "Full typing check failed..."
@@ -54,10 +54,10 @@ fi
 
 if [ "${BASIC_TYPING-0}" -eq 1 ]; then
 
-    pipenv run mypy --version
+    poetry run mypy --version
 
     echo "Running basic mypy on code base..."
-    pipenv run mypy --config-file mypy.ini rplugin/python3/nvim_diary_template
+    poetry run mypy --config-file mypy.ini rplugin/python3/nvim_diary_template
 
     if [ $? -ne 0 ]; then
         echo "Basic typing check failed..."

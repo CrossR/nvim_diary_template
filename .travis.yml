@@ -24,7 +24,10 @@ matrix:
   allow_failures:
     - name: "Full Type Check"
 
-cache: pip
+cache:
+  pip: true
+  directories:
+- $HOME/.cache/pypoetry
 
 install:
   - pip install pipenv
