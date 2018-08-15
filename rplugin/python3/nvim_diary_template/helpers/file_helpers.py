@@ -9,11 +9,13 @@ import re
 import time as t
 from datetime import datetime, timedelta
 from os import makedirs, path, remove
-from typing import Any, Callable, List, Union
+from typing import Any, Callable, Dict, List, Union
+
+from dateutil import parser
 
 from ..classes.data_class_json import EnhancedJSONEncoder
 from ..classes.plugin_options import PluginOptions
-from ..utils.constants import CACHE_EPOCH_REGEX, DIARY_FOLDER
+from ..utils.constants import CACHE_EPOCH_REGEX, DATE_FORMAT, DIARY_FOLDER, FILE_TYPE_WILDCARD
 
 
 def get_file_content(file_path: str) -> List[str]:
@@ -59,7 +61,8 @@ def check_cache(
     try:
         cache_file_name: str = glob.glob(pattern)[0]
 
-        epoch_search: Union[str, Any] = re.search(CACHE_EPOCH_REGEX, cache_file_name)
+        epoch_search: Union[str, Any] = re.search(
+            CACHE_EPOCH_REGEX, cache_file_name)
         epoch: str = epoch_search[0] if epoch_search is not None else ""
 
         cache_file_creation_date: datetime = datetime.fromtimestamp(int(epoch))
@@ -105,3 +108,32 @@ def set_cache(config_path: str, data: List[Any], data_name: str) -> None:
 
     for old_cache_file in old_cache_files:
         remove(old_cache_file)
+
+
+def generate_diary_index(options: PluginOptions) -> None:
+    """generate_diary_index
+
+    A helper function to generate the diary index page.
+    This is currently needed as VimWiki will not make this file
+    in the background.
+    """
+
+    diary_files: List[str] = glob.glob(FILE_TYPE_WILDCARD)
+
+    diary_dates: List[Dict[str, List[str]]] = []
+
+    # Build up a list of dicts, where the month is the key.
+    for diary in diary_files:
+        diary_date: datetime = parser.parse(diary)
+        diary_date_string = diary_date.strftime(DATE_FORMAT)
+
+        try:
+            diary_dates[diary_date.month].append(diary_date_string)
+        except KeyError:
+            diary_dates[diary_date.month] = [diary_date_string]
+
+    full_markdown: List[str] = ["# Diary Index", ""]
+
+    for month in diary_dates:
+        for diary_entry in month:
+            full_markdown.append(f"- [{diary_entry}]({DIARY_FOLDER}/{diary_entry}.md)")

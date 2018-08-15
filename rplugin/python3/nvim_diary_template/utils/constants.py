@@ -17,6 +17,7 @@ ISSUE_CACHE_DURATION = timedelta(minutes=30)
 
 # DateTime Formats
 TIME_FORMAT = "%H:%M"
+DATE_FORMAT = "%Y-%m-%d"
 ISO_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"
 
 # Regex constants

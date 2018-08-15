@@ -14,6 +14,7 @@ from ..classes.github_issue_class import GitHubIssue
 from ..classes.nvim_github_class import SimpleNvimGithub
 from ..classes.nvim_google_cal_class import SimpleNvimGoogleCal
 from ..classes.plugin_options import PluginOptions
+from ..helpers.file_helpers import generate_diary_index
 from ..helpers.neovim_helpers import is_buffer_empty, set_buffer_contents
 from ..utils.make_issues import produce_issue_markdown
 from ..utils.make_schedule import produce_schedule_markdown
@@ -75,6 +76,9 @@ def make_todays_diary(
     # Set the buffer contents and save the file.
     set_buffer_contents(nvim, full_markdown)
     nvim.command(":w")
+
+    if options.auto_generate_diary_index:
+        generate_diary_index(options)
 
 
 def generate_markdown_metadata(metadata_obj: Dict[str, str]) -> List[str]:
