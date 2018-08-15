@@ -7,6 +7,7 @@ name = "pypi"
 allow_prereleases = true
 
 [packages]
+dataclasses = {version = "*", markers="python_version < '3.7'"}
 neovim = "*"
 google-api-python-client = "*"
 python-dateutil = "*"
@@ -20,4 +21,4 @@ pylint = "*"
 typed-ast = "*"
 
 [requires]
-python_version = "3.7"
+python_version = "3.6"

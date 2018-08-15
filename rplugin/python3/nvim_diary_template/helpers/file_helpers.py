@@ -11,9 +11,19 @@ from datetime import datetime, timedelta
 from os import makedirs, path, remove
 from typing import Any, Callable, List, Union
 
+from dateutil import parser
+
 from ..classes.data_class_json import EnhancedJSONEncoder
 from ..classes.plugin_options import PluginOptions
-from ..utils.constants import CACHE_EPOCH_REGEX, DIARY_FOLDER
+from ..utils.constants import (
+    BULLET_POINT,
+    CACHE_EPOCH_REGEX,
+    DATE_FORMAT,
+    DIARY_FOLDER,
+    DIARY_INDEX_FILE,
+    HEADING_2,
+    HEADING_3,
+)
 
 
 def get_file_content(file_path: str) -> List[str]:
@@ -105,3 +115,47 @@ def set_cache(config_path: str, data: List[Any], data_name: str) -> None:
 
     for old_cache_file in old_cache_files:
         remove(old_cache_file)
+
+
+def generate_diary_index(options: PluginOptions) -> None:
+    """generate_diary_index
+
+    A helper function to generate the diary index page.
+    This is currently needed as VimWiki will not make this file
+    in the background.
+    """
+
+    diary_index_file = path.join(options.notes_path, DIARY_FOLDER, DIARY_INDEX_FILE)
+
+    diary_files: List[str] = glob.glob(path.join(options.notes_path, "diary", "*.md"))
+    diary_files = [path.split(diary)[-1].split(".")[0] for diary in diary_files]
+
+    date_time_diaries: List[datetime] = [
+        parser.parse(diary) for diary in diary_files if diary != "diary"
+    ]
+    sorted_diary_list: List[datetime] = sorted(
+        date_time_diaries, key=lambda d: (d.year, d.month, d.day), reverse=True
+    )
+
+    full_markdown: List[str] = ["# Diary Index", ""]
+    last_added_year: str = ""
+    last_added_month: str = ""
+
+    for diary in sorted_diary_list:
+
+        current_month: str = diary.strftime("%B")
+        current_year: str = diary.strftime("%Y")
+
+        if current_year != last_added_year:
+            full_markdown.append(f"{HEADING_2} {current_year}")
+            last_added_year = current_year
+
+        if current_month != last_added_month:
+            full_markdown.extend(("", f"{HEADING_3} {current_month}", ""))
+            last_added_month = current_month
+
+        date = diary.strftime(DATE_FORMAT)
+        full_markdown.append(f"{BULLET_POINT} [Diary for {date}]({date}.md)")
+
+    with open(diary_index_file, "w") as diary_index:
+        diary_index.write("\n".join(full_markdown))

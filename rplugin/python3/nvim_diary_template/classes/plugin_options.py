@@ -27,6 +27,7 @@ class PluginOptions:
         self.notes_path: str = os.path.join(str(Path.home()), "vimwiki")
         self.config_path: str = os.path.join(str(Path.home()), "vimwiki", "config")
         self.daily_headings: List[str] = ["Notes"]
+        self.auto_generate_diary_index = False
         self.use_google_calendar: bool = True
         self.calendar_filter_list: List[str] = []
         self.add_to_google_cal: bool = False

@@ -8,6 +8,7 @@ from datetime import timedelta
 # Global plugin constants
 FILE_TYPE_WILDCARD = "*/diary/*.md"
 DIARY_FOLDER = "diary"
+DIARY_INDEX_FILE = "diary.md"
 
 # Google Calendar Constants
 CACHE_EPOCH_REGEX = "([0-9])+"
@@ -19,6 +20,7 @@ ISSUE_CACHE_DURATION = timedelta(minutes=30)
 
 # DateTime Formats
 TIME_FORMAT = "%H:%M"
+DATE_FORMAT = "%Y-%m-%d"
 ISO_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"
 
 # Regex constants
