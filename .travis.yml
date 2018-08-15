@@ -27,7 +27,7 @@ matrix:
 cache:
   pip: true
   directories:
-- $HOME/.cache/pypoetry
+    - $HOME/.cache/pypoetry
 
 install:
   - pip install poetry
