@@ -120,7 +120,7 @@ def generate_diary_index(options: PluginOptions) -> None:
 
     diary_files: List[str] = glob.glob(FILE_TYPE_WILDCARD)
 
-    diary_dates: List[Dict[str, List[str]]] = []
+    diary_dates: Dict[str, List[str]] = {}
 
     # Build up a list of dicts, where the month is the key.
     for diary in diary_files:
@@ -128,9 +128,9 @@ def generate_diary_index(options: PluginOptions) -> None:
         diary_date_string = diary_date.strftime(DATE_FORMAT)
 
         try:
-            diary_dates[diary_date.month].append(diary_date_string)
+            diary_dates[diary_date.strftime("%m")].append(diary_date_string)
         except KeyError:
-            diary_dates[diary_date.month] = [diary_date_string]
+            diary_dates[diary_date.strftime("%m")] = [diary_date_string]
 
     full_markdown: List[str] = ["# Diary Index", ""]
 
