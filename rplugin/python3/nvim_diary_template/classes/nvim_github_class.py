@@ -214,7 +214,7 @@ class SimpleNvimGithub:
 
                     processed_comment: GitHubIssueComment = GitHubIssueComment(
                         number=comment.number,
-                        body=processed_comment_lines,
+                        body=["\r\n".join(processed_comment_lines)],
                         tags=comment.tags,
                         updated_at=comment.updated_at,
                     )
@@ -261,7 +261,7 @@ class SimpleNvimGithub:
 
                 body_comment: GitHubIssueComment = GitHubIssueComment(
                     number=comment.number,
-                    body=processed_body,
+                    body=["\r\n".join(processed_body)],
                     tags=comment.tags,
                     updated_at=comment.updated_at,
                 )
@@ -303,7 +303,7 @@ class SimpleNvimGithub:
             new_comment: Any = (
                 self.service.get_repo(self.repo_name)
                 .get_issue(issue.number)
-                .create_comment(issue.all_comments[0].body)
+                .create_comment(issue.all_comments[0].body[0])
             )
 
             current_issue: GitHubIssue = issues[change_index["issue"]]
@@ -341,7 +341,7 @@ class SimpleNvimGithub:
                 continue
 
             new_issue: Any = self.service.get_repo(self.repo_name).create_issue(
-                title=issue.title, body=issue.all_comments[0].body, labels=issue.labels
+                title=issue.title, body=issue.all_comments[0].body[0], labels=issue.labels
             )
 
             issues[index].number = new_issue.number
@@ -388,7 +388,7 @@ class SimpleNvimGithub:
                     comments_to_ignore.append(change_index)
                     continue
 
-                github_comment.edit(body=comment.body)
+                github_comment.edit(body=comment.body[0])
 
                 # Grab the comment again, to sort the update time.
                 github_comment = self.service.get_repo(self.repo_name).get_issue(
@@ -414,7 +414,7 @@ class SimpleNvimGithub:
                     comments_to_ignore.append(change_index)
                     continue
 
-                github_comment.edit(comment.body)
+                github_comment.edit(comment.body[0])
 
                 # Grab the comment again, to sort the update time.
                 github_comment = (
@@ -466,7 +466,7 @@ class SimpleNvimGithub:
                 continue
 
             github_issue.edit(
-                title=issue.title, body=issue.all_comments[0].body, labels=issue.labels
+                title=issue.title, body=issue.all_comments[0].body[0], labels=issue.labels
             )
 
             # Grab the issue again, to sort the update time.
