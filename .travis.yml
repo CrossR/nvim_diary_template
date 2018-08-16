@@ -9,10 +9,6 @@ branches:
   only:
   - master
 
-env:
-  global:
-    - PIPENV_VERBOSITY=-1
-
 matrix:
   include:
   - name: "Lint Code"
