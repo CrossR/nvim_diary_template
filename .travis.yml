@@ -24,11 +24,14 @@ matrix:
   allow_failures:
     - name: "Full Type Check"
 
-cache: pip
+cache:
+  pip: true
+  directories:
+    - $HOME/.cache/pypoetry
 
 install:
-  - pip install pipenv
-  - pipenv install --dev
+  - pip install poetry
+  - poetry install
 
 script:
   - ci/ci_test.sh
