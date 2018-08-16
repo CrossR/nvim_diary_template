@@ -2,7 +2,7 @@
 
 Test repo for a plugin to generate a suitable template for VimWiki (for me).
 This was mainly made to let me mess with various Python features, like the
-NeoVim API, pipenv, mypy and more, there is a million and one simpler ways to
+NeoVim API, poetry, mypy and more, there is a million and one simpler ways to
 achieve this. The README here currently mainly stands more to give myself a
 reminder where and how things are setup.
 
