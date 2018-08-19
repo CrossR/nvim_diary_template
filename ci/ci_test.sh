@@ -1,7 +1,7 @@
 #!/bin/bash
 
 LogMessage() {
-    echo `date +%d"/"%m"/"%Y" "%X` : "$*"
+    echo "$(date +'%d/%m/%Y %X')" : "$*"
 }
 
 # Setup some global variables
