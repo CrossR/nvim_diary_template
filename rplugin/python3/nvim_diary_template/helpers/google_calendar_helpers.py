@@ -65,7 +65,10 @@ def format_google_events(events_list: List[Dict[str, Any]]) -> List[CalendarEven
             event_start = event["start"]["date"]
             event_end = event["start"]["date"]
 
-        if get_time(event_start).date != datetime.today().date:
+        date_today = str(datetime.today().date())
+        event_date = str(get_time(event_start).date())
+
+        if event_date != date_today:
             continue
 
         filtered_events.append(
