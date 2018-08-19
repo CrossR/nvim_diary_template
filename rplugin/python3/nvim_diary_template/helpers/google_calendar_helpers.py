@@ -72,11 +72,7 @@ def format_google_events(events_list: List[Dict[str, Any]]) -> List[CalendarEven
             continue
 
         filtered_events.append(
-            CalendarEvent(
-                name=event["summary"],
-                start=event_start,
-                end=event_end,
-            )
+            CalendarEvent(name=event["summary"], start=event_start, end=event_end)
         )
 
     return filtered_events

@@ -1,8 +1,16 @@
+#!/bin/bash
+
+LogMessage() {
+    echo `date +%d"/"%m"/"%Y" "%X` : "$*"
+}
+
+# Setup some global variables
 SUCCESS=0
 FAIL=1
 
-echo "Starting testing script..."
+LogMessage "Starting testing script..."
 
+# Printing relevant versions of libraries
 poetry run python --version
 
 if [ "${LINT_CODE:-0}" -eq 1 ]; then
@@ -10,29 +18,46 @@ if [ "${LINT_CODE:-0}" -eq 1 ]; then
     poetry run pylint --version
     poetry run black --version
 
-    echo "Running full lint of code..."
+    LogMessage "Running full lint of code..."
     poetry run pylint rplugin/python3/nvim_diary_template -j 0
+    LogMessage "Finished running full lint of code..."
 
-    echo "Linting code ignoring TODO warnings..."
+    LogMessage "Linting code ignoring TODO warnings..."
     poetry run pylint rplugin/python3/nvim_diary_template -j 0 -d W0511
+    LogMessage "Finished running second lint of code..."
 
-    if [ $? -ne 0 ]; then
-        echo "pylint failed check..."
+    RETURN_CODE=$?
+
+    LogMessage "Pylint returned ${RETURN_CODE}..."
+
+    if [ $RETURN_CODE -ne 0 ]; then
+        LogMessage "pylint failed check..."
         exit ${FAIL}
     fi
 
-    echo "Checking code syntax with Black..."
+    LogMessage "Running black source code syntax with Black..."
     poetry run black rplugin/python3/deoplete --check
+    LogMessage "Finished running black on deopletet source..."
 
-    if [ $? -ne 0 ]; then
-        echo "Deoplete failed black check..."
+    RETURN_CODE=$?
+
+    LogMessage "black returned ${RETURN_CODE}..."
+
+    if [ $RETURN_CODE -ne 0 ]; then
+        LogMessage "Deoplete failed black check..."
         exit ${FAIL}
     fi
 
+    LogMessage "Running black on main source..."
     poetry run black rplugin/python3/nvim_diary_template --check
+    LogMessage "Finished running black on main source..."
 
-    if [ $? -ne 0 ]; then
-        echo "Main code failed black check..."
+    RETURN_CODE=$?
+
+    LogMessage "black returned ${RETURN_CODE}..."
+
+    if [ $RETURN_CODE -ne 0 ]; then
+        LogMessage "Main code failed black check..."
         exit ${FAIL}
     fi
 fi
@@ -41,14 +66,19 @@ if [ "${FULL_TYPING:-0}" -eq 1 ]; then
 
     poetry run mypy --version
 
-    echo "Running full mypy on code base..."
+    LogMessage "Running full mypy on code base..."
     poetry run mypy rplugin/python3/nvim_diary_template --strict
+    LogMessage "Finished running full mypy on code base..."
 
-    if [ $? -ne 0 ]; then
-        echo "Full typing check failed..."
+    RETURN_CODE=$?
+
+    LogMessage "mypy returned ${RETURN_CODE}..."
+
+    if [ $RETURN_CODE -ne 0 ]; then
+        LogMessage "Full typing check failed..."
         exit ${FAIL}
     else
-        echo "Full typing check passed!"
+        LogMessage "Full typing check passed!"
     fi
 fi
 
@@ -56,16 +86,21 @@ if [ "${BASIC_TYPING-0}" -eq 1 ]; then
 
     poetry run mypy --version
 
-    echo "Running basic mypy on code base..."
+    LogMessage "Running basic mypy on code base..."
     poetry run mypy --config-file mypy.ini rplugin/python3/nvim_diary_template
+    LogMessage "Finished running basic mypy on code base..."
 
-    if [ $? -ne 0 ]; then
-        echo "Basic typing check failed..."
+    RETURN_CODE=$?
+
+    LogMessage "mypy returned ${RETURN_CODE}..."
+
+    if [ $RETURN_CODE -ne 0 ]; then
+        LogMessage "Basic typing check failed..."
         exit ${FAIL}
     else
-        echo "Basic typing check passed!"
+        LogMessage "Basic typing check passed!"
     fi
 fi
 
-echo "Script finished!"
+LogMessage "Script finished!"
 exit ${SUCCESS}
