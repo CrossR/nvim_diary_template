@@ -1,12 +1,19 @@
 #!/bin/bash
 
-LogMessage() {
-    echo "$(date +'%d/%m/%Y %X')" : "$*"
-}
-
 # Setup some global variables
 SUCCESS=0
 FAIL=1
+
+RED='\033[0;31m'
+GREEN='\033[1;32m'
+
+LogMessage() {
+    echo -e "${GREEN}$(date +'%d/%m/%Y %X')" : "$*"
+}
+
+LogError() {
+    echo -e "${RED}$(date +'%d/%m/%Y %X')" : "$*"
+}
 
 LogMessage "Starting testing script..."
 
@@ -31,7 +38,7 @@ if [ "${LINT_CODE:-0}" -eq 1 ]; then
     LogMessage "Pylint returned ${RETURN_CODE}..."
 
     if [ $RETURN_CODE -ne 0 ]; then
-        LogMessage "pylint failed check..."
+        LogError "pylint failed check..."
         exit ${FAIL}
     fi
 
@@ -44,7 +51,7 @@ if [ "${LINT_CODE:-0}" -eq 1 ]; then
     LogMessage "black returned ${RETURN_CODE}..."
 
     if [ $RETURN_CODE -ne 0 ]; then
-        LogMessage "Deoplete failed black check..."
+        LogError "Deoplete failed black check..."
         exit ${FAIL}
     fi
 
@@ -57,7 +64,7 @@ if [ "${LINT_CODE:-0}" -eq 1 ]; then
     LogMessage "black returned ${RETURN_CODE}..."
 
     if [ $RETURN_CODE -ne 0 ]; then
-        LogMessage "Main code failed black check..."
+        LogError "Main code failed black check..."
         exit ${FAIL}
     fi
 fi
@@ -75,7 +82,7 @@ if [ "${FULL_TYPING:-0}" -eq 1 ]; then
     LogMessage "mypy returned ${RETURN_CODE}..."
 
     if [ $RETURN_CODE -ne 0 ]; then
-        LogMessage "Full typing check failed..."
+        LogError "Full typing check failed..."
         exit ${FAIL}
     else
         LogMessage "Full typing check passed!"
@@ -95,7 +102,7 @@ if [ "${BASIC_TYPING-0}" -eq 1 ]; then
     LogMessage "mypy returned ${RETURN_CODE}..."
 
     if [ $RETURN_CODE -ne 0 ]; then
-        LogMessage "Basic typing check failed..."
+        LogError "Basic typing check failed..."
         exit ${FAIL}
     else
         LogMessage "Basic typing check passed!"
