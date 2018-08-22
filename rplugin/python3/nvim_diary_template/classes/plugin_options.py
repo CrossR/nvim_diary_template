@@ -36,6 +36,7 @@ class PluginOptions:
         self.use_github_repo: bool = True
         self.repo_name: str = ""
         self.user_name: str = ""
+        self.sort_issues_on_upload: bool = False
 
         for key, default_value in self.__dict__.items():
             value: Any = nvim.vars.get(f"nvim_diary_template#{key}", default_value)

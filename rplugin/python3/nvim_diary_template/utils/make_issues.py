@@ -19,17 +19,19 @@ from ..utils.constants import (
 )
 
 
-def format_issues(issues: List[GitHubIssue]) -> List[str]:
+def format_issues(issues: List[GitHubIssue], should_sort: bool) -> List[str]:
     """format_issues
 
     Given some issues, will produce formatted lines for them.
     """
 
     issue_lines: List[str] = []
-    sorted_issues: List[GitHubIssue] = sort_issues(issues)
+
+    if should_sort:
+        issues = sort_issues(issues)
 
     # For every issue, format it into markdown lines that are easily read.
-    for issue in sorted_issues:
+    for issue in issues:
 
         issue_title: str = issue.title
         issue_comments: List[GitHubIssueComment] = issue.all_comments
@@ -110,7 +112,7 @@ def produce_issue_markdown(issue_list: List[GitHubIssue]) -> List[str]:
 
     markdown_lines: List[str] = [ISSUE_HEADING, ""]
 
-    issue_lines: List[str] = format_issues(issue_list)
+    issue_lines: List[str] = format_issues(issue_list, True)
     markdown_lines.extend(issue_lines)
 
     return markdown_lines
@@ -160,14 +162,14 @@ def remove_tag_from_issues(
     return issues
 
 
-def set_issues_from_issues_list(nvim: Nvim, issues: List[GitHubIssue]) -> None:
+def set_issues_from_issues_list(nvim: Nvim, issues: List[GitHubIssue], should_sort: bool) -> None:
     """set_issues_from_issues_list
 
     Update the issues for the current buffer with a new list of issues.
     """
 
     # Get the formatted lines to set.
-    issue_lines: List[str] = format_issues(issues)
+    issue_lines: List[str] = format_issues(issues, should_sort)
 
     buffer_number: int = nvim.current.buffer.number
     current_buffer: List[str] = get_buffer_contents(nvim)
