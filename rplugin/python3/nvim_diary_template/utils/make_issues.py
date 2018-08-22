@@ -33,28 +33,21 @@ def format_issues(issues: List[GitHubIssue], should_sort: bool) -> List[str]:
     # For every issue, format it into markdown lines that are easily read.
     for issue in issues:
 
-        issue_title: str = issue.title
-        issue_comments: List[GitHubIssueComment] = issue.all_comments
-        issue_number: int = issue.number
-        issue_labels: List[str] = issue.labels
-        issue_complete: bool = issue.complete
-        issue_tags: List[str] = issue.metadata
-
-        if issue_complete:
-            issue_start = f"{HEADING_3} {VIMWIKI_TODO} Issue {{{issue_number}}}: "
+        if issue.complete:
+            issue_start = f"{HEADING_3} {VIMWIKI_TODO} Issue {{{issue.number}}}: "
         else:
-            issue_start = f"{HEADING_3} {EMPTY_TODO} Issue {{{issue_number}}}: "
+            issue_start = f"{HEADING_3} {EMPTY_TODO} Issue {{{issue.number}}}: "
 
-        title_line = f"{HEADING_4} Title: {issue_title}"
+        title_line = f"{HEADING_4} Title: {issue.title}"
 
         # Apply the labels, and tags.
-        for label in issue_labels:
+        for label in issue.labels:
             issue_start += f" +label:{label}"
 
-        for tag in issue_tags:
+        for tag in issue.metadata:
             issue_start += f" +{tag}"
 
-        formatted_comments: List[str] = format_issue_comments(issue_comments)
+        formatted_comments: List[str] = format_issue_comments(issue.all_comments)
 
         issue_lines.append(issue_start.strip())
         issue_lines.append("")
@@ -77,20 +70,16 @@ def format_issue_comments(comments: List[GitHubIssueComment]) -> List[str]:
 
     for comment_num, comment in enumerate(comments):
 
-        split_comments: List[str] = comment.body
-        tags: List[str] = comment.tags
-        comment_edit_time: str = comment.updated_at
-
-        header_line = f"{HEADING_4} Comment {{{comment_num}}} - {comment_edit_time}:"
+        header_line = f"{HEADING_4} Comment {{{comment_num}}} - {comment.updated_at}:"
 
         # Apply the tags if there are any.
-        for tag in tags:
+        for tag in comment.tags:
             header_line += f" +{tag}"
 
         formatted_comments.append(header_line)
 
         # Format the lines of the comments.
-        for line in split_comments:
+        for line in comment.body:
             if line == "":
                 formatted_comments.append("")
                 continue
