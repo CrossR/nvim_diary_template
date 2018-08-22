@@ -38,6 +38,16 @@ let s:issue_start = '^### \[[ X]\] Issue {\d\{1,}}:'
 let s:comment_start = '^#### Comment {\d\{1,}} - '
 let s:date_time_regex = '\d\{4}-\d\{2}-\d\{2} \d\{2}:\d\{2}'
 let s:label = '+label:\a\{1,}'
+let s:label_text = '\(+label:\)\@<=\a\{1,}'
+
+let s:status = {}
+let s:status.backlog = '⏸️'
+let s:status.blocked = '🛑'
+let s:status.blocking = '✋'
+let s:status.bug = '🐛'
+let s:status.feature = '💡'
+let s:status.inprogress = '⏩'
+let s:status.question = '❓'
 
 function! DiaryFoldText()
 
@@ -61,9 +71,17 @@ function! DiaryFoldText()
       let l:completed_status = '[X]'
     endif
 
+    let l:issue_status = matchstr(l:start_line, s:label_text)
+
+    let l:status_icon = ''
+
+    if has_key(s:status, l:issue_status)
+      let l:status_icon = s:status[l:issue_status] . '  '
+    endif
+
     " Add the completion status, then the issue number, then title.
     " Finally append each label
-    let l:issue_fold_text = "### " . l:completed_status
+    let l:issue_fold_text = l:status_icon . "### " . l:completed_status
     let l:issue_fold_text = l:issue_fold_text . " Issue {" . l:issue_number . "} - Title: "
     let l:issue_fold_text = l:issue_fold_text . l:issue_topic . "."
 
