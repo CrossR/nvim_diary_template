@@ -127,7 +127,7 @@ def insert_new_comment(nvim: Nvim) -> None:
         return
 
     relevant_buffer: List[str] = current_buffer[current_line:schedule_header_index]
-    new_line_number: int = 0
+    new_line_number: int = -1
 
     # Search the buffer forwards and find the start of the next issue, to
     # insert before it. Then, find the last comment number and increment it.
@@ -139,10 +139,11 @@ def insert_new_comment(nvim: Nvim) -> None:
 
     # If we didn't change the new line number, we must be in the last comment.
     # Instead, just place above the next section heading.
-    if new_line_number == 0:
-        new_line_number = schedule_header_index
+    if new_line_number != -1:
+        relative_line: int = current_line + new_line_number
+    else:
+        relative_line = schedule_header_index
 
-    relative_line: int = current_line + new_line_number
     relevant_buffer = current_buffer[issues_header_index:relative_line]
     comment_number: int = -1
 
