@@ -299,14 +299,13 @@ def sort_issues(issues: List[GitHubIssue]) -> List[GitHubIssue]:
     the case of a tie there.
     """
 
-    return sorted(
-        issues,
-        key=lambda i: (
-            sort_completion_state(i),
-            i.all_comments[-1].updated_at,
-            i.number,
-        ),
+    issues = sorted(issues, key=lambda i: (i.number,))
+
+    issues = sorted(
+        issues, key=lambda i: (i.all_comments[-1].updated_at,), reverse=True
     )
+
+    return sorted(issues, key=lambda i: (sort_completion_state(i),))
 
 
 def sort_completion_state(issue: GitHubIssue) -> int:
