@@ -38,7 +38,6 @@ let s:issue_start = '^### \[[ X]\] Issue {\d\{1,}}:'
 let s:comment_start = '^#### Comment {\d\{1,}} - '
 let s:date_time_regex = '\d\{4}-\d\{2}-\d\{2} \d\{2}:\d\{2}'
 let s:label = '+label:\a\{1,}'
-let s:label_text = '\(+label:\)\@<=\a\{1,}'
 
 function! DiaryFoldText()
 
