@@ -151,7 +151,9 @@ def remove_tag_from_issues(
     return issues
 
 
-def set_issues_from_issues_list(nvim: Nvim, issues: List[GitHubIssue], should_sort: bool) -> None:
+def set_issues_from_issues_list(
+    nvim: Nvim, issues: List[GitHubIssue], should_sort: bool
+) -> None:
     """set_issues_from_issues_list
 
     Update the issues for the current buffer with a new list of issues.
