@@ -4,13 +4,8 @@ from typing import List
 
 from dateutil import parser
 
-from ..classes.calendar_event_class import (
-    CalendarEvent
-)
-from ..helpers.event_helpers import (
-    format_event,
-    sort_events,
-)
+from ..classes.calendar_event_class import CalendarEvent
+from ..helpers.event_helpers import format_event, sort_events
 from ..utils.constants import ISO_FORMAT
 
 

@@ -84,8 +84,7 @@ class neovim_helpersTest(unittest.TestCase):
 
         # Finally a range.
         set_line_content(self.nvim, ["", "Note:", "Add unit tests."], 8, 3)
-        assert self.nvim.current.buffer.lines[7: 10] == ["", "Note:", "Add unit tests."]
-
+        assert self.nvim.current.buffer.lines[7:10] == ["", "Note:", "Add unit tests."]
 
     def test_get_section_line(self) -> None:
         self.nvim.current.buffer.lines = [
@@ -119,6 +118,8 @@ class neovim_helpersTest(unittest.TestCase):
 
         buffered_info_message(self.nvim, "Second one to send.\n")
 
-        assert self.nvim.messages == ["Info message to send...", "Second one to send.\n"]
+        assert self.nvim.messages == [
+            "Info message to send...",
+            "Second one to send.\n",
+        ]
         assert self.nvim.message_print_count == 1
-
