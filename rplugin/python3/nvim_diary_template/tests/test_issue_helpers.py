@@ -14,9 +14,6 @@ class issue_helpersTest(unittest.TestCase):
     def setUp(self) -> None:
         self.nvim = MockNvim()
 
-    def tearDown(self) -> None:
-        pass  # TODO
-
     def test_insert_edit_tag(self) -> None:
         raise NotImplementedError()
 
