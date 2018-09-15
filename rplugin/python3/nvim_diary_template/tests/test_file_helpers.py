@@ -10,12 +10,6 @@ class file_helpersTest(unittest.TestCase):
     def setUp(self) -> None:
         pass  # TODO
 
-    def test_get_file_content(self) -> None:
-        raise NotImplementedError()  # TODO: test get_file_content
-
-    def test_get_diary_path(self) -> None:
-        raise NotImplementedError()  # TODO: test get_diary_path
-
     def test_check_cache(self) -> None:
         raise NotImplementedError()  # TODO: test check_cache
 
