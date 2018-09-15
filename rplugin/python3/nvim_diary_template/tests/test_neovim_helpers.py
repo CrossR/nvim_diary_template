@@ -1,8 +1,10 @@
 
 import unittest
 
+from typing import List
+
 from .mocks.nvim import mock_nvim
-from rplugin.python3.nvim_diary_template.helpers.neovim_helpers import is_buffer_empty
+from rplugin.python3.nvim_diary_template.helpers.neovim_helpers import is_buffer_empty, get_buffer_contents
 
 
 class neovim_helpersTest(unittest.TestCase):
@@ -22,8 +24,19 @@ class neovim_helpersTest(unittest.TestCase):
         result: bool = is_buffer_empty(self.nvim)
         assert result == True
 
+        self.nvim.current.buffer.lines = ["Line added!"]
+        result = is_buffer_empty(self.nvim)
+        assert result == False
+
     def test_get_buffer_contents(self) -> None:
-        raise NotImplementedError()  # TODO: test get_buffer_contents
+        # The buffer is initialised to be empty, so should be empty straight
+        # away.
+        result: List[str] = get_buffer_contents(self.nvim)
+        assert result == [""]
+
+        self.nvim.current.buffer.lines = ["Line added!"]
+        result = get_buffer_contents(self.nvim)
+        assert result == ["Line added!"]
 
     def test_set_buffer_contents(self) -> None:
         raise NotImplementedError()  # TODO: test set_buffer_contents

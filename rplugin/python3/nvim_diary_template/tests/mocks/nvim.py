@@ -30,7 +30,10 @@ class mock_nvim_api:
         strict_indexing: bool,
     ) -> List[str]:
 
-        return self.nvim.current.buffer.lines[start:end]
+        if end == -1:
+            return self.nvim.current.buffer.lines[start:]
+        else:
+            return self.nvim.current.buffer.lines[start:end]
 
 class mock_current:
 
