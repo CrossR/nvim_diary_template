@@ -69,6 +69,26 @@ if [ "${LINT_CODE:-0}" -eq 1 ]; then
     fi
 fi
 
+if [ "${UNIT_TESTS-0}" -eq 1 ]; then
+
+    poetry run pytest --version
+
+    LogMessage "Running unit tests..."
+    poetry run pytest
+    LogMessage "Finished running unit tests..."
+
+    RETURN_CODE=$?
+
+    LogMessage "pytest returned ${RETURN_CODE}..."
+
+    if [ $RETURN_CODE -ne 0 ]; then
+        LogError "Unit tests failed..."
+        exit ${FAIL}
+    else
+        LogMessage "Unit tests passed!"
+    fi
+fi
+
 if [ "${FULL_TYPING:-0}" -eq 1 ]; then
 
     poetry run mypy --version

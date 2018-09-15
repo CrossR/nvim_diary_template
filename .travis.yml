@@ -13,12 +13,15 @@ matrix:
   include:
   - name: "Lint Code"
     env: LINT_CODE=1
+  - name: "Unit Tests"
+    env: UNIT_TESTS=1
   - name: "Basic Type Check"
     env: BASIC_TYPING=1
   - name: "Full Type Check"
     env: FULL_TYPING=1
   allow_failures:
     - name: "Full Type Check"
+    - name: "Unit Tests"
 
 cache:
   pip: true
