@@ -67,6 +67,19 @@ if [ "${LINT_CODE:-0}" -eq 1 ]; then
         LogError "Main code failed black check..."
         exit ${FAIL}
     fi
+
+    LogMessage "Running black on tests source..."
+    poetry run black tests --check
+    LogMessage "Finished running black on tests source..."
+
+    RETURN_CODE=$?
+
+    LogMessage "black returned ${RETURN_CODE}..."
+
+    if [ $RETURN_CODE -ne 0 ]; then
+        LogError "Test code failed black check..."
+        exit ${FAIL}
+    fi
 fi
 
 if [ "${UNIT_TESTS-0}" -eq 1 ]; then
