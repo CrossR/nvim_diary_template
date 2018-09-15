@@ -1,5 +1,14 @@
 
 import unittest
+from typing import List
+
+from dateutil import parser
+
+from rplugin.python3.nvim_diary_template.classes.calendar_event_class import \
+    CalendarEvent
+from rplugin.python3.nvim_diary_template.helpers.event_helpers import (format_event,
+                                                                       sort_events)
+from rplugin.python3.nvim_diary_template.utils.constants import ISO_FORMAT
 
 
 class event_helpersTest(unittest.TestCase):
@@ -7,22 +16,84 @@ class event_helpersTest(unittest.TestCase):
     Tests for functions in the event_helpers module.
     """
 
-    @classmethod
-    def setUpClass(cls):
-        pass  # TODO
+    def test_sort_events(self) -> None:
+        # This test 3 things:
+        #  Start Time
+        #  End Time
+        #  Matching both, so using the name.
+        unsorted_events: List[CalendarEvent] = [
+            CalendarEvent(
+                name="Event 2",
+                start=parser.parse("2018-01-01 14:00").strftime(ISO_FORMAT),
+                end=parser.parse("2018-01-01 15:00").strftime(ISO_FORMAT)
+            ),
+            CalendarEvent(
+                name="Event 4",
+                start=parser.parse("2018-01-01 19:00").strftime(ISO_FORMAT),
+                end=parser.parse("2018-01-01 22:00").strftime(ISO_FORMAT)
+            ),
+            CalendarEvent(
+                name="Event 3",
+                start=parser.parse("2018-01-01 14:00").strftime(ISO_FORMAT),
+                end=parser.parse("2018-01-01 16:00").strftime(ISO_FORMAT)
+            ),
+            CalendarEvent(
+                name="Event 1",
+                start=parser.parse("2018-01-01 10:00").strftime(ISO_FORMAT),
+                end=parser.parse("2018-01-01 11:00").strftime(ISO_FORMAT)
+            ),
+            CalendarEvent(
+                name="Event 5",
+                start=parser.parse("2018-01-01 19:00").strftime(ISO_FORMAT),
+                end=parser.parse("2018-01-01 22:00").strftime(ISO_FORMAT)
+            ),
+        ]
 
-    @classmethod
-    def tearDownClass(cls):
-        pass  # TODO
+        sorted_events: List[CalendarEvent] = [
+            CalendarEvent(
+                name="Event 1",
+                start=parser.parse("2018-01-01 10:00").strftime(ISO_FORMAT),
+                end=parser.parse("2018-01-01 11:00").strftime(ISO_FORMAT)
+            ),
+            CalendarEvent(
+                name="Event 2",
+                start=parser.parse("2018-01-01 14:00").strftime(ISO_FORMAT),
+                end=parser.parse("2018-01-01 15:00").strftime(ISO_FORMAT)
+            ),
+            CalendarEvent(
+                name="Event 3",
+                start=parser.parse("2018-01-01 14:00").strftime(ISO_FORMAT),
+                end=parser.parse("2018-01-01 16:00").strftime(ISO_FORMAT)
+            ),
+            CalendarEvent(
+                name="Event 4",
+                start=parser.parse("2018-01-01 19:00").strftime(ISO_FORMAT),
+                end=parser.parse("2018-01-01 22:00").strftime(ISO_FORMAT)
+            ),
+            CalendarEvent(
+                name="Event 5",
+                start=parser.parse("2018-01-01 19:00").strftime(ISO_FORMAT),
+                end=parser.parse("2018-01-01 22:00").strftime(ISO_FORMAT)
+            ),
+        ]
 
-    def setUp(self):
-        pass  # TODO
+        result: List[CalendarEvent] = sort_events(unsorted_events)
 
-    def tearDown(self):
-        pass  # TODO
+        assert result == sorted_events
 
-    def test_sort_events(self):
-        raise NotImplementedError()  # TODO: test sort_events
+    def test_format_event(self) -> None:
+        formatted_event: CalendarEvent = CalendarEvent(
+            name="Event 1",
+            start=parser.parse("2018-01-01 14:00").strftime(ISO_FORMAT),
+            end=parser.parse("2018-01-01 15:00").strftime(ISO_FORMAT)
+        )
 
-    def test_format_event(self):
-        raise NotImplementedError()  # TODO: test format_event
+        unformatted_event: CalendarEvent = CalendarEvent(
+            name="Event 1",
+            start="2018-01-01 14:00",
+            end="2018-01-01 15:00"
+        )
+
+        result: CalendarEvent = format_event(unformatted_event, ISO_FORMAT)
+
+        assert result == formatted_event
