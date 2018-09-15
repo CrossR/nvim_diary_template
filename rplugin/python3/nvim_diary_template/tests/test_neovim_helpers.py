@@ -1,10 +1,18 @@
 
 import unittest
-
 from typing import List
 
+from ..helpers.neovim_helpers import (
+    buffered_info_message,
+    get_buffer_contents,
+    get_section_line,
+    is_buffer_empty,
+    set_buffer_contents,
+    set_line_content,
+)
+from ..utils.constants import SCHEDULE_HEADING, ISSUE_HEADING
+
 from .mocks.nvim import mock_nvim
-from rplugin.python3.nvim_diary_template.helpers.neovim_helpers import is_buffer_empty, get_buffer_contents
 
 
 class neovim_helpersTest(unittest.TestCase):
@@ -14,9 +22,6 @@ class neovim_helpersTest(unittest.TestCase):
 
     def setUp(self) -> None:
         self.nvim: mock_nvim = mock_nvim()
-
-    def tearDown(self) -> None:
-        pass  # TODO
 
     def test_is_buffer_empty(self) -> None:
         # The buffer is initialised to be empty, so should be empty straight
@@ -39,16 +44,81 @@ class neovim_helpersTest(unittest.TestCase):
         assert result == ["Line added!"]
 
     def test_set_buffer_contents(self) -> None:
-        raise NotImplementedError()  # TODO: test set_buffer_contents
+        # First ensure the buffer is empty, then set it.
+        assert self.nvim.current.buffer.lines == [""]
 
-    def test_get_line_content(self) -> None:
-        raise NotImplementedError()  # TODO: test get_line_content
+        set_buffer_contents(self.nvim, ["This is a new line", "And a second one."])
+        assert self.nvim.current.buffer.lines == [
+            "This is a new line",
+            "And a second one.",
+        ]
 
     def test_set_line_content(self) -> None:
-        raise NotImplementedError()  # TODO: test set_line_content
+        self.nvim.current.buffer.lines = [
+            "<!---",
+            "    Date: 2018-09-14",
+            "    Tags:",
+            "--->",
+            "# Diary for 2018-09-15",
+            "",
+            "## Notes",
+            "",
+            "## Issues",
+            "",
+            "## Schedule",
+            "",
+        ]
+        self.nvim.current.window.cursor = (5, 0)
+
+        # First test removing a line.
+        set_line_content(self.nvim, [])
+        assert len(self.nvim.current.buffer.lines) == 11
+
+        # Then setting one.
+        set_line_content(self.nvim, ["# Diary for 2018-09-15"])
+        assert self.nvim.current.buffer.lines[4] == "# Diary for 2018-09-15"
+
+        # Then one not at the cursor position
+        set_line_content(self.nvim, ["    Date: 2018-09-15"], 2)
+        assert self.nvim.current.buffer.lines[1] == "    Date: 2018-09-15"
+
+        # Finally a range.
+        set_line_content(self.nvim, ["", "Note:", "Add unit tests."], 8, 3)
+        assert self.nvim.current.buffer.lines[7: 10] == ["", "Note:", "Add unit tests."]
+
 
     def test_get_section_line(self) -> None:
-        raise NotImplementedError()  # TODO: test get_section_line
+        self.nvim.current.buffer.lines = [
+            "<!---",
+            "    Date: 2018-09-15",
+            "    Tags:",
+            "--->",
+            "# Diary for 2018-09-15",
+            "",
+            "## Notes",
+            "",
+            "## Issues",
+            "",
+            "## Schedule",
+            "",
+        ]
+
+        result: int = get_section_line(self.nvim.current.buffer.lines, ISSUE_HEADING)
+        assert result == 9
+
+        result = get_section_line(self.nvim.current.buffer.lines, SCHEDULE_HEADING)
+        assert result == 11
 
     def test_buffered_info_message(self) -> None:
-        raise NotImplementedError()  # TODO: test buffered_info_message
+        assert self.nvim.messages == []
+
+        buffered_info_message(self.nvim, "Info message to send...")
+
+        assert self.nvim.messages == ["Info message to send..."]
+        assert self.nvim.message_print_count == 0
+
+        buffered_info_message(self.nvim, "Second one to send.\n")
+
+        assert self.nvim.messages == ["Info message to send...", "Second one to send.\n"]
+        assert self.nvim.message_print_count == 1
+
