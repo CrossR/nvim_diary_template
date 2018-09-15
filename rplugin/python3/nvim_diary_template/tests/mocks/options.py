@@ -2,7 +2,6 @@ from typing import List
 
 
 class MockPluginOptions:
-
     def __init__(self) -> None:
 
         self.active: bool = True

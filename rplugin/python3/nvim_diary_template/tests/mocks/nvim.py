@@ -24,7 +24,7 @@ class MockNvim:
             self.message_print_count += 1
 
         self.messages.append(message)
-    
+
     def command(self, command: str) -> None:
         self.commands.append(command)
 
