@@ -11,7 +11,7 @@ from ..helpers.neovim_helpers import (
     set_line_content,
 )
 from ..utils.constants import ISSUE_HEADING, SCHEDULE_HEADING
-from .mocks.nvim import mock_nvim
+from .mocks.nvim import MockNvim
 
 
 class neovim_helpersTest(unittest.TestCase):
@@ -20,7 +20,7 @@ class neovim_helpersTest(unittest.TestCase):
     """
 
     def setUp(self) -> None:
-        self.nvim: mock_nvim = mock_nvim()
+        self.nvim: MockNvim = MockNvim()
 
     def test_is_buffer_empty(self) -> None:
         # The buffer is initialised to be empty, so should be empty straight

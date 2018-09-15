@@ -2,10 +2,11 @@
 from typing import List
 
 
-class mock_nvim:
+class MockNvim:
     def __init__(self) -> None:
-        self.api: mock_nvim_api = mock_nvim_api(self)
-        self.current: mock_current = mock_current()
+        self.api: MockNvimApi = MockNvimApi(self)
+        self.current: MockNvimCurrent = MockNvimCurrent()
+        self.commands: List[str] = []
         self.errors: List[str] = []
         self.messages: List[str] = []
 
@@ -23,11 +24,14 @@ class mock_nvim:
             self.message_print_count += 1
 
         self.messages.append(message)
+    
+    def command(self, command: str) -> None:
+        self.commands.append(command)
 
 
-class mock_nvim_api:
-    def __init__(self, nvim_mock: mock_nvim) -> None:
-        self.nvim: mock_nvim = nvim_mock
+class MockNvimApi:
+    def __init__(self, nvim_mock: MockNvim) -> None:
+        self.nvim: MockNvim = nvim_mock
 
     def buf_set_lines(
         self,
@@ -53,18 +57,18 @@ class mock_nvim_api:
             return self.nvim.current.buffer.lines[start:end]
 
 
-class mock_current:
+class MockNvimCurrent:
     def __init__(self) -> None:
-        self.window: mock_window = mock_window()
-        self.buffer: mock_buffer = mock_buffer()
+        self.window: MockNvimWindow = MockNvimWindow()
+        self.buffer: MockNvimBuffer = MockNvimBuffer()
 
 
-class mock_buffer:
+class MockNvimBuffer:
     def __init__(self) -> None:
         self.number: int = 0
         self.lines: List[str] = [""]
 
 
-class mock_window:
+class MockNvimWindow:
     def __init__(self) -> None:
         self.cursor: tuple = tuple()

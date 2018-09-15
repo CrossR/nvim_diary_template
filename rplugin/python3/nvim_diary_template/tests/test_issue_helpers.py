@@ -2,7 +2,7 @@
 import unittest
 from unittest.mock import MagicMock, create_autospec
 
-from .mocks.nvim import mock_nvim
+from .mocks.nvim import MockNvim
 from ..helpers.issue_helpers import insert_edit_tag
 
 
@@ -12,7 +12,7 @@ class issue_helpersTest(unittest.TestCase):
     """
 
     def setUp(self) -> None:
-        self.nvim = mock_nvim()
+        self.nvim = MockNvim()
 
     def tearDown(self) -> None:
         pass  # TODO
