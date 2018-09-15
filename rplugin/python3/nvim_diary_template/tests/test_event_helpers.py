@@ -4,14 +4,14 @@ from typing import List
 
 from dateutil import parser
 
-from rplugin.python3.nvim_diary_template.classes.calendar_event_class import (
+from ..classes.calendar_event_class import (
     CalendarEvent
 )
-from rplugin.python3.nvim_diary_template.helpers.event_helpers import (
+from ..helpers.event_helpers import (
     format_event,
     sort_events,
 )
-from rplugin.python3.nvim_diary_template.utils.constants import ISO_FORMAT
+from ..utils.constants import ISO_FORMAT
 
 
 class event_helpersTest(unittest.TestCase):
