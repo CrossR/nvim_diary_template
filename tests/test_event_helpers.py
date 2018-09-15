@@ -4,10 +4,13 @@ from typing import List
 
 from dateutil import parser
 
-from rplugin.python3.nvim_diary_template.classes.calendar_event_class import \
+from rplugin.python3.nvim_diary_template.classes.calendar_event_class import (
     CalendarEvent
-from rplugin.python3.nvim_diary_template.helpers.event_helpers import (format_event,
-                                                                       sort_events)
+)
+from rplugin.python3.nvim_diary_template.helpers.event_helpers import (
+    format_event,
+    sort_events,
+)
 from rplugin.python3.nvim_diary_template.utils.constants import ISO_FORMAT
 
 
@@ -25,27 +28,27 @@ class event_helpersTest(unittest.TestCase):
             CalendarEvent(
                 name="Event 2",
                 start=parser.parse("2018-01-01 14:00").strftime(ISO_FORMAT),
-                end=parser.parse("2018-01-01 15:00").strftime(ISO_FORMAT)
+                end=parser.parse("2018-01-01 15:00").strftime(ISO_FORMAT),
             ),
             CalendarEvent(
                 name="Event 4",
                 start=parser.parse("2018-01-01 19:00").strftime(ISO_FORMAT),
-                end=parser.parse("2018-01-01 22:00").strftime(ISO_FORMAT)
+                end=parser.parse("2018-01-01 22:00").strftime(ISO_FORMAT),
             ),
             CalendarEvent(
                 name="Event 3",
                 start=parser.parse("2018-01-01 14:00").strftime(ISO_FORMAT),
-                end=parser.parse("2018-01-01 16:00").strftime(ISO_FORMAT)
+                end=parser.parse("2018-01-01 16:00").strftime(ISO_FORMAT),
             ),
             CalendarEvent(
                 name="Event 1",
                 start=parser.parse("2018-01-01 10:00").strftime(ISO_FORMAT),
-                end=parser.parse("2018-01-01 11:00").strftime(ISO_FORMAT)
+                end=parser.parse("2018-01-01 11:00").strftime(ISO_FORMAT),
             ),
             CalendarEvent(
                 name="Event 5",
                 start=parser.parse("2018-01-01 19:00").strftime(ISO_FORMAT),
-                end=parser.parse("2018-01-01 22:00").strftime(ISO_FORMAT)
+                end=parser.parse("2018-01-01 22:00").strftime(ISO_FORMAT),
             ),
         ]
 
@@ -53,27 +56,27 @@ class event_helpersTest(unittest.TestCase):
             CalendarEvent(
                 name="Event 1",
                 start=parser.parse("2018-01-01 10:00").strftime(ISO_FORMAT),
-                end=parser.parse("2018-01-01 11:00").strftime(ISO_FORMAT)
+                end=parser.parse("2018-01-01 11:00").strftime(ISO_FORMAT),
             ),
             CalendarEvent(
                 name="Event 2",
                 start=parser.parse("2018-01-01 14:00").strftime(ISO_FORMAT),
-                end=parser.parse("2018-01-01 15:00").strftime(ISO_FORMAT)
+                end=parser.parse("2018-01-01 15:00").strftime(ISO_FORMAT),
             ),
             CalendarEvent(
                 name="Event 3",
                 start=parser.parse("2018-01-01 14:00").strftime(ISO_FORMAT),
-                end=parser.parse("2018-01-01 16:00").strftime(ISO_FORMAT)
+                end=parser.parse("2018-01-01 16:00").strftime(ISO_FORMAT),
             ),
             CalendarEvent(
                 name="Event 4",
                 start=parser.parse("2018-01-01 19:00").strftime(ISO_FORMAT),
-                end=parser.parse("2018-01-01 22:00").strftime(ISO_FORMAT)
+                end=parser.parse("2018-01-01 22:00").strftime(ISO_FORMAT),
             ),
             CalendarEvent(
                 name="Event 5",
                 start=parser.parse("2018-01-01 19:00").strftime(ISO_FORMAT),
-                end=parser.parse("2018-01-01 22:00").strftime(ISO_FORMAT)
+                end=parser.parse("2018-01-01 22:00").strftime(ISO_FORMAT),
             ),
         ]
 
@@ -85,13 +88,11 @@ class event_helpersTest(unittest.TestCase):
         formatted_event: CalendarEvent = CalendarEvent(
             name="Event 1",
             start=parser.parse("2018-01-01 14:00").strftime(ISO_FORMAT),
-            end=parser.parse("2018-01-01 15:00").strftime(ISO_FORMAT)
+            end=parser.parse("2018-01-01 15:00").strftime(ISO_FORMAT),
         )
 
         unformatted_event: CalendarEvent = CalendarEvent(
-            name="Event 1",
-            start="2018-01-01 14:00",
-            end="2018-01-01 15:00"
+            name="Event 1", start="2018-01-01 14:00", end="2018-01-01 15:00"
         )
 
         result: CalendarEvent = format_event(unformatted_event, ISO_FORMAT)
