@@ -10,8 +10,7 @@ from ..helpers.neovim_helpers import (
     set_buffer_contents,
     set_line_content,
 )
-from ..utils.constants import SCHEDULE_HEADING, ISSUE_HEADING
-
+from ..utils.constants import ISSUE_HEADING, SCHEDULE_HEADING
 from .mocks.nvim import mock_nvim
 
 

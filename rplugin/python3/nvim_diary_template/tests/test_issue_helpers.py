@@ -3,7 +3,7 @@ import unittest
 from unittest.mock import MagicMock, create_autospec
 
 from .mocks.nvim import mock_nvim
-from rplugin.python3.nvim_diary_template.helpers.issue_helpers import insert_edit_tag
+from ..helpers.issue_helpers import insert_edit_tag
 
 
 class issue_helpersTest(unittest.TestCase):
