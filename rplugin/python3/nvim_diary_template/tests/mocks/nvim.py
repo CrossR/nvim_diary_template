@@ -9,7 +9,7 @@ class mock_nvim:
 
 class mock_nvim_api:
     def __init__(self, nvim_mock: mock_nvim) -> None:
-        self.nvim: mock_nvim = mock_nvim
+        self.nvim: mock_nvim = nvim_mock
 
     def buf_set_lines(
         self,
