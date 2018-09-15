@@ -49,7 +49,9 @@ def check_cache(
     try:
         cache_file_name: str = glob.glob(pattern)[0]
 
-        epoch_search: Union[str, Any] = re.search(CACHE_EPOCH_REGEX, cache_file_name)
+        epoch_search: Union[str, Any] = re.search(
+            CACHE_EPOCH_REGEX, path.basename(cache_file_name)
+        )
         epoch: str = epoch_search[0] if epoch_search is not None else ""
 
         cache_file_creation_date: datetime = datetime.fromtimestamp(int(epoch))
