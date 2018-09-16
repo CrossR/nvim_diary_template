@@ -50,7 +50,7 @@ class MockNvimApi:
             else:
                 self.nvim.current.buffer.lines[start : end] = replacement
         else:
-            self.nvim.current.buffer.lines[start : end + 1] = replacement
+            self.nvim.current.buffer.lines[start : end ] = replacement
 
     def buf_get_lines(
         self, buffer: int, start: int, end: int, strict_indexing: bool
