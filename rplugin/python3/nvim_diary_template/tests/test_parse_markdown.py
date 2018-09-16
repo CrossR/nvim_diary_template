@@ -2,6 +2,8 @@
 import unittest
 from typing import List
 
+from dateutil import parser
+
 from ..classes.calendar_event_class import CalendarEvent
 from ..classes.github_issue_class import GitHubIssue, GitHubIssueComment
 from ..utils.constants import ISO_FORMAT
@@ -179,7 +181,34 @@ class parse_markdownTest(unittest.TestCase):
         assert result == issues
 
     def test_combine_events(self) -> None:
-        raise NotImplementedError()  # TODO: test combine_events
+        markdown_events: List[CalendarEvent] = [
+            CalendarEvent(name="Event 1", start="10:00", end="11:00"),
+            CalendarEvent(name="Event 2", start="14:00", end="15:00"),
+            CalendarEvent(name="Event 5", start="19:00", end="22:00"),
+        ]
+
+        api_events: List[CalendarEvent] = [
+            CalendarEvent(name="Event 1", start="10:00", end="11:00"),
+            CalendarEvent(name="Event 3", start="14:00", end="16:00"),
+            CalendarEvent(name="Event 4", start="19:00", end="22:00"),
+        ]
+
+        final_list: List[CalendarEvent] = [
+            CalendarEvent(name="Event 1", start="10:00", end="11:00"),
+            CalendarEvent(name="Event 2", start="14:00", end="15:00"),
+            CalendarEvent(name="Event 5", start="19:00", end="22:00"),
+            CalendarEvent(name="Event 3", start="14:00", end="16:00"),
+            CalendarEvent(name="Event 4", start="19:00", end="22:00"),
+        ]
+
+        # This has the following:
+        # * Duplicated Events.
+        # * API Only events.
+        # * Calendar Only Events
+        # Does not test or work for events that are not from today.
+        # Events should not be sorted.
+        result: List[CalendarEvent] = combine_events(markdown_events, api_events)
+        assert result == final_list
 
     def test_combine_issues(self) -> None:
         raise NotImplementedError()  # TODO: test combine_issues

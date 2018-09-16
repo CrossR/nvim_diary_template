@@ -240,6 +240,7 @@ def combine_events(
     with no duplicates.
 
     The markdown is taken to be the ground truth, as there is no online copy.
+    Does not sort events.
     """
 
     buffer_events: List[CalendarEvent] = [
