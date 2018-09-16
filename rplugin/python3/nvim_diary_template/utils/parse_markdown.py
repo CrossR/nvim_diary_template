@@ -51,6 +51,8 @@ def parse_buffer_events(
         if event == "":
             continue
 
+        # Get the start and end dates.
+        # Regex is used to pull out the two substrings.
         matches_date_time: List[str] = re.findall(DATETIME_REGEX, event)
 
         if not matches_date_time:

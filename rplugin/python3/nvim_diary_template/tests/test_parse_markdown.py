@@ -1,16 +1,18 @@
 
 import unittest
 from typing import List
-from .mocks.nvim import MockNvim
-from ..classes.github_issue_class import GitHubIssue, GitHubIssueComment
+
 from ..classes.calendar_event_class import CalendarEvent
-from ..utils.parse_markdown import (
-    remove_events_not_from_today,
-    parse_markdown_file_for_issues,
-    parse_markdown_file_for_events,
-)
+from ..classes.github_issue_class import GitHubIssue, GitHubIssueComment
 from ..utils.constants import ISO_FORMAT
-from dateutil import parser
+from ..utils.parse_markdown import (
+    combine_events,
+    combine_issues,
+    parse_markdown_file_for_events,
+    parse_markdown_file_for_issues,
+    remove_events_not_from_today,
+)
+from .mocks.nvim import MockNvim
 
 
 class parse_markdownTest(unittest.TestCase):
@@ -56,13 +58,54 @@ class parse_markdownTest(unittest.TestCase):
             "",
             "- 10:00 - 11:00: Event 1",
             "- 19:00 - 22:00: Event 2",
-            "",
+            "- 25/01/2018 12:00 - 25/01/2018 13:00: Meeting with Alex",
         ]
 
     def test_remove_events_not_from_today(self) -> None:
-        raise NotImplementedError()  # TODO: test remove_events_not_from_today
+        final_buffer: List[str] = [
+            "<!---",
+            "    Date: 2018-01-01",
+            "    Tags:",
+            "--->",
+            "# Diary for 2018-01-01",
+            "",
+            "## Notes",
+            "",
+            "## Issues",
+            "",
+            "### [ ] Issue {1}: +label:work",
+            "",
+            "#### Title: Test Issue 1",
+            "",
+            "#### Comment {0} - 2018-01-01 12:00:",
+            "Test comment body.",
+            "",
+            "#### Comment {1} - 0000-00-00 00:00: +new",
+            "Test comment list:",
+            "",
+            " * Line 1",
+            " * Line 2",
+            " * Line 3",
+            "",
+            "### [ ] Issue {00}: +new",
+            "",
+            "#### Title: New Issue 2",
+            "",
+            "#### Comment {0} - 0000-00-00 00:00: +new",
+            "New issue body.",
+            "",
+            "## Schedule",
+            "",
+            "- 10:00 - 11:00: Event 1",
+            "- 19:00 - 22:00: Event 2",
+        ]
+
+        remove_events_not_from_today(self.nvim)
+        assert self.nvim.current.buffer.lines == final_buffer
 
     def test_parse_markdown_file_for_events(self) -> None:
+        # Currently, we assume an event is today if no date is given.
+        # If the diary date is ever used, should update this.
         events: List[CalendarEvent] = [
             CalendarEvent(
                 name="Event 1",
@@ -73,6 +116,11 @@ class parse_markdownTest(unittest.TestCase):
                 name="Event 2",
                 start=parser.parse("19:00").strftime(ISO_FORMAT),
                 end=parser.parse("22:00").strftime(ISO_FORMAT),
+            ),
+            CalendarEvent(
+                name="Meeting with Alex",
+                start=parser.parse("2018-01-25 12:00").strftime(ISO_FORMAT),
+                end=parser.parse("2018-01-25 13:00").strftime(ISO_FORMAT),
             ),
         ]
 
