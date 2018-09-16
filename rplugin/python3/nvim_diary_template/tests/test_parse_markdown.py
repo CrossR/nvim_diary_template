@@ -1,5 +1,6 @@
 
 import unittest
+from copy import deepcopy
 from typing import List
 
 from dateutil import parser
@@ -211,4 +212,106 @@ class parse_markdownTest(unittest.TestCase):
         assert result == final_list
 
     def test_combine_issues(self) -> None:
-        raise NotImplementedError()  # TODO: test combine_issues
+        default_issue: GitHubIssue = GitHubIssue(
+            number=1,
+            title="Test Issue 1",
+            complete=False,
+            labels=["work"],
+            metadata=[],
+            all_comments=[
+                GitHubIssueComment(
+                    number=0,
+                    body=["Test comment body."],
+                    tags=[],
+                    updated_at="2018-01-01 12:00",
+                )
+            ],
+        )
+
+        issue_2 = deepcopy(default_issue)
+        issue_2.number = 2
+        issue_2.title = "Markdown Only Issue"
+
+        issue_3 = deepcopy(default_issue)
+        issue_3.number = 3
+        issue_3.title = "API Only Issue"
+
+        issue_4 = deepcopy(default_issue)
+        issue_4.number = 4
+        issue_4.title = "Issue with new markdown comment"
+
+        issue_5 = deepcopy(default_issue)
+        issue_5.number = 5
+        issue_5.title = "Issue with editted markdown comment"
+
+        issue_6 = deepcopy(default_issue)
+        issue_6.number = 6
+        issue_6.title = "Issue with editted in both"
+        issue_6.all_comments[0].body = ["Edit 2."]
+        issue_6.all_comments[0].updated_at = "2018-01-01 14:00"
+
+        # Deep copy is needed here to stop changes being applied to both instances.
+        api_issues: List[GitHubIssue] = [
+            default_issue,
+            issue_3,
+            deepcopy(issue_4),
+            deepcopy(issue_5),
+            deepcopy(issue_6),
+        ]
+
+        # Add a new comment.
+        issue_4.all_comments.append(
+            GitHubIssueComment(
+                number=1,
+                body=["Test comment list:", "", " * Line 1", " * Line 2", " * Line 3"],
+                tags=["new"],
+                updated_at="0000-00-00 00:00",
+            )
+        )
+
+        # Add an edit.
+        issue_5.all_comments[0].body = ["Edit."]
+        issue_5.all_comments[0].tags = ["edit"]
+        issue_5.all_comments[0].updated_at = "2018-01-01 12:00"
+
+        # Add a conflicting edit.
+        issue_6.all_comments[0].body = ["Conflict."]
+        issue_6.all_comments[0].tags = ["edit"]
+        issue_6.all_comments[0].updated_at = "2018-01-01 12:00"
+
+        # Deep copy is needed here to stop changes being applied to both instances.
+        markdown_issues: List[GitHubIssue] = [
+            default_issue,
+            deepcopy(issue_2),
+            deepcopy(issue_4),
+            deepcopy(issue_5),
+            deepcopy(issue_6),
+        ]
+
+        # Add the conflict comment to check it is added.
+        # Also set the comment back to how it was at the start.
+        issue_6.all_comments.append(
+            GitHubIssueComment(
+                number=1,
+                body=["Conflict."],
+                tags=["edit", "conflict"],
+                updated_at="2018-01-01 12:00",
+            )
+        )
+        issue_6.all_comments[0].body = ["Edit 2."]
+        issue_6.all_comments[0].updated_at = "2018-01-01 14:00"
+        issue_6.all_comments[0].tags = []
+
+        final_issues: List[GitHubIssue] = [
+            default_issue,
+            issue_3,
+            issue_4,
+            issue_5,
+            issue_6,
+            issue_2,
+        ]
+
+        result: List[GitHubIssue] = combine_issues(
+            self.nvim, markdown_issues, api_issues
+        )
+        assert result == final_issues
