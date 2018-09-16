@@ -287,28 +287,27 @@ class issue_helpersTest(unittest.TestCase):
         issue_7.all_comments[0].updated_at = "2018-01-01 22:00"
 
         unsorted_list: List[GitHubIssue] = [
-           deepcopy(default_issue),
-           deepcopy(issue_2),
-           deepcopy(issue_3),
-           deepcopy(issue_4),
-           deepcopy(issue_5),
-           deepcopy(issue_6),
-           deepcopy(issue_7),
+            deepcopy(default_issue),
+            deepcopy(issue_2),
+            deepcopy(issue_3),
+            deepcopy(issue_4),
+            deepcopy(issue_5),
+            deepcopy(issue_6),
+            deepcopy(issue_7),
         ]
 
         sorted_list: List[GitHubIssue] = [
-           deepcopy(issue_7),
-           deepcopy(issue_4),
-           deepcopy(issue_6),
-           deepcopy(default_issue),
-           deepcopy(issue_3),
-           deepcopy(issue_5),
-           deepcopy(issue_2),
+            deepcopy(issue_7),
+            deepcopy(issue_4),
+            deepcopy(issue_6),
+            deepcopy(default_issue),
+            deepcopy(issue_3),
+            deepcopy(issue_5),
+            deepcopy(issue_2),
         ]
 
         result: List[GitHubIssue] = sort_issues(unsorted_list)
         assert result == sorted_list
-
 
     def test_get_github_objects(self) -> None:
         raise NotImplementedError()  # TODO: test get_github_objects
