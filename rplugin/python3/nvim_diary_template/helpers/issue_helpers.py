@@ -382,6 +382,7 @@ def split_comment(comment: str) -> List[str]:
 
     while lines and not lines[0].strip():
         lines.pop(0)
+
     while lines and not lines[-1].strip():
         lines.pop()
 

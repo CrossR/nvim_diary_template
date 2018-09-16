@@ -9,6 +9,7 @@ from ..helpers.issue_helpers import (
     insert_new_comment,
     insert_new_issue,
     sort_issues,
+    split_comment,
     toggle_issue_completion,
 )
 from .mocks.nvim import MockNvim
@@ -313,7 +314,15 @@ class issue_helpersTest(unittest.TestCase):
         raise NotImplementedError()  # TODO: test get_github_objects
 
     def test_split_comment(self) -> None:
-        raise NotImplementedError()  # TODO: test split_comment
+        initial_comment: str = "This is comments line 1.\nAnd this is line 2.\nAnd the line 3!\n\n"
+        final_comment: List[str] = [
+            "This is comments line 1.",
+            "And this is line 2.",
+            "And the line 3!",
+        ]
+
+        result: List[str] = split_comment(initial_comment)
+        assert result == final_comment
 
     def test_get_issue_index(self) -> None:
         raise NotImplementedError()  # TODO: test get_issue_index

@@ -1,6 +1,7 @@
-repos:
--   repo: https://github.com/ambv/black
-    rev: stable
+-   repo: local
     hooks:
-    - id: black
-      language_version: python3.6
+    -   id: black
+        name: black
+        entry: poetry run black rplugin/
+        language: system
+        types: [python]
