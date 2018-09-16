@@ -20,3 +20,8 @@ black = "^18.3-alpha.0"
 mypy = "^0.620.0"
 pylint = "^2.1"
 pytest = "^3.8"
+pre-commit = "^1.11"
+
+[tool.black]
+line-length = 88
+py36 = true
