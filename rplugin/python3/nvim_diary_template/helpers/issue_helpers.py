@@ -90,17 +90,15 @@ def insert_new_issue(nvim: Nvim) -> None:
 
     # Grab the indexes needed to find the issue we are in.
     current_buffer: List[str] = get_buffer_contents(nvim)
-    schedule_header_index: int = get_section_line(current_buffer, SCHEDULE_HEADING) - 1
-
-    new_line_number: int = schedule_header_index
+    new_line_number: int = get_section_line(current_buffer, SCHEDULE_HEADING) - 1
 
     issue_start: str = f"{HEADING_3} {EMPTY_TODO} Issue {{00}}: +new"
     title_line: str = f"{HEADING_4} Title: "
     comment_line: str = f"{HEADING_4} Comment {{0}} - 0000-00-00 00:00: +new"
 
-    new_comment: List[str] = ["", issue_start, "", title_line, "", comment_line]
+    new_issue: List[str] = ["", issue_start, "", title_line, "", comment_line]
 
-    set_line_content(nvim, new_comment, line_index=new_line_number)
+    set_line_content(nvim, new_issue, line_index=new_line_number)
 
     new_cursor_pos: Tuple[int, int] = (new_line_number + 3, len(title_line) - 1)
     nvim.current.window.cursor = new_cursor_pos
