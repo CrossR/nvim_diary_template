@@ -8,9 +8,11 @@ from ..helpers.issue_helpers import (
     insert_edit_tag,
     insert_new_comment,
     insert_new_issue,
+    sort_issues,
     toggle_issue_completion,
 )
 from .mocks.nvim import MockNvim
+from ..classes.github_issue_class import GitHubIssue, GitHubIssueComment
 
 
 class issue_helpersTest(unittest.TestCase):
@@ -236,7 +238,77 @@ class issue_helpersTest(unittest.TestCase):
         assert result == vimwiki
 
     def test_sort_issues(self) -> None:
-        raise NotImplementedError()  # TODO: test sort_issues
+        default_issue: GitHubIssue = GitHubIssue(
+            number=1,
+            title="Test Issue 1",
+            complete=False,
+            labels=["work"],
+            metadata=[],
+            all_comments=[
+                GitHubIssueComment(
+                    number=0,
+                    body=["Test comment body."],
+                    tags=[],
+                    updated_at="2018-01-01 12:00",
+                )
+            ],
+        )
+
+        issue_2 = deepcopy(default_issue)
+        issue_2.number = 2
+        issue_2.title = "Complete"
+        issue_2.complete = True
+
+        issue_3 = deepcopy(default_issue)
+        issue_3.number = 3
+        issue_3.title = "Blocked"
+        issue_3.labels = ["blocked"]
+
+        issue_4 = deepcopy(default_issue)
+        issue_4.number = 4
+        issue_4.title = "2) In Progress"
+        issue_4.labels = ["inprogress"]
+
+        issue_5 = deepcopy(default_issue)
+        issue_5.number = 5
+        issue_5.title = "Backlog"
+        issue_5.labels = ["backlog"]
+
+        issue_6 = deepcopy(default_issue)
+        issue_6.number = 6
+        issue_6.title = "3) In Progress"
+        issue_6.labels = ["inprogress"]
+
+        # First, due to being in progress and latest edit.
+        issue_7 = deepcopy(default_issue)
+        issue_7.number = 7
+        issue_7.title = "1) In Progress"
+        issue_7.labels = ["inprogress"]
+        issue_7.all_comments[0].updated_at = "2018-01-01 22:00"
+
+        unsorted_list: List[GitHubIssue] = [
+           deepcopy(default_issue),
+           deepcopy(issue_2),
+           deepcopy(issue_3),
+           deepcopy(issue_4),
+           deepcopy(issue_5),
+           deepcopy(issue_6),
+           deepcopy(issue_7),
+        ]
+
+        sorted_list: List[GitHubIssue] = [
+           deepcopy(issue_7),
+           deepcopy(issue_4),
+           deepcopy(issue_6),
+           deepcopy(default_issue),
+           deepcopy(issue_3),
+           deepcopy(issue_5),
+           deepcopy(issue_2),
+        ]
+
+        result: List[GitHubIssue] = sort_issues(unsorted_list)
+        assert result == sorted_list
+
 
     def test_get_github_objects(self) -> None:
         raise NotImplementedError()  # TODO: test get_github_objects
