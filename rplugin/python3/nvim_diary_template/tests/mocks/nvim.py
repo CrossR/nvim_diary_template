@@ -44,6 +44,11 @@ class MockNvimApi:
 
         if end == -1:
             self.nvim.current.buffer.lines[start:] = replacement
+        elif start == end:
+            if replacement == []:
+                del self.nvim.current.buffer.lines[start]
+            else:
+                self.nvim.current.buffer.lines[start : end] = replacement
         else:
             self.nvim.current.buffer.lines[start : end + 1] = replacement
 
@@ -71,4 +76,4 @@ class MockNvimBuffer:
 
 class MockNvimWindow:
     def __init__(self) -> None:
-        self.cursor: tuple = tuple()
+        self.cursor: tuple = (0, 0)
