@@ -302,7 +302,7 @@ def combine_issues(
             # If we've got an edited comment, where the online matches the
             # markdown version, keep the markdown comment around.
             if "edit" in comment.tags and comment.updated_at == api_comment.updated_at:
-                api_comment = comment
+                api_issue.all_comments[index] = comment
 
                 continue
 
