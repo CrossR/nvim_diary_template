@@ -47,7 +47,9 @@ def get_time(time_to_convert: str) -> datetime:
     return parsed_datetime
 
 
-def format_google_events(events_list: List[Dict[str, Any]], diary_date: str) -> List[CalendarEvent]:
+def format_google_events(
+    events_list: List[Dict[str, Any]], diary_date: str
+) -> List[CalendarEvent]:
     """format_google_events
 
     Formats a list of GCal events down to the event name, and the
