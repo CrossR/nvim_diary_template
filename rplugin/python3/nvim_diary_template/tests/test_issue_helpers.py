@@ -29,12 +29,6 @@ class issue_helpersTest(unittest.TestCase):
     def test_check_markdown_style(self) -> None:
         raise NotImplementedError()  # TODO: test check_markdown_style
 
-    def test_vimwiki_to_github_process(self) -> None:
-        raise NotImplementedError()  # TODO: test vimwiki_to_github_process
-
-    def test_github_to_vimwiki_process(self) -> None:
-        raise NotImplementedError()  # TODO: test github_to_vimwiki_process
-
     def test_convert_utc_timezone(self) -> None:
         raise NotImplementedError()  # TODO: test convert_utc_timezone
 
