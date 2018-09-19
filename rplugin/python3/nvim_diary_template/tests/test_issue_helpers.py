@@ -3,6 +3,9 @@ import unittest
 from copy import deepcopy
 from typing import Any, Dict, List
 
+import pytest
+
+from ..classes.github_issue_class import GitHubIssue, GitHubIssueComment
 from ..helpers.issue_helpers import (
     check_markdown_style,
     get_github_objects,
@@ -14,7 +17,6 @@ from ..helpers.issue_helpers import (
     toggle_issue_completion,
 )
 from .mocks.nvim import MockNvim
-from ..classes.github_issue_class import GitHubIssue, GitHubIssueComment
 
 
 class issue_helpersTest(unittest.TestCase):
@@ -90,6 +92,21 @@ class issue_helpersTest(unittest.TestCase):
         final_buffer[14] = "#### Comment {0} - 2018-01-01 12:00: +edit"
         insert_edit_tag(self.nvim, "comment")
         assert self.nvim.current.buffer.lines == final_buffer
+
+        # Check there is no error if there is no issues.
+        # Test with both, neither should change the buffer.
+        final_buffer[10:17] = []
+        self.nvim.current.buffer.lines = deepcopy(final_buffer)
+        self.nvim.current.window.cursor = (10, 0)
+
+        insert_edit_tag(self.nvim, "comment")
+        assert self.nvim.current.buffer.lines == final_buffer
+        insert_edit_tag(self.nvim, "issue")
+        assert self.nvim.current.buffer.lines == final_buffer
+
+        # Check the errors are correctly raised.
+        with pytest.raises(ValueError):
+            insert_edit_tag(self.nvim, "fake-type")
 
     def test_insert_new_issue(self) -> None:
         final_buffer: List[str] = [
@@ -238,6 +255,10 @@ class issue_helpersTest(unittest.TestCase):
         # Are GitHub states swapped?
         result = check_markdown_style(github, "vimwiki")
         assert result == vimwiki
+
+        # Check other tests raise an exception.
+        with pytest.raises(Exception):
+            check_markdown_style(github, "fake-type")
 
     def test_sort_issues(self) -> None:
         default_issue: GitHubIssue = GitHubIssue(
@@ -399,7 +420,7 @@ class issue_helpersTest(unittest.TestCase):
         assert result == converted_dicts
 
     def test_split_comment(self) -> None:
-        initial_comment: str = "This is comments line 1.\nAnd this is line 2.\nAnd the line 3!\n\n"
+        initial_comment: str = "\nThis is comments line 1.\nAnd this is line 2.\nAnd the line 3!\n\n"
         final_comment: List[str] = [
             "This is comments line 1.",
             "And this is line 2.",
