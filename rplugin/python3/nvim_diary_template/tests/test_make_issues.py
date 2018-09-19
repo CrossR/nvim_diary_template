@@ -75,7 +75,7 @@ class make_issuesTest(unittest.TestCase):
             ),
         ]
 
-    def set_buffer(self):
+    def set_buffer(self) -> None:
         self.nvim.current.buffer.lines = [
             "<!---",
             "    Date: 2018-01-01",
