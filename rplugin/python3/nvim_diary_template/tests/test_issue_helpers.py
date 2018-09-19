@@ -1,10 +1,11 @@
 
 import unittest
 from copy import deepcopy
-from typing import List
+from typing import Any, Dict, List
 
 from ..helpers.issue_helpers import (
     check_markdown_style,
+    get_github_objects,
     insert_edit_tag,
     insert_new_comment,
     insert_new_issue,
@@ -311,7 +312,91 @@ class issue_helpersTest(unittest.TestCase):
         assert result == sorted_list
 
     def test_get_github_objects(self) -> None:
-        raise NotImplementedError()  # TODO: test get_github_objects
+        dicts_to_check: List[Dict[str, Any]] = [
+            {
+                "number": 1,
+                "title": "Test Issue",
+                "complete": False,
+                "labels": ["backlog", "personal"],
+                "all_comments": [
+                    {
+                        "number": 0,
+                        "body": ["Line 1", "Line 2"],
+                        "tags": [],
+                        "updated_at": "2018-08-19 18:18",
+                    }
+                ],
+                "metadata": [],
+            },
+            {
+                "number": 2,
+                "title": "Test Issue 2",
+                "complete": False,
+                "labels": ["inprogress", "work"],
+                "all_comments": [
+                    {
+                        "number": 0,
+                        "body": ["Line 1", "Line 2"],
+                        "tags": [],
+                        "updated_at": "2018-08-19 18:18",
+                    },
+                    {
+                        "number": 1,
+                        "body": ["Line 2-1", "Line 2-2"],
+                        "tags": [],
+                        "updated_at": "2018-08-19 12:18",
+                    },
+                ],
+                "metadata": [],
+            },
+        ]
+
+        converted_dicts: List[GitHubIssue] = [
+            GitHubIssue(
+                number=1,
+                title="Test Issue",
+                complete=False,
+                labels=["backlog", "personal"],
+                all_comments=[
+                    GitHubIssueComment(
+                        number=0,
+                        body=["Line 1", "Line 2"],
+                        tags=[],
+                        updated_at="2018-08-19 18:18",
+                    )
+                ],
+                metadata=[],
+            ),
+            GitHubIssue(
+                number=2,
+                title="Test Issue 2",
+                complete=False,
+                labels=["inprogress", "work"],
+                all_comments=[
+                    GitHubIssueComment(
+                        number=0,
+                        body=["Line 1", "Line 2"],
+                        tags=[],
+                        updated_at="2018-08-19 18:18",
+                    ),
+                    GitHubIssueComment(
+                        number=1,
+                        body=["Line 2-1", "Line 2-2"],
+                        tags=[],
+                        updated_at="2018-08-19 12:18",
+                    ),
+                ],
+                metadata=[],
+            ),
+        ]
+
+        # Check dicts are converted.
+        result: Any = get_github_objects(dicts_to_check)
+        assert result == converted_dicts
+
+        # Check objects are left alone.
+        result = get_github_objects(converted_dicts)
+        assert result == converted_dicts
 
     def test_split_comment(self) -> None:
         initial_comment: str = "This is comments line 1.\nAnd this is line 2.\nAnd the line 3!\n\n"
@@ -323,6 +408,3 @@ class issue_helpersTest(unittest.TestCase):
 
         result: List[str] = split_comment(initial_comment)
         assert result == final_comment
-
-    def test_get_issue_index(self) -> None:
-        raise NotImplementedError()  # TODO: test get_issue_index

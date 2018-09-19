@@ -158,6 +158,7 @@ class google_calendar_helpersTest(unittest.TestCase):
             CalendarEvent(name="Test Event 2", start="2018-09-16", end="2018-09-17"),
         ]
 
+        # Check dicts are converted.
         result: Any = get_calendar_objects(dicts_to_check)
         assert result == converted_dicts
 
