@@ -7,6 +7,6 @@
         types: [python]
     -   id: pylint
         name: pylint
-        entry: poetry run pylint rplugin/python3/nvim_diary_template -j 0 -d W0511
+        entry: poetry run pylint rplugin/python3/nvim_diary_template -d W0511
         language: system
         types: [python]

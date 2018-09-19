@@ -26,11 +26,11 @@ if [ "${LINT_CODE:-0}" -eq 1 ]; then
     poetry run black --version
 
     LogMessage "Running full lint of code..."
-    poetry run pylint rplugin/python3/nvim_diary_template -j 0
+    poetry run pylint rplugin/python3/nvim_diary_template
     LogMessage "Finished running full lint of code..."
 
     LogMessage "Linting code ignoring TODO warnings..."
-    poetry run pylint rplugin/python3/nvim_diary_template -j 0 -d W0511
+    poetry run pylint rplugin/python3/nvim_diary_template -d W0511
     RETURN_CODE=$?
     LogMessage "Finished running second lint of code..."
 
