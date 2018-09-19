@@ -74,7 +74,7 @@ if [ "${UNIT_TESTS-0}" -eq 1 ]; then
     poetry install codecov
 
     LogMessage "Running unit tests..."
-    poetry run pytest --cov=nvim_diary_template
+    poetry run pytest --cov=./
     RETURN_CODE=$?
     LogMessage "Finished running unit tests..."
 
@@ -85,11 +85,11 @@ if [ "${UNIT_TESTS-0}" -eq 1 ]; then
         exit ${FAIL}
     else
         LogMessage "Unit tests passed!"
-
-        LogMessage "Uploading results..."
-        poetry run codecov
-        LogMessage "Done uploading!"
     fi
+
+    LogMessage "Uploading results..."
+    poetry run codecov
+    LogMessage "Done uploading!"
 fi
 
 if [ "${FULL_TYPING:-0}" -eq 1 ]; then
