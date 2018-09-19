@@ -33,6 +33,9 @@ class MockNvimApi:
     def __init__(self, nvim_mock: MockNvim) -> None:
         self.nvim: MockNvim = nvim_mock
 
+        self.set_count = 0
+        self.get_count = 0
+
     def buf_set_lines(
         self,
         buffer: int,
@@ -52,14 +55,18 @@ class MockNvimApi:
         else:
             self.nvim.current.buffer.lines[start:end] = replacement
 
+        self.set_count += 1
+
     def buf_get_lines(
         self, buffer: int, start: int, end: int, strict_indexing: bool
     ) -> List[str]:
 
+        self.get_count += 1
+
         if end == -1:
             return self.nvim.current.buffer.lines[start:]
-        else:
-            return self.nvim.current.buffer.lines[start:end]
+
+        return self.nvim.current.buffer.lines[start:end]
 
 
 class MockNvimCurrent:

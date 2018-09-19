@@ -11,7 +11,7 @@ from ..utils.make_schedule import (
     produce_schedule_markdown,
     set_schedule_from_events_list,
 )
-from .mocks.nvim import MockNvim
+from .mocks.mock_nvim import MockNvim
 
 
 class make_scheduleTest(unittest.TestCase):

@@ -10,7 +10,7 @@ from random import choices
 from typing import Any, Dict, List
 
 from ..helpers.file_helpers import check_cache, generate_diary_index, set_cache
-from .mocks.options import MockPluginOptions
+from .mocks.mock_options import MockPluginOptions
 
 
 class file_helpersTest(unittest.TestCase):

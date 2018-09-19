@@ -3,7 +3,7 @@ import unittest
 
 from typing import List
 
-from .mocks.nvim import MockNvim
+from .mocks.mock_nvim import MockNvim
 from ..helpers.markdown_helpers import sort_markdown_events
 
 

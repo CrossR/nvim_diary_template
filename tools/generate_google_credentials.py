@@ -1,3 +1,16 @@
+"""generate_google_credentials
+
+A helper file that takes in the given Google credentials, and produces a usable credentials file.
+
+First, generate a set of API keys on the
+[Google API Dashboard](https://console.developers.google.com).
+
+This is done by making a new project, then making a new set of credentials under
+"Credentials". After giving it any name, download the config file and rename it
+to `client_secret.json`, before running the included
+`generate_google_credentials.py` script on it, to make the final authentication
+file. This final `credentials.json` should then be put in your config folder.
+"""
 import warnings
 from os import path
 

@@ -9,7 +9,7 @@ from ..utils.make_issues import (
     remove_tag_from_issues,
     set_issues_from_issues_list,
 )
-from .mocks.nvim import MockNvim
+from .mocks.mock_nvim import MockNvim
 
 
 class make_issuesTest(unittest.TestCase):

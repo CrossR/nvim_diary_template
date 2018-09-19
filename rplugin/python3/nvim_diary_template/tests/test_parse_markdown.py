@@ -15,7 +15,7 @@ from ..utils.parse_markdown import (
     parse_markdown_file_for_issues,
     remove_events_not_from_today,
 )
-from .mocks.nvim import MockNvim
+from .mocks.mock_nvim import MockNvim
 
 
 class parse_markdownTest(unittest.TestCase):

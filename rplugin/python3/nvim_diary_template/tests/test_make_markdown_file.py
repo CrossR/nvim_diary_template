@@ -8,10 +8,10 @@ from ..classes.calendar_event_class import CalendarEvent
 from ..classes.github_issue_class import GitHubIssue, GitHubIssueComment
 from ..utils.constants import ISO_FORMAT
 from ..utils.make_markdown_file import generate_markdown_metadata, make_todays_diary
-from .mocks.gcal import MockGCalService
-from .mocks.github import MockGitHubService
-from .mocks.nvim import MockNvim
-from .mocks.options import MockPluginOptions
+from .mocks.mock_gcal import MockGCalService
+from .mocks.mock_github import MockGitHubService
+from .mocks.mock_nvim import MockNvim
+from .mocks.mock_options import MockPluginOptions
 
 
 class make_markdown_fileTest(unittest.TestCase):

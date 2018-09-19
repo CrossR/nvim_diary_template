@@ -16,7 +16,7 @@ from ..helpers.issue_helpers import (
     split_comment,
     toggle_issue_completion,
 )
-from .mocks.nvim import MockNvim
+from .mocks.mock_nvim import MockNvim
 
 
 class issue_helpersTest(unittest.TestCase):

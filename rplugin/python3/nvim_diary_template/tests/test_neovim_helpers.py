@@ -11,7 +11,7 @@ from ..helpers.neovim_helpers import (
     set_line_content,
 )
 from ..utils.constants import ISSUE_HEADING, SCHEDULE_HEADING
-from .mocks.nvim import MockNvim
+from .mocks.mock_nvim import MockNvim
 
 
 class neovim_helpersTest(unittest.TestCase):
