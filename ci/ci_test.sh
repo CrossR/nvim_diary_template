@@ -70,12 +70,14 @@ if [ "${UNIT_TESTS-0}" -eq 1 ]; then
 
     poetry run pytest --version
 
-    LogMessage "Installing codecov..."
-    poetry install codecov
-
     LogMessage "Running unit tests..."
     poetry run pytest --cov=./
     RETURN_CODE=$?
+
+    LogMessage "Uploading results..."
+    poetry run codecov
+    LogMessage "Done uploading!"
+
     LogMessage "Finished running unit tests..."
 
     LogMessage "pytest returned ${RETURN_CODE}..."
@@ -86,10 +88,6 @@ if [ "${UNIT_TESTS-0}" -eq 1 ]; then
     else
         LogMessage "Unit tests passed!"
     fi
-
-    LogMessage "Uploading results..."
-    poetry run codecov
-    LogMessage "Done uploading!"
 fi
 
 if [ "${FULL_TYPING:-0}" -eq 1 ]; then

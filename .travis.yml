@@ -29,7 +29,7 @@ cache:
     - $HOME/.cache/pypoetry
 
 install:
-  - pip install poetry
+  - pip install poetry codecov
   - poetry install
 
 script:
