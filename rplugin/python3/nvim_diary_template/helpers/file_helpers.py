@@ -26,26 +26,6 @@ from ..utils.constants import (
 )
 
 
-def get_file_content(file_path: str) -> List[str]:
-    """get_file_content
-
-    Return the content of the passed note file.
-    """
-
-    with open(file_path) as note_file:
-        return note_file.read().split("\n")
-
-
-def get_diary_path(options: PluginOptions, note_name: str) -> str:
-    """get_diary_path
-
-    Gives a full path, given just a diary name.
-    """
-    pattern: str = path.join(options.notes_path, DIARY_FOLDER, note_name)
-
-    return glob.glob(pattern)[0]
-
-
 def check_cache(
     config_path: str,
     data_name: str,
@@ -69,7 +49,9 @@ def check_cache(
     try:
         cache_file_name: str = glob.glob(pattern)[0]
 
-        epoch_search: Union[str, Any] = re.search(CACHE_EPOCH_REGEX, cache_file_name)
+        epoch_search: Union[str, Any] = re.search(
+            CACHE_EPOCH_REGEX, path.basename(cache_file_name)
+        )
         epoch: str = epoch_search[0] if epoch_search is not None else ""
 
         cache_file_creation_date: datetime = datetime.fromtimestamp(int(epoch))

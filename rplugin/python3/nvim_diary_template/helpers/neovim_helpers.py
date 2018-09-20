@@ -40,25 +40,6 @@ def set_buffer_contents(nvim: Nvim, data: List[str]) -> None:
     nvim.api.buf_set_lines(buffer_number, 0, -1, True, data)
 
 
-def get_line_content(nvim: Nvim, line_offset: int = -1) -> str:
-    """get_line_content
-
-    Get the contents of the current line.
-    """
-
-    buffer_number: int = nvim.current.buffer.number
-    cursor_line: int = nvim.current.window.cursor[0]
-
-    if line_offset != -1:
-        cursor_line += line_offset
-
-    current_line: str = nvim.api.buf_get_lines(
-        buffer_number, cursor_line - 1, cursor_line, True
-    )[0]
-
-    return current_line
-
-
 def set_line_content(
     nvim: Nvim, data: List[str], line_index: int = -1, line_offset: int = -1
 ) -> None:

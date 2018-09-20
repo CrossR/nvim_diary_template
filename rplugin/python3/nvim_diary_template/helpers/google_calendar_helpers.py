@@ -47,7 +47,9 @@ def get_time(time_to_convert: str) -> datetime:
     return parsed_datetime
 
 
-def format_google_events(events_list: List[Dict[str, Any]]) -> List[CalendarEvent]:
+def format_google_events(
+    events_list: List[Dict[str, Any]], diary_date: str
+) -> List[CalendarEvent]:
     """format_google_events
 
     Formats a list of GCal events down to the event name, and the
@@ -60,15 +62,14 @@ def format_google_events(events_list: List[Dict[str, Any]]) -> List[CalendarEven
 
         try:
             event_start = event["start"]["dateTime"]
-            event_end = event["start"]["dateTime"]
+            event_end = event["end"]["dateTime"]
         except KeyError:
             event_start = event["start"]["date"]
-            event_end = event["start"]["date"]
+            event_end = event["end"]["date"]
 
-        date_today = str(datetime.today().date())
-        event_date = str(get_time(event_start).date())
+        event_date: str = str(get_time(event_start).date())
 
-        if event_date != date_today:
+        if event_date != diary_date:
             continue
 
         filtered_events.append(

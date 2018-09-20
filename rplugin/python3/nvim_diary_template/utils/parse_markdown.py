@@ -51,6 +51,8 @@ def parse_buffer_events(
         if event == "":
             continue
 
+        # Get the start and end dates.
+        # Regex is used to pull out the two substrings.
         matches_date_time: List[str] = re.findall(DATETIME_REGEX, event)
 
         if not matches_date_time:
@@ -238,6 +240,7 @@ def combine_events(
     with no duplicates.
 
     The markdown is taken to be the ground truth, as there is no online copy.
+    Does not sort events.
     """
 
     buffer_events: List[CalendarEvent] = [
@@ -299,7 +302,7 @@ def combine_issues(
             # If we've got an edited comment, where the online matches the
             # markdown version, keep the markdown comment around.
             if "edit" in comment.tags and comment.updated_at == api_comment.updated_at:
-                api_comment = comment
+                api_issue.all_comments[index] = comment
 
                 continue
 

@@ -34,9 +34,9 @@ def format_issues(issues: List[GitHubIssue], should_sort: bool) -> List[str]:
     for issue in issues:
 
         if issue.complete:
-            issue_start = f"{HEADING_3} {VIMWIKI_TODO} Issue {{{issue.number}}}: "
+            issue_start = f"{HEADING_3} {VIMWIKI_TODO} Issue {{{issue.number}}}:"
         else:
-            issue_start = f"{HEADING_3} {EMPTY_TODO} Issue {{{issue.number}}}: "
+            issue_start = f"{HEADING_3} {EMPTY_TODO} Issue {{{issue.number}}}:"
 
         title_line = f"{HEADING_4} Title: {issue.title}"
 
@@ -128,8 +128,8 @@ def remove_tag_from_issues(
         if scope in ("all", "issues"):
             if tag in issue.metadata:
 
-                # If the comment is one we should ignore, continue.
-                # This is usually due to the comment being empty.
+                # If the issue is one we should ignore, continue.
+                # This is usually due to the issue being empty.
                 if index in ignore_list:
                     continue
 

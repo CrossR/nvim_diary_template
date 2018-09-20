@@ -1,0 +1,12 @@
+-   repo: local
+    hooks:
+    -   id: black
+        name: black
+        entry: poetry run black rplugin/
+        language: system
+        types: [python]
+    -   id: pylint
+        name: pylint
+        entry: poetry run pylint rplugin/python3/nvim_diary_template -d W0511
+        language: system
+        types: [python]

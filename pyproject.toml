@@ -19,3 +19,11 @@ pyuv = "^1.4"
 black = "^18.3-alpha.0"
 mypy = "^0.620.0"
 pylint = "^2.1"
+pytest = "^3.8"
+pre-commit = "^1.11"
+coverage = "^4.5"
+pytest-cov = "^2.6"
+
+[tool.black]
+line-length = 88
+py36 = true

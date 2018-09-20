@@ -35,13 +35,18 @@ class SimpleNvimGithub:
     A class to deal with the simple interactions with the Github API.
     """
 
-    def __init__(self, nvim: Nvim, options: PluginOptions) -> None:
+    def __init__(
+        self, nvim: Nvim, options: PluginOptions, service: Optional[Github] = None
+    ) -> None:
         self.nvim: Nvim = nvim
         self.config_path: str = options.config_path
         self.repo_name: str = options.repo_name
         self.options: PluginOptions = options
 
-        self.service: Optional[Github] = self.setup_github_api()
+        self.service: Optional[Github] = service
+
+        if self.service is None:
+            self.service = self.setup_github_api()
 
         if self.service_not_valid():
             return

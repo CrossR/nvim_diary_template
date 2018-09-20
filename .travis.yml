@@ -13,6 +13,8 @@ matrix:
   include:
   - name: "Lint Code"
     env: LINT_CODE=1
+  - name: "Unit Tests"
+    env: UNIT_TESTS=1
   - name: "Basic Type Check"
     env: BASIC_TYPING=1
   - name: "Full Type Check"
@@ -26,7 +28,7 @@ cache:
     - $HOME/.cache/pypoetry
 
 install:
-  - pip install poetry
+  - pip install poetry codecov
   - poetry install
 
 script:

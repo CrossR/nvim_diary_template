@@ -173,7 +173,7 @@ class SimpleNvimGoogleCal:
 
             events_in_timeframe.extend(events["items"])
 
-        return format_google_events(events_in_timeframe)
+        return format_google_events(events_in_timeframe, str(datetime.today().date()))
 
     def upload_to_calendar(self, markdown_events: List[CalendarEvent]) -> None:
         """upload_to_calendar
