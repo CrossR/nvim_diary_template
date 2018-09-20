@@ -120,8 +120,12 @@ class MockGitHubIssue:
         return self.comments
 
     def create_comment(self, body: str) -> None:
-        new_comment: MockGitHubComment = MockGitHubComment()
-        new_comment.body = body
+        next_comment_number: int = 0
+        if len(self.comments) != 0:
+            next_comment_number = self.comments[-1].number + 1
+        new_comment: MockGitHubComment = MockGitHubComment(
+            number=next_comment_number, body=body, updated_at=datetime.now()
+        )
 
         self.comments.append(new_comment)
 
