@@ -1,18 +1,17 @@
 from datetime import datetime
 from tempfile import mkdtemp
-from typing import Any, Dict, List
+from typing import Any, List, Tuple
 
 from dataclasses import dataclass
 from dateutil import parser
 from neovim import Nvim
 
 from ...classes.github_issue_class import GitHubIssue
-from ...classes.nvim_github_class import SimpleNvimGithub
 from ...utils.constants import ISO_FORMAT
 from .mock_options import MockPluginOptions
 
 
-def get_mock_github(nvim: Nvim) -> SimpleNvimGithub:
+def get_mock_github(nvim: Nvim) -> Tuple[Any, MockPluginOptions]:
     new_api: Any = MockGitHubService()
     options: Any = MockPluginOptions()
 
@@ -59,8 +58,7 @@ def get_mock_github(nvim: Nvim) -> SimpleNvimGithub:
         ),
     ]
 
-    nvim_github: SimpleNvimGithub = SimpleNvimGithub(nvim, options, new_api)
-    return nvim_github
+    return new_api, options
 
 
 # TODO: Fix these forward type references to not be Any.

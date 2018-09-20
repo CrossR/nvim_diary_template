@@ -5,13 +5,12 @@ from typing import Any, Dict, List
 from dateutil import parser
 
 from ..classes.calendar_event_class import CalendarEvent
-from ..classes.github_issue_class import GitHubIssue, GitHubIssueComment
+from ..classes.nvim_github_class import SimpleNvimGithub
 from ..utils.constants import ISO_FORMAT
 from ..utils.make_markdown_file import generate_markdown_metadata, make_todays_diary
 from .mocks.mock_gcal import MockGCalService
 from .mocks.mock_github import get_mock_github
 from .mocks.mock_nvim import MockNvim
-from .mocks.mock_options import MockPluginOptions
 
 
 class make_markdown_fileTest(unittest.TestCase):
@@ -22,8 +21,12 @@ class make_markdown_fileTest(unittest.TestCase):
     def test_make_todays_diary(self) -> None:
         nvim: Any = MockNvim()
         gcal: Any = MockGCalService()
-        github: Any = get_mock_github(nvim)
-        options: Any = MockPluginOptions()
+        api_setup = get_mock_github(nvim)
+
+        github_api: Any = api_setup[0]
+        options: Any = api_setup[1]
+
+        github: SimpleNvimGithub = SimpleNvimGithub(nvim, options, github_api)
 
         # Check defaults work and is saved.
         # This includes Issues
