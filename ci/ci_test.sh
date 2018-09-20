@@ -71,9 +71,8 @@ if [ "${UNIT_TESTS-0}" -eq 1 ]; then
     poetry run pytest --version
 
     LogMessage "Running unit tests..."
-    poetry run coverage run --source=rplugin/python3/nvim_diary_template -m pytest
+    poetry run pytest --cov=./
     RETURN_CODE=$?
-    poetry run coverage report
 
     LogMessage "Uploading results..."
     poetry run codecov
