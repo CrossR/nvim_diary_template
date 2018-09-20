@@ -21,7 +21,7 @@ class make_markdown_fileTest(unittest.TestCase):
     def test_make_todays_diary(self) -> None:
         nvim: Any = MockNvim()
         gcal: Any = MockGCalService()
-        api_setup = get_mock_github(nvim)
+        api_setup = get_mock_github()
 
         github_api: Any = api_setup[0]
         options: Any = api_setup[1]

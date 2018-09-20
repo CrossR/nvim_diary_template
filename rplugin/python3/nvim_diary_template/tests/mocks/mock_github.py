@@ -4,14 +4,13 @@ from typing import Any, List, Tuple
 
 from dataclasses import dataclass
 from dateutil import parser
-from neovim import Nvim
 
 from ...classes.github_issue_class import GitHubIssue
 from ...utils.constants import ISO_FORMAT
 from .mock_options import MockPluginOptions
 
 
-def get_mock_github(nvim: Nvim) -> Tuple[Any, MockPluginOptions]:
+def get_mock_github() -> Tuple[Any, MockPluginOptions]:
     new_api: Any = MockGitHubService()
     options: Any = MockPluginOptions()
 
