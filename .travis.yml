@@ -21,7 +21,6 @@ matrix:
     env: FULL_TYPING=1
   allow_failures:
     - name: "Full Type Check"
-    - name: "Unit Tests"
 
 cache:
   pip: true
