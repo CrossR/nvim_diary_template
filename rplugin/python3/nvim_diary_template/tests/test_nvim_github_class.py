@@ -84,7 +84,57 @@ class SimpleNvimGithubTest(unittest.TestCase):
         assert result == issue_list
 
     def test_filter_comments(self) -> None:
-        raise NotImplementedError()  # TODO: test filter_comments
+        self.github.issues[1].all_comments[2].tags = ["edit"]
+
+        filtered_list: List[GitHubIssue] = [
+            GitHubIssue(
+                number=2,
+                title="Test Issue 2",
+                complete=False,
+                labels=["inprogress", "work"],
+                metadata=[],
+                all_comments=[
+                    GitHubIssueComment(
+                        number=2,
+                        body=["Line 2-1\r\nLine 2-2"],
+                        tags=["edit"],
+                        updated_at="2018-08-19 13:18",
+                    )
+                ],
+            )
+        ]
+
+        change_list: List[Any] = [{"issue": 1, "comment": 2}]
+
+        result: Any = SimpleNvimGithub.filter_comments(self.github.issues, "edit")
+        assert result[0] == filtered_list
+        assert result[1] == change_list
 
     def test_filter_issues(self) -> None:
-        raise NotImplementedError()  # TODO: test filter_issues
+        self.github.issues[1].metadata = ["edit"]
+
+        filtered_list: List[GitHubIssue] = [
+            GitHubIssue(
+                number=2,
+                title="Test Issue 2",
+                complete=False,
+                labels=["inprogress", "work"],
+                metadata=["edit"],
+                all_comments=[
+                    GitHubIssueComment(
+                        number=0,
+                        body=[
+                            "This is the second issue body:\r\n    * Item 1\r\n    * Item 2"
+                        ],
+                        tags=[],
+                        updated_at="2018-01-01 10:00",
+                    )
+                ],
+            )
+        ]
+
+        change_list: List[int] = [1]
+
+        result: Any = SimpleNvimGithub.filter_issues(self.github.issues, "edit")
+        assert result[0] == filtered_list
+        assert result[1] == change_list
