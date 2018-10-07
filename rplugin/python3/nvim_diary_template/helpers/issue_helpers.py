@@ -4,9 +4,9 @@ Simple helpers to deal with Github issues.
 """
 import re
 from datetime import datetime
-from typing import Any, Dict, List, Tuple, Union, Optional
+from typing import Any, Dict, List, Optional, Tuple, Union
 
-from dateutil import tz
+from dateutil import parser, tz
 from neovim import Nvim
 
 from ..classes.github_issue_class import GitHubIssue, GitHubIssueComment
@@ -282,6 +282,21 @@ def convert_utc_timezone(passed_datetime: datetime, target: str) -> str:
     utc_time: datetime = passed_datetime.replace(tzinfo=tz.tzutc())
 
     return utc_time.astimezone(tz.gettz(target)).strftime("%Y-%m-%d %H:%M")
+
+
+def get_latest_update(comments: List[GitHubIssueComment]) -> str:
+    """get_latest_update
+
+    Get the latest update for an issue, that is the latest updated comment.
+    """
+
+    latest_update: str = comments[0].updated_at
+
+    for comment in comments:
+        if parser.parse(latest_update) < parser.parse(comment.updated_at):
+            latest_update = comment.updated_at
+
+    return latest_update
 
 
 def sort_issues(issues: List[GitHubIssue]) -> List[GitHubIssue]:

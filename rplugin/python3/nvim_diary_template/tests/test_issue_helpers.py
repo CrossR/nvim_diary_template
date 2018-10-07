@@ -9,6 +9,7 @@ from ..classes.github_issue_class import GitHubIssue, GitHubIssueComment
 from ..helpers.issue_helpers import (
     check_markdown_style,
     get_github_objects,
+    get_latest_update,
     insert_edit_tag,
     insert_new_comment,
     insert_new_issue,
@@ -418,6 +419,39 @@ class issue_helpersTest(unittest.TestCase):
         # Check objects are left alone.
         result = get_github_objects(converted_dicts)
         assert result == converted_dicts
+
+    def test_get_latest_update(self) -> None:
+        inital_issue: GitHubIssue = GitHubIssue(
+            number=1,
+            title="Test Issue 1",
+            complete=False,
+            labels=["inprogress", "work"],
+            all_comments=[
+                GitHubIssueComment(
+                    number=0,
+                    body=["Line 1", "Line 2"],
+                    tags=[],
+                    updated_at="2018-08-19 18:18",
+                ),
+                GitHubIssueComment(
+                    number=1,
+                    body=["Line 2-1", "Line 2-2"],
+                    tags=[],
+                    updated_at="2018-12-19 12:18",
+                ),
+                GitHubIssueComment(
+                    number=1,
+                    body=["Line 3-1", "Line 3-2"],
+                    tags=[],
+                    updated_at="2018-08-19 12:18",
+                ),
+            ],
+            metadata=[],
+        )
+        expected_date: str = "2018-12-19 12:18"
+
+        result: str = get_latest_update(inital_issue.all_comments)
+        assert result == expected_date
 
     def test_split_comment(self) -> None:
         initial_comment: str = "\nThis is comments line 1.\nAnd this is line 2.\nAnd the line 3!\n\n"
