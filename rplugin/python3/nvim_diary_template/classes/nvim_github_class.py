@@ -19,6 +19,7 @@ from ..helpers.issue_helpers import (
     check_markdown_style,
     convert_utc_timezone,
     get_github_objects,
+    get_latest_update,
     split_comment,
 )
 from ..helpers.neovim_helpers import buffered_info_message
@@ -288,11 +289,14 @@ class SimpleNvimGithub:
                     check_markdown_style(line, "github") for line in comment.body
                 ]
 
+                # Here, we use the latest update time to ensure that the issues are in sync.
+                # Since the actual update time isn't needed for an issue update, this is why
+                # it is instead stored here.
                 body_comment: GitHubIssueComment = GitHubIssueComment(
                     number=comment.number,
                     body=["\r\n".join(processed_body)],
                     tags=comment.tags,
-                    updated_at=comment.updated_at,
+                    updated_at=get_latest_update(issue.all_comments),
                 )
 
                 issues_to_upload.append(
