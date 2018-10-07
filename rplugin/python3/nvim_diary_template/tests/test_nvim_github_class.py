@@ -127,7 +127,7 @@ class SimpleNvimGithubTest(unittest.TestCase):
                             "This is the second issue body:\r\n    * Item 1\r\n    * Item 2"
                         ],
                         tags=[],
-                        updated_at="2018-01-01 10:00",
+                        updated_at="2018-08-19 19:18",
                     )
                 ],
             )
