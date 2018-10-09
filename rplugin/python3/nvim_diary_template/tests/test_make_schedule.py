@@ -50,14 +50,14 @@ class make_scheduleTest(unittest.TestCase):
 
         events: List[CalendarEvent] = [
             CalendarEvent(
-                name="Event 1",
-                start=parser.parse("2018-01-01 10:00").strftime(ISO_FORMAT),
-                end=parser.parse("2018-01-01 11:00").strftime(ISO_FORMAT),
-            ),
-            CalendarEvent(
                 name="Event 2",
                 start=parser.parse("2018-01-01 14:00").strftime(ISO_FORMAT),
                 end=parser.parse("2018-01-01 15:00").strftime(ISO_FORMAT),
+            ),
+            CalendarEvent(
+                name="Event 1",
+                start=parser.parse("2018-01-01 10:00").strftime(ISO_FORMAT),
+                end=parser.parse("2018-01-01 11:00").strftime(ISO_FORMAT),
             ),
             CalendarEvent(
                 name="Event 3",

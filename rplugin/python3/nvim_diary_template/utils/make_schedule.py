@@ -7,6 +7,7 @@ from typing import List
 from neovim import Nvim
 
 from ..classes.calendar_event_class import CalendarEvent
+from ..helpers.event_helpers import sort_events
 from ..helpers.google_calendar_helpers import convert_events
 from ..helpers.neovim_helpers import get_buffer_contents, get_section_line
 from ..utils.constants import BULLET_POINT, SCHEDULE_HEADING, TIME_FORMAT
@@ -44,7 +45,9 @@ def produce_schedule_markdown(event_list: List[CalendarEvent]) -> List[str]:
 
     markdown_lines: List[str] = [SCHEDULE_HEADING, ""]
 
-    converted_events: List[CalendarEvent] = convert_events(event_list, TIME_FORMAT)
+    converted_events: List[CalendarEvent] = sort_events(
+        convert_events(event_list, TIME_FORMAT)
+    )
     schedule_lines: List[str] = format_events_lines(converted_events)
     markdown_lines.extend(schedule_lines)
 
