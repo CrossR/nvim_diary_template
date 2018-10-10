@@ -4,8 +4,10 @@ Functions to open the markdown files from the filesystem, or make them if
 they don't exist.
 """
 
+from datetime import date
 from typing import Dict, List
 
+from dateutil import parser
 from neovim import Nvim
 
 from ..classes.calendar_event_class import CalendarEvent
@@ -72,7 +74,10 @@ def make_diary(
     # Add in that days calendar entries
     days_events: List[CalendarEvent] = []
     if options.use_google_calendar and gcal_service and gcal_service.active:
-        days_events = gcal_service.events
+        if diary_date == date.today():
+            days_events = gcal_service.events
+        else:
+            days_events = gcal_service.get_events_for_today(parser.parse(diary_date))
 
     schedule_markdown: List[str] = produce_schedule_markdown(days_events)
     full_markdown.extend(schedule_markdown)

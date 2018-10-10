@@ -97,4 +97,4 @@ def get_diary_date(nvim: Nvim) -> str:
     This is just the filename, without the extension.
     """
 
-    return str(nvim.current.buffer.name).split(".")[1]
+    return str(nvim.current.buffer.name).split(".")[0]
