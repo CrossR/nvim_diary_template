@@ -19,6 +19,7 @@ class make_markdown_fileTest(unittest.TestCase):
 
     def test_make_diary(self) -> None:
         nvim: Any = MockNvim()
+        nvim.current.buffer.name = "2018-01-01.md"
         gcal: Any = MockGCalService()
         api_setup = get_mock_github()
 
@@ -35,6 +36,7 @@ class make_markdown_fileTest(unittest.TestCase):
 
         # Check doesn't save over modified.
         nvim = MockNvim()
+        nvim.current.buffer.name = "2018-01-01.md"
         nvim.current.buffer.lines = ["Edited!"]
         make_diary(nvim, options, gcal, github)
         assert nvim.current.buffer.lines == ["Edited!"]
