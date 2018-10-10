@@ -18,7 +18,7 @@ from .helpers.issue_helpers import (
 from .helpers.markdown_helpers import sort_markdown_events
 from .utils.constants import FILE_TYPE_WILDCARD, ISO_FORMAT
 from .utils.make_issues import remove_tag_from_issues, set_issues_from_issues_list
-from .utils.make_markdown_file import make_todays_diary
+from .utils.make_markdown_file import make_diary
 from .utils.make_schedule import set_schedule_from_events_list
 from .utils.parse_markdown import (
     combine_events,
@@ -50,7 +50,7 @@ class DiaryTemplatePlugin:
 
     @neovim.command("DiaryMake")
     def make_diary(self, called_from_autocommand: bool = False) -> None:
-        make_todays_diary(
+        make_diary(
             self._nvim,
             self.options,
             self._gcal_service,

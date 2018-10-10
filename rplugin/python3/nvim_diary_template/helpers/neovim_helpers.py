@@ -88,3 +88,13 @@ def buffered_info_message(nvim: Nvim, message: str) -> None:
     """
 
     nvim.out_write(f"{message}")
+
+
+def get_diary_date(nvim: Nvim) -> str:
+    """get_diary_date
+
+    Get the date of the current diary file.
+    This is just the filename, without the extension.
+    """
+
+    return str(nvim.current.buffer.name).split(".")[1]

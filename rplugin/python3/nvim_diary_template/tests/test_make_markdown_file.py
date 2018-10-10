@@ -6,7 +6,7 @@ from dateutil import parser
 from ..classes.calendar_event_class import CalendarEvent
 from ..classes.nvim_github_class import SimpleNvimGithub
 from ..utils.constants import ISO_FORMAT
-from ..utils.make_markdown_file import generate_markdown_metadata, make_todays_diary
+from ..utils.make_markdown_file import generate_markdown_metadata, make_diary
 from .mocks.mock_gcal import MockGCalService
 from .mocks.mock_github import get_mock_github
 from .mocks.mock_nvim import MockNvim
@@ -29,14 +29,14 @@ class make_markdown_fileTest(unittest.TestCase):
 
         # Check defaults work and is saved.
         # This includes Issues
-        make_todays_diary(nvim, options, gcal, github)
+        make_diary(nvim, options, gcal, github)
         assert len(nvim.current.buffer.lines) == 41
         assert nvim.commands == [":w"]
 
         # Check doesn't save over modified.
         nvim = MockNvim()
         nvim.current.buffer.lines = ["Edited!"]
-        make_todays_diary(nvim, options, gcal, github)
+        make_diary(nvim, options, gcal, github)
         assert nvim.current.buffer.lines == ["Edited!"]
         assert nvim.commands == []
 
@@ -57,30 +57,30 @@ class make_markdown_fileTest(unittest.TestCase):
 
         # Check events are added.
         nvim = MockNvim()
-        make_todays_diary(nvim, options, gcal, github)
+        make_diary(nvim, options, gcal, github)
         assert len(nvim.current.buffer.lines) == 43
 
         # But not when disabled.
         options.use_google_calendar = False
         nvim = MockNvim()
-        make_todays_diary(nvim, options, gcal, github)
+        make_diary(nvim, options, gcal, github)
         assert len(nvim.current.buffer.lines) == 41
         options.use_google_calendar = True
 
         # Check issues are added.
         nvim = MockNvim()
-        make_todays_diary(nvim, options, gcal, github)
+        make_diary(nvim, options, gcal, github)
         assert len(nvim.current.buffer.lines) == 43
 
         # But not when disabled.
         options.use_github_repo = False
         nvim = MockNvim()
-        make_todays_diary(nvim, options, gcal, github)
+        make_diary(nvim, options, gcal, github)
         assert len(nvim.current.buffer.lines) == 15
         options.use_github_repo = True
 
         nvim = MockNvim()
-        make_todays_diary(nvim, options, gcal, github)
+        make_diary(nvim, options, gcal, github)
         final_markdown: List[str] = [
             "",
             "## Notes",
