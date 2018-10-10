@@ -145,9 +145,9 @@ class SimpleNvimGoogleCal:
         return all_calendars
 
     def get_events_for_date(self, current_date: date) -> List[CalendarEvent]:
-        """get_events_for_today
+        """get_events_for_date
 
-        Gets all the events for today calendars.
+        Gets all the events for given days calendars.
         Events are brought in from 00:00 on the first day, to 23:59 on the
         last day.
         """

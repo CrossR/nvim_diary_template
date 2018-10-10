@@ -74,10 +74,11 @@ def make_diary(
     # Add in that days calendar entries
     days_events: List[CalendarEvent] = []
     if options.use_google_calendar and gcal_service and gcal_service.active:
-        if diary_date == date.today():
+        date_today_object: date = parser.parse(diary_date).date()
+        if date_today_object == date.today():
             days_events = gcal_service.events
         else:
-            days_events = gcal_service.get_events_for_today(parser.parse(diary_date))
+            days_events = gcal_service.get_events_for_date(date_today_object)
 
     schedule_markdown: List[str] = produce_schedule_markdown(days_events)
     full_markdown.extend(schedule_markdown)

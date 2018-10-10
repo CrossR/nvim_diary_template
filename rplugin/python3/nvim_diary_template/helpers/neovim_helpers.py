@@ -3,6 +3,7 @@
 Simple helpers to help interfacing with NeoVim.
 """
 
+from os import path
 from typing import List
 
 from neovim import Nvim
@@ -97,4 +98,5 @@ def get_diary_date(nvim: Nvim) -> str:
     This is just the filename, without the extension.
     """
 
-    return str(nvim.current.buffer.name).split(".")[0]
+    file_name: str = path.basename(nvim.current.buffer.name)
+    return path.splitext(file_name)[0]

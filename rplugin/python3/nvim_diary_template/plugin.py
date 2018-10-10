@@ -78,7 +78,7 @@ class DiaryTemplatePlugin:
             self._nvim, ISO_FORMAT
         )
         cal_events: List[CalendarEvent] = self._gcal_service.get_events_for_date(
-            parser.parse(buffer_date)
+            parser.parse(buffer_date).date()
         )
 
         combined_events: List[CalendarEvent] = combine_events(
