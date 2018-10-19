@@ -98,5 +98,8 @@ def get_diary_date(nvim: Nvim) -> str:
     This is just the filename, without the extension.
     """
 
+    if "diary" not in nvim.current.buffer.name:
+        return ""
+
     file_name: str = path.basename(nvim.current.buffer.name)
     return path.splitext(file_name)[0]

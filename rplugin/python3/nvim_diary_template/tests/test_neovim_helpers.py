@@ -4,6 +4,7 @@ from typing import List
 from ..helpers.neovim_helpers import (
     buffered_info_message,
     get_buffer_contents,
+    get_diary_date,
     get_section_line,
     is_buffer_empty,
     set_buffer_contents,
@@ -121,3 +122,15 @@ class neovim_helpersTest(unittest.TestCase):
             "Second one to send.\n",
         ]
         assert self.nvim.message_print_count == 1
+
+    def test_get_diary_date(self) -> None:
+        self.nvim.current.buffer.name = "/home/crossr/git/wiki/diary/2018-01-01.md"
+        diary_date: str = "2018-01-01"
+
+        result: str = get_diary_date(self.nvim)
+        assert result == diary_date
+
+        self.nvim.current.buffer.name = "/home/crossr/git/wiki/docs/wiki_file.md"
+
+        result = get_diary_date(self.nvim)
+        assert result == ""
