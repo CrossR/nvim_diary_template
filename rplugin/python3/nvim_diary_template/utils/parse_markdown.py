@@ -17,6 +17,7 @@ from ..helpers.google_calendar_helpers import convert_events
 from ..helpers.issue_helpers import get_issue_index
 from ..helpers.neovim_helpers import (
     get_buffer_contents,
+    get_diary_date,
     get_section_line,
     set_line_content,
 )
@@ -38,7 +39,7 @@ from ..utils.constants import (
 
 
 def parse_buffer_events(
-    event_lines: List[str], format_string: str
+    event_lines: List[str], format_string: str, diary_date: str
 ) -> List[CalendarEvent]:
     """parse_buffer_events
 
@@ -57,8 +58,12 @@ def parse_buffer_events(
 
         if not matches_date_time:
             matches_time: List[str] = re.findall(TIME_REGEX, event)
-            start_date: str = parser.parse(matches_time[0]).strftime(format_string)
-            end_date: str = parser.parse(matches_time[1]).strftime(format_string)
+            start_date: str = parser.parse(f"{diary_date} {matches_time[0]}").strftime(
+                format_string
+            )
+            end_date: str = parser.parse(f"{diary_date} {matches_time[1]}").strftime(
+                format_string
+            )
         else:
             start_date = parser.parse(matches_date_time[0]).strftime(format_string)
             end_date = parser.parse(matches_date_time[1]).strftime(format_string)
@@ -204,7 +209,10 @@ def parse_markdown_file_for_events(
 
     buffer_events_index: int = get_section_line(current_buffer, SCHEDULE_HEADING)
     events: List[str] = current_buffer[buffer_events_index:]
-    formatted_events: List[CalendarEvent] = parse_buffer_events(events, format_string)
+    diary_date: str = get_diary_date(nvim)
+    formatted_events: List[CalendarEvent] = parse_buffer_events(
+        events, format_string, diary_date
+    )
 
     return formatted_events
 
