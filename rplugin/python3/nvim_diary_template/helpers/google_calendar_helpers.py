@@ -68,14 +68,10 @@ def format_google_events(
             event_end = event["end"]["date"]
 
         event_date: str = str(get_time(event_start).date())
-        recursed_event: bool = "recurrence" in event and event["recurrence"] != []
 
         # If its an event not from today, then don't show it.
         # This is needed since it can return some late events somehow.
-        # Additionally, we just have to trust that a recurring event is today.
-        # This is because the start date is set to the date of the first event,
-        # not the current event instance.
-        if event_date != diary_date and not recursed_event:
+        if event_date != diary_date:
             continue
 
         filtered_events.append(
