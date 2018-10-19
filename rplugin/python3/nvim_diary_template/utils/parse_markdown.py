@@ -256,7 +256,9 @@ def combine_events(
     ]
 
     formatted_calendar: List[CalendarEvent] = convert_events(google_events, ISO_FORMAT)
-    calendar_events = [format_event(event, ISO_FORMAT) for event in formatted_calendar]
+    calendar_events: List[CalendarEvent] = [
+        format_event(event, ISO_FORMAT) for event in formatted_calendar
+    ]
 
     combined_events: List[CalendarEvent] = buffer_events
     combined_events.extend(
