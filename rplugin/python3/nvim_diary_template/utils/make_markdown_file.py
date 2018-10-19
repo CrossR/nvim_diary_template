@@ -7,6 +7,7 @@ they don't exist.
 from datetime import date
 from typing import Dict, List
 
+from dateutil import parser
 from neovim import Nvim
 
 from ..classes.calendar_event_class import CalendarEvent
@@ -15,19 +16,23 @@ from ..classes.nvim_github_class import SimpleNvimGithub
 from ..classes.nvim_google_cal_class import SimpleNvimGoogleCal
 from ..classes.plugin_options import PluginOptions
 from ..helpers.file_helpers import generate_diary_index
-from ..helpers.neovim_helpers import is_buffer_empty, set_buffer_contents
+from ..helpers.neovim_helpers import (
+    get_diary_date,
+    is_buffer_empty,
+    set_buffer_contents,
+)
 from ..utils.make_issues import produce_issue_markdown
 from ..utils.make_schedule import produce_schedule_markdown
 
 
-def make_todays_diary(
+def make_diary(
     nvim: Nvim,
     options: PluginOptions,
     gcal_service: SimpleNvimGoogleCal,
     github_service: SimpleNvimGithub,
     auto_command: bool = False,
 ) -> None:
-    """make_todays_diary
+    """make_diary
 
     Make the actual diary markdown file.
     This includes the following steps:
@@ -49,7 +54,8 @@ def make_todays_diary(
 
     full_markdown: List[str] = []
 
-    diary_metadata: Dict[str, str] = {"Date": str(date.today())}
+    diary_date: str = get_diary_date(nvim)
+    diary_metadata: Dict[str, str] = {"Date": diary_date}
 
     full_markdown.extend(generate_markdown_metadata(diary_metadata))
 
@@ -65,12 +71,16 @@ def make_todays_diary(
     issue_markdown: List[str] = produce_issue_markdown(issues)
     full_markdown.extend(issue_markdown)
 
-    # Add in Todays Calendar Entries
-    todays_events: List[CalendarEvent] = []
+    # Add in that days calendar entries
+    days_events: List[CalendarEvent] = []
     if options.use_google_calendar and gcal_service and gcal_service.active:
-        todays_events = gcal_service.events
+        date_today_object: date = parser.parse(diary_date).date()
+        if date_today_object == date.today():
+            days_events = gcal_service.events
+        else:
+            days_events = gcal_service.get_events_for_date(date_today_object)
 
-    schedule_markdown: List[str] = produce_schedule_markdown(todays_events)
+    schedule_markdown: List[str] = produce_schedule_markdown(days_events)
     full_markdown.extend(schedule_markdown)
 
     # Set the buffer contents and save the file.

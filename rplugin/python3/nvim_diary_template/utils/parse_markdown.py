@@ -17,6 +17,7 @@ from ..helpers.google_calendar_helpers import convert_events
 from ..helpers.issue_helpers import get_issue_index
 from ..helpers.neovim_helpers import (
     get_buffer_contents,
+    get_diary_date,
     get_section_line,
     set_line_content,
 )
@@ -38,7 +39,7 @@ from ..utils.constants import (
 
 
 def parse_buffer_events(
-    event_lines: List[str], format_string: str
+    event_lines: List[str], format_string: str, diary_date: str
 ) -> List[CalendarEvent]:
     """parse_buffer_events
 
@@ -57,8 +58,12 @@ def parse_buffer_events(
 
         if not matches_date_time:
             matches_time: List[str] = re.findall(TIME_REGEX, event)
-            start_date: str = parser.parse(matches_time[0]).strftime(format_string)
-            end_date: str = parser.parse(matches_time[1]).strftime(format_string)
+            start_date: str = parser.parse(f"{diary_date} {matches_time[0]}").strftime(
+                format_string
+            )
+            end_date: str = parser.parse(f"{diary_date} {matches_time[1]}").strftime(
+                format_string
+            )
         else:
             start_date = parser.parse(matches_date_time[0]).strftime(format_string)
             end_date = parser.parse(matches_date_time[1]).strftime(format_string)
@@ -176,17 +181,21 @@ def remove_events_not_from_today(nvim: Nvim) -> None:
     Remove events from the file if they are not for the correct date.
     """
 
-    current_events = parse_markdown_file_for_events(nvim, ISO_FORMAT)
-    date_today = date.today()
-    schedule_index = get_section_line(get_buffer_contents(nvim), SCHEDULE_HEADING) + 1
+    current_events: List[CalendarEvent] = parse_markdown_file_for_events(
+        nvim, ISO_FORMAT
+    )
+    date_today: date = parser.parse(get_diary_date(nvim)).date()
+    schedule_index: int = get_section_line(
+        get_buffer_contents(nvim), SCHEDULE_HEADING
+    ) + 1
 
     for index, event in enumerate(current_events):
-        event_date = parser.parse(event.start).date()
+        event_date: date = parser.parse(event.start).date()
 
         if date_today == event_date:
             continue
 
-        event_index = schedule_index + index + 1
+        event_index: int = schedule_index + index + 1
 
         set_line_content(nvim, [], event_index, line_offset=1)
 
@@ -204,7 +213,10 @@ def parse_markdown_file_for_events(
 
     buffer_events_index: int = get_section_line(current_buffer, SCHEDULE_HEADING)
     events: List[str] = current_buffer[buffer_events_index:]
-    formatted_events: List[CalendarEvent] = parse_buffer_events(events, format_string)
+    diary_date: str = get_diary_date(nvim)
+    formatted_events: List[CalendarEvent] = parse_buffer_events(
+        events, format_string, diary_date
+    )
 
     return formatted_events
 
@@ -248,7 +260,9 @@ def combine_events(
     ]
 
     formatted_calendar: List[CalendarEvent] = convert_events(google_events, ISO_FORMAT)
-    calendar_events = [format_event(event, ISO_FORMAT) for event in formatted_calendar]
+    calendar_events: List[CalendarEvent] = [
+        format_event(event, ISO_FORMAT) for event in formatted_calendar
+    ]
 
     combined_events: List[CalendarEvent] = buffer_events
     combined_events.extend(

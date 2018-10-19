@@ -24,6 +24,7 @@ class parse_markdownTest(unittest.TestCase):
 
     def setUp(self) -> None:
         self.nvim: MockNvim = MockNvim()
+        self.nvim.current.buffer.name = "/home/crossr/diary/2018-01-01.md"
         self.nvim.current.buffer.lines = [
             "<!---",
             "    Date: 2018-01-01",
@@ -111,13 +112,13 @@ class parse_markdownTest(unittest.TestCase):
         events: List[CalendarEvent] = [
             CalendarEvent(
                 name="Event 1",
-                start=parser.parse("10:00").strftime(ISO_FORMAT),
-                end=parser.parse("11:00").strftime(ISO_FORMAT),
+                start=parser.parse("2018-01-01 10:00").strftime(ISO_FORMAT),
+                end=parser.parse("2018-01-01 11:00").strftime(ISO_FORMAT),
             ),
             CalendarEvent(
                 name="Event 2",
-                start=parser.parse("19:00").strftime(ISO_FORMAT),
-                end=parser.parse("22:00").strftime(ISO_FORMAT),
+                start=parser.parse("2018-01-01 19:00").strftime(ISO_FORMAT),
+                end=parser.parse("2018-01-01 22:00").strftime(ISO_FORMAT),
             ),
             CalendarEvent(
                 name="Meeting with Alex",

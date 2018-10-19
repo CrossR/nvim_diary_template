@@ -78,6 +78,7 @@ class MockNvimBuffer:
     def __init__(self) -> None:
         self.number: int = 0
         self.lines: List[str] = [""]
+        self.name: str = ""
 
 
 class MockNvimWindow:

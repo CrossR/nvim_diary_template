@@ -3,6 +3,7 @@ from functools import wraps
 from typing import Any, Callable, List
 
 import neovim
+from dateutil import parser
 
 from .classes.calendar_event_class import CalendarEvent
 from .classes.github_issue_class import GitHubIssue
@@ -16,9 +17,10 @@ from .helpers.issue_helpers import (
     toggle_issue_completion,
 )
 from .helpers.markdown_helpers import sort_markdown_events
+from .helpers.neovim_helpers import get_diary_date
 from .utils.constants import FILE_TYPE_WILDCARD, ISO_FORMAT
 from .utils.make_issues import remove_tag_from_issues, set_issues_from_issues_list
-from .utils.make_markdown_file import make_todays_diary
+from .utils.make_markdown_file import make_diary
 from .utils.make_schedule import set_schedule_from_events_list
 from .utils.parse_markdown import (
     combine_events,
@@ -50,7 +52,7 @@ class DiaryTemplatePlugin:
 
     @neovim.command("DiaryMake")
     def make_diary(self, called_from_autocommand: bool = False) -> None:
-        make_todays_diary(
+        make_diary(
             self._nvim,
             self.options,
             self._gcal_service,
@@ -64,15 +66,20 @@ class DiaryTemplatePlugin:
             self._nvim, ISO_FORMAT
         )
 
-        self._gcal_service.upload_to_calendar(markdown_events)
+        buffer_date: str = get_diary_date(self._nvim)
+        self._gcal_service.upload_to_calendar(markdown_events, buffer_date)
         remove_events_not_from_today(self._nvim)
 
     @neovim.command("DiaryGetCalendar")
     def grab_from_calendar(self) -> None:
+        buffer_date: str = get_diary_date(self._nvim)
+
         markdown_events: List[CalendarEvent] = parse_markdown_file_for_events(
             self._nvim, ISO_FORMAT
         )
-        cal_events: List[CalendarEvent] = self._gcal_service.get_events_for_today()
+        cal_events: List[CalendarEvent] = self._gcal_service.get_events_for_date(
+            parser.parse(buffer_date).date()
+        )
 
         combined_events: List[CalendarEvent] = combine_events(
             markdown_events, cal_events

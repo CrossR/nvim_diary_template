@@ -3,6 +3,7 @@
 Simple helpers to help interfacing with NeoVim.
 """
 
+from os import path
 from typing import List
 
 from neovim import Nvim
@@ -88,3 +89,17 @@ def buffered_info_message(nvim: Nvim, message: str) -> None:
     """
 
     nvim.out_write(f"{message}")
+
+
+def get_diary_date(nvim: Nvim) -> str:
+    """get_diary_date
+
+    Get the date of the current diary file.
+    This is just the filename, without the extension.
+    """
+
+    if "diary" not in nvim.current.buffer.name:
+        return ""
+
+    file_name: str = path.basename(nvim.current.buffer.name)
+    return path.splitext(file_name)[0]

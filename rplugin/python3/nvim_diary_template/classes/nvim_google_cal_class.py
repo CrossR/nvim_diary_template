@@ -51,7 +51,10 @@ class SimpleNvimGoogleCal:
         self.filtered_calendars: Dict[str, str] = self.filter_calendars()
 
         loaded_events: Union[List[Dict[str, Any]], List[CalendarEvent]] = check_cache(
-            self.config_path, "events", EVENT_CACHE_DURATION, self.get_events_for_today
+            self.config_path,
+            "events",
+            EVENT_CACHE_DURATION,
+            lambda: self.get_events_for_date(date.today()),
         )
 
         self.events = get_calendar_objects(loaded_events)
@@ -141,10 +144,10 @@ class SimpleNvimGoogleCal:
 
         return all_calendars
 
-    def get_events_for_today(self) -> List[CalendarEvent]:
-        """get_events_for_today
+    def get_events_for_date(self, current_date: date) -> List[CalendarEvent]:
+        """get_events_for_date
 
-        Gets all the events for today calendars.
+        Gets all the events for given days calendars.
         Events are brought in from 00:00 on the first day, to 23:59 on the
         last day.
         """
@@ -152,9 +155,8 @@ class SimpleNvimGoogleCal:
         if self.service_is_not_ready():
             return []
 
-        date_today: date = date.today()
-        time_min: str = datetime.combine(date_today, time.min).isoformat() + "Z"
-        time_max: str = datetime.combine(date_today, time.max).isoformat() + "Z"
+        time_min: str = datetime.combine(current_date, time.min).isoformat() + "Z"
+        time_max: str = datetime.combine(current_date, time.max).isoformat() + "Z"
 
         page_token = None
         events_in_timeframe: List = []
@@ -173,9 +175,11 @@ class SimpleNvimGoogleCal:
 
             events_in_timeframe.extend(events["items"])
 
-        return format_google_events(events_in_timeframe, str(datetime.today().date()))
+        return format_google_events(events_in_timeframe, str(current_date))
 
-    def upload_to_calendar(self, markdown_events: List[CalendarEvent]) -> None:
+    def upload_to_calendar(
+        self, markdown_events: List[CalendarEvent], diary_date: date
+    ) -> None:
         """upload_to_calendar
 
         Given a set of events that are missing from Google calendar, will upload
@@ -204,7 +208,7 @@ class SimpleNvimGoogleCal:
             ).execute()
 
         # Now that the events have been updated, update the cache.
-        updated_events: List[CalendarEvent] = self.get_events_for_today()
+        updated_events: List[CalendarEvent] = self.get_events_for_date(diary_date)
         set_cache(self.config_path, updated_events, "events")
 
         self.nvim.out_write(
