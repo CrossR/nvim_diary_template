@@ -24,7 +24,7 @@ class parse_markdownTest(unittest.TestCase):
 
     def setUp(self) -> None:
         self.nvim: MockNvim = MockNvim()
-        self.nvim.current.buffer.name = "2018-01-01.md"
+        self.nvim.current.buffer.name = "/home/crossr/diary/2018-01-01.md"
         self.nvim.current.buffer.lines = [
             "<!---",
             "    Date: 2018-01-01",

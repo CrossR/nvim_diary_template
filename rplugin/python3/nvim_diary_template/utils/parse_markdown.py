@@ -181,17 +181,21 @@ def remove_events_not_from_today(nvim: Nvim) -> None:
     Remove events from the file if they are not for the correct date.
     """
 
-    current_events = parse_markdown_file_for_events(nvim, ISO_FORMAT)
-    date_today = date.today()
-    schedule_index = get_section_line(get_buffer_contents(nvim), SCHEDULE_HEADING) + 1
+    current_events: List[CalendarEvent] = parse_markdown_file_for_events(
+        nvim, ISO_FORMAT
+    )
+    date_today: date = parser.parse(get_diary_date(nvim)).date()
+    schedule_index: int = get_section_line(
+        get_buffer_contents(nvim), SCHEDULE_HEADING
+    ) + 1
 
     for index, event in enumerate(current_events):
-        event_date = parser.parse(event.start).date()
+        event_date: date = parser.parse(event.start).date()
 
         if date_today == event_date:
             continue
 
-        event_index = schedule_index + index + 1
+        event_index: int = schedule_index + index + 1
 
         set_line_content(nvim, [], event_index, line_offset=1)
 

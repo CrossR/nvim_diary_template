@@ -19,7 +19,7 @@ class make_markdown_fileTest(unittest.TestCase):
 
     def test_make_diary(self) -> None:
         nvim: Any = MockNvim()
-        nvim.current.buffer.name = "2018-01-01.md"
+        nvim.current.buffer.name = "/home/crossr/diary/2018-01-01.md"
         gcal: Any = MockGCalService()
         api_setup = get_mock_github()
 
@@ -36,7 +36,7 @@ class make_markdown_fileTest(unittest.TestCase):
 
         # Check doesn't save over modified.
         nvim = MockNvim()
-        nvim.current.buffer.name = "2018-01-01.md"
+        nvim.current.buffer.name = "/home/crossr/diary/2018-01-01.md"
         nvim.current.buffer.lines = ["Edited!"]
         make_diary(nvim, options, gcal, github)
         assert nvim.current.buffer.lines == ["Edited!"]
@@ -59,34 +59,34 @@ class make_markdown_fileTest(unittest.TestCase):
 
         # Check events are added.
         nvim = MockNvim()
-        nvim.current.buffer.name = "2018-01-01.md"
+        nvim.current.buffer.name = "/home/crossr/diary/2018-01-01.md"
         make_diary(nvim, options, gcal, github)
         assert len(nvim.current.buffer.lines) == 43
 
         # But not when disabled.
         options.use_google_calendar = False
         nvim = MockNvim()
-        nvim.current.buffer.name = "2018-01-01.md"
+        nvim.current.buffer.name = "/home/crossr/diary/2018-01-01.md"
         make_diary(nvim, options, gcal, github)
         assert len(nvim.current.buffer.lines) == 41
         options.use_google_calendar = True
 
         # Check issues are added.
         nvim = MockNvim()
-        nvim.current.buffer.name = "2018-01-01.md"
+        nvim.current.buffer.name = "/home/crossr/diary/2018-01-01.md"
         make_diary(nvim, options, gcal, github)
         assert len(nvim.current.buffer.lines) == 43
 
         # But not when disabled.
         options.use_github_repo = False
         nvim = MockNvim()
-        nvim.current.buffer.name = "2018-01-01.md"
+        nvim.current.buffer.name = "/home/crossr/diary/2018-01-01.md"
         make_diary(nvim, options, gcal, github)
         assert len(nvim.current.buffer.lines) == 15
         options.use_github_repo = True
 
         nvim = MockNvim()
-        nvim.current.buffer.name = "2018-01-01.md"
+        nvim.current.buffer.name = "/home/crossr/diary/2018-01-01.md"
         make_diary(nvim, options, gcal, github)
         final_markdown: List[str] = [
             "<!---",
