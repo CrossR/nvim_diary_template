@@ -169,6 +169,7 @@ class SimpleNvimGoogleCal:
                     pageToken=page_token,
                     timeMin=time_min,
                     timeMax=time_max,
+                    singleEvents=True,
                 )
                 .execute()
             )
