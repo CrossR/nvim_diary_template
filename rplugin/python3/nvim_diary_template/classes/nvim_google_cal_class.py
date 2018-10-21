@@ -209,6 +209,7 @@ class SimpleNvimGoogleCal:
                 ).execute()
             except (errors.HttpError, HttpLib2Error):
                 self.nvim.err_write("Error adding events to calendar. Quitting.\n")
+                return
 
         # Now that the events have been updated, update the cache.
         updated_events: List[CalendarEvent] = self.get_events_for_date(diary_date)
