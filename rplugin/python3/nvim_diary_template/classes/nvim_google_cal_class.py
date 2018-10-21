@@ -8,8 +8,8 @@ from datetime import date, datetime, time
 from os import path
 from typing import Any, Dict, List, Optional, Union
 
-from googleapiclient import discovery
-from httplib2 import Http
+from googleapiclient import discovery, errors
+from httplib2 import Http, HttpLib2Error
 from neovim import Nvim
 from oauth2client import file
 
@@ -198,15 +198,17 @@ class SimpleNvimGoogleCal:
 
         target_calendar: str = self.get_calendar_id()
 
-        # TODO: This needs to be wrapped in an try/catch probably.
         for event in missing_events:
             gcal_event: Dict[str, str] = create_google_event(
                 event, self.options.timezone
             )
 
-            self.service.events().insert(
-                calendarId=target_calendar, body=gcal_event
-            ).execute()
+            try:
+                self.service.events().insert(
+                    calendarId=target_calendar, body=gcal_event
+                ).execute()
+            except (errors.HttpError, HttpLib2Error):
+                self.nvim.err_write("Error adding events to calendar. Quitting.\n")
 
         # Now that the events have been updated, update the cache.
         updated_events: List[CalendarEvent] = self.get_events_for_date(diary_date)
