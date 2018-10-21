@@ -112,7 +112,6 @@ def get_calendar_objects(
         event for event in events if isinstance(event, dict)
     ]
 
-    # TODO: Update this to use `is_dataclass` when we swap to Python 3.7
     event_objects: List[CalendarEvent] = [
         event for event in events if not isinstance(event, dict)
     ]

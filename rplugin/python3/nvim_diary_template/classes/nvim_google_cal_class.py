@@ -124,7 +124,7 @@ class SimpleNvimGoogleCal:
             if cal_name not in self.filter_list
         }
 
-    def get_all_calendars(self) -> Union[List, Dict[str, str]]:
+    def get_all_calendars(self) -> Union[List[str], Dict[str, str]]:
         """get_all_calendars
 
         Returns a list of all the users calendars, which will include ones that
@@ -159,7 +159,7 @@ class SimpleNvimGoogleCal:
         time_max: str = datetime.combine(current_date, time.max).isoformat() + "Z"
 
         page_token = None
-        events_in_timeframe: List = []
+        events_in_timeframe: List[Dict[str, Any]] = []
 
         for _, calendar_id in self.filtered_calendars.items():
             events = (

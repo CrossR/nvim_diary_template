@@ -196,7 +196,7 @@ class DiaryTemplatePlugin:
         self._nvim.out_write("\n")
 
 
-def if_active(function: Callable) -> Callable:
+def if_active(function: Callable[[DiaryTemplatePlugin], None]) -> Callable[[], None]:
     """if_active
 
     A decorator for a function, such that it is only run when
