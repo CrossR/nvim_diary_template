@@ -1,7 +1,8 @@
 import unittest
 from typing import Any, List
 
-from .mocks.mock_github import get_mock_github
+from .mocks.mock_github import get_mock_github, MockGitHubService
+from .mocks.mock_options import MockPluginOptions
 from .mocks.mock_nvim import MockNvim
 from ..classes.nvim_github_class import SimpleNvimGithub
 from ..classes.github_issue_class import GitHubIssue, GitHubIssueComment
@@ -13,11 +14,11 @@ class SimpleNvimGithubTest(unittest.TestCase):
     """
 
     def setUp(self) -> None:
-        self.nvim: Any = MockNvim()
+        self.nvim: MockNvim = MockNvim()
         api_setup = get_mock_github()
 
-        self.api: Any = api_setup[0]
-        self.options: Any = api_setup[1]
+        self.api: MockGitHubService = api_setup[0]
+        self.options: MockPluginOptions = api_setup[1]
 
         self.github: SimpleNvimGithub = SimpleNvimGithub(
             self.nvim, self.options, self.api
@@ -137,3 +138,80 @@ class SimpleNvimGithubTest(unittest.TestCase):
         result: Any = SimpleNvimGithub.filter_issues(self.github.issues, "edit")
         assert result[0] == filtered_list
         assert result[1] == change_list
+
+    def test_upload_new(self) -> None:
+        issue_list: List[GitHubIssue] = [
+            GitHubIssue(
+                number=1,
+                title="Test Issue",
+                complete=False,
+                labels=["backlog", "personal"],
+                all_comments=[
+                    GitHubIssueComment(
+                        number=0,
+                        body=["Line 1", "Line 2"],
+                        tags=[],
+                        updated_at="2018-08-19 18:18",
+                    )
+                ],
+                metadata=[],
+            ),
+            GitHubIssue(
+                number=2,
+                title="Test Issue 2",
+                complete=True,
+                labels=["personal"],
+                all_comments=[
+                    GitHubIssueComment(
+                        number=0,
+                        body=["Line 1", "Line 2"],
+                        tags=[],
+                        updated_at="2018-08-19 18:18",
+                    )
+                ],
+                metadata=[],
+            ),
+            GitHubIssue(
+                number=0,
+                title="New Issue",
+                complete=False,
+                labels=[],
+                all_comments=[
+                    GitHubIssueComment(
+                        number=0,
+                        body=["Line 1", "Line 2"],
+                        tags=[],
+                        updated_at="0000-00-00 00:00",
+                    )
+                ],
+                metadata=["new"],
+            ),
+        ]
+
+        # Check the number of issues increases and that the
+        # new issue is correct.
+        assert len(self.api.repo.issues) == 2
+        self.github.upload_issues(issue_list, "new")
+        assert len(self.api.repo.issues) == 3
+
+        assert self.api.repo.issues[2].number == 3
+        assert self.api.repo.issues[2].title == "New Issue"
+        assert self.api.repo.issues[2].body == "Line 1\r\nLine 2"
+
+        issue_list[2].all_comments.append(
+            GitHubIssueComment(
+                number=1,
+                body=["New Line 1", "Newer Line 2"],
+                tags=["new"],
+                updated_at="0000-00-00 00:00",
+            )
+        )
+
+        # Check the number of comments increases and that the
+        # new comment is correct.
+        assert len(self.api.repo.issues[2].comments) == 0
+        self.github.upload_comments(issue_list, "new")
+        assert len(self.api.repo.issues[2].comments) == 1
+
+        assert self.api.repo.issues[2].comments[0].number == 0
+        assert self.api.repo.issues[2].comments[0].body == "New Line 1\r\nNewer Line 2"

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from datetime import datetime
 from tempfile import mkdtemp
 from typing import Any, List, Tuple
@@ -10,9 +12,9 @@ from ...utils.constants import ISO_FORMAT
 from .mock_options import MockPluginOptions
 
 
-def get_mock_github() -> Tuple[Any, MockPluginOptions]:
-    new_api: Any = MockGitHubService()
-    options: Any = MockPluginOptions()
+def get_mock_github() -> Tuple[MockGitHubService, MockPluginOptions]:
+    new_api: MockGitHubService = MockGitHubService()
+    options: MockPluginOptions = MockPluginOptions()
 
     # Setup options
     options.config_path = mkdtemp()
@@ -60,7 +62,6 @@ def get_mock_github() -> Tuple[Any, MockPluginOptions]:
     return new_api, options
 
 
-# TODO: Fix these forward type references to not be Any.
 class MockGitHubService:
     def __init__(self) -> None:
         self.active = True
@@ -68,10 +69,10 @@ class MockGitHubService:
         self.repo: MockGitHubRepo = MockGitHubRepo()
         self.user: MockGitHubUser = MockGitHubUser([self.repo])
 
-    def get_repo(self, name: str) -> Any:
+    def get_repo(self, name: str) -> MockGitHubRepo:
         return self.repo
 
-    def get_user(self, name: str) -> Any:
+    def get_user(self, name: str) -> MockGitHubUser:
         return self.user
 
 
@@ -84,14 +85,21 @@ class MockGitHubRepo:
     def get_labels(self) -> List[str]:
         return self.labels
 
-    def get_issues(self, state: str = "open") -> List[Any]:
+    def get_issues(self, state: str = "open") -> List[MockGitHubIssue]:
         return self.issues
 
-    def create_issue(self, title: str, body: str, labels: List[str]) -> None:
+    def get_issue(self, issue_number: int) -> MockGitHubIssue:
+        return self.issues[issue_number - 1]
+
+    def create_issue(self, title: str, body: str, labels: List[str]) -> MockGitHubIssue:
         new_issue: MockGitHubIssue = MockGitHubIssue()
+        new_issue.number = len(self.issues) + 1
         new_issue.title = title
         new_issue.body = body
         new_issue.labels = [MockGitHubLabel(label) for label in labels]
+
+        self.issues.append(new_issue)
+        return new_issue
 
 
 class MockGitHubIssue:
@@ -101,8 +109,8 @@ class MockGitHubIssue:
         title: str = "",
         complete: bool = False,
         body: str = "",
-        labels: List[Any] = [],
-        comments: List[Any] = [],
+        labels: List[MockGitHubLabel] = [],
+        comments: List[MockGitHubComment] = [],
         updated_at: datetime = parser.parse("2018-01-01 10:00"),
     ) -> None:
         self.number: int = number
@@ -113,10 +121,10 @@ class MockGitHubIssue:
         self.comments: List[MockGitHubComment] = comments
         self.updated_at: datetime = updated_at
 
-    def get_comments(self) -> List[Any]:
+    def get_comments(self) -> List[MockGitHubComment]:
         return self.comments
 
-    def create_comment(self, body: str) -> None:
+    def create_comment(self, body: str) -> MockGitHubComment:
         next_comment_number: int = 0
         if len(self.comments) != 0:
             next_comment_number = self.comments[-1].number + 1
@@ -125,6 +133,7 @@ class MockGitHubIssue:
         )
 
         self.comments.append(new_comment)
+        return new_comment
 
 
 @dataclass
