@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple
 
 
 class MockNvim:
@@ -83,4 +83,4 @@ class MockNvimBuffer:
 
 class MockNvimWindow:
     def __init__(self) -> None:
-        self.cursor: tuple = (0, 0)
+        self.cursor: Tuple[int, int] = (0, 0)

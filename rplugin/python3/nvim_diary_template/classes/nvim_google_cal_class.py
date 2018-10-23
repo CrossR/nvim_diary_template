@@ -8,8 +8,8 @@ from datetime import date, datetime, time
 from os import path
 from typing import Any, Dict, List, Optional, Union
 
-from googleapiclient import discovery
-from httplib2 import Http
+from googleapiclient import discovery, errors
+from httplib2 import Http, HttpLib2Error
 from neovim import Nvim
 from oauth2client import file
 
@@ -124,7 +124,7 @@ class SimpleNvimGoogleCal:
             if cal_name not in self.filter_list
         }
 
-    def get_all_calendars(self) -> Union[List, Dict[str, str]]:
+    def get_all_calendars(self) -> Union[List[str], Dict[str, str]]:
         """get_all_calendars
 
         Returns a list of all the users calendars, which will include ones that
@@ -159,7 +159,7 @@ class SimpleNvimGoogleCal:
         time_max: str = datetime.combine(current_date, time.max).isoformat() + "Z"
 
         page_token = None
-        events_in_timeframe: List = []
+        events_in_timeframe: List[Dict[str, Any]] = []
 
         for _, calendar_id in self.filtered_calendars.items():
             events = (
@@ -198,15 +198,18 @@ class SimpleNvimGoogleCal:
 
         target_calendar: str = self.get_calendar_id()
 
-        # TODO: This needs to be wrapped in an try/catch probably.
         for event in missing_events:
             gcal_event: Dict[str, str] = create_google_event(
                 event, self.options.timezone
             )
 
-            self.service.events().insert(
-                calendarId=target_calendar, body=gcal_event
-            ).execute()
+            try:
+                self.service.events().insert(
+                    calendarId=target_calendar, body=gcal_event
+                ).execute()
+            except (errors.HttpError, HttpLib2Error):
+                self.nvim.err_write("Error adding events to calendar. Quitting.\n")
+                return
 
         # Now that the events have been updated, update the cache.
         updated_events: List[CalendarEvent] = self.get_events_for_date(diary_date)

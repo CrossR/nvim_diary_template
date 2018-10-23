@@ -360,7 +360,6 @@ def get_github_objects(
         issue for issue in issues if isinstance(issue, dict)
     ]
 
-    # TODO: Update this to use `is_dataclass` when we swap to Python 3.7
     issue_objects: List[GitHubIssue] = [
         issue for issue in issues if not isinstance(issue, dict)
     ]
