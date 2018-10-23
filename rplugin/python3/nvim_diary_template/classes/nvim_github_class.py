@@ -333,7 +333,7 @@ class SimpleNvimGithub:
         for issue, change_index in zip(comments_to_upload, change_indexes):
 
             # We don't want to try and upload an empty comment.
-            if issue.all_comments[0].body == "":
+            if issue.all_comments[0].body == [""]:
                 comments_to_ignore.append(change_index)
                 continue
 
