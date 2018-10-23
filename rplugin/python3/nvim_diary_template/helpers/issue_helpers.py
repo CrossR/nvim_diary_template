@@ -293,7 +293,10 @@ def get_latest_update(comments: List[GitHubIssueComment]) -> str:
     latest_update: str = comments[0].updated_at
 
     for comment in comments:
-        if parser.parse(latest_update) < parser.parse(comment.updated_at):
+        if comment.updated_at == "0000-00-00 00:00":
+            # Skip the new comments, that don't have a timestamp yet.
+            continue
+        elif parser.parse(latest_update) < parser.parse(comment.updated_at):
             latest_update = comment.updated_at
 
     return latest_update
