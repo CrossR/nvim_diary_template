@@ -173,7 +173,7 @@ class SimpleNvimGithubTest(unittest.TestCase):
             ),
             GitHubIssue(
                 number=0,
-                title="New Issue",
+                title="",
                 complete=False,
                 labels=[],
                 all_comments=[
@@ -188,6 +188,14 @@ class SimpleNvimGithubTest(unittest.TestCase):
             ),
         ]
 
+        # Check the number of issues doesn't change when the issue is
+        # incomplete.
+        assert len(self.api.repo.issues) == 2
+        self.github.upload_issues(issue_list, "new")
+        assert len(self.api.repo.issues) == 2
+
+        issue_list[2].title = "New Issue"
+
         # Check the number of issues increases and that the
         # new issue is correct.
         assert len(self.api.repo.issues) == 2
@@ -200,12 +208,17 @@ class SimpleNvimGithubTest(unittest.TestCase):
 
         issue_list[2].all_comments.append(
             GitHubIssueComment(
-                number=1,
-                body=["New Line 1", "Newer Line 2"],
-                tags=["new"],
-                updated_at="0000-00-00 00:00",
+                number=1, body=[], tags=["new"], updated_at="0000-00-00 00:00"
             )
         )
+
+        # Check the number of comments doesn't change when the comment is
+        # incomplete.
+        assert len(self.api.repo.issues[2].comments) == 0
+        self.github.upload_comments(issue_list, "new")
+        assert len(self.api.repo.issues[2].comments) == 0
+
+        issue_list[2].all_comments[1].body = ["New Line 1", "Newer Line 2"]
 
         # Check the number of comments increases and that the
         # new comment is correct.

@@ -377,7 +377,7 @@ class SimpleNvimGithub:
 
         for issue, index in zip(issues_to_upload, change_indexes):
             # We don't want to try and upload an empty issue/title.
-            if issue.title == "" or issue.all_comments[0].body == "":
+            if issue.title == "" or issue.all_comments[0].body == [""]:
                 issues_to_ignore.append(index)
                 continue
 
