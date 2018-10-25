@@ -228,3 +228,82 @@ class SimpleNvimGithubTest(unittest.TestCase):
 
         assert self.api.repo.issues[2].comments[0].number == 0
         assert self.api.repo.issues[2].comments[0].body == "New Line 1\r\nNewer Line 2"
+
+    def test_upload_edits(self) -> None:
+        issue_list: List[GitHubIssue] = [
+            GitHubIssue(
+                number=1,
+                title="Test Issue",
+                complete=False,
+                labels=["backlog", "personal"],
+                all_comments=[
+                    GitHubIssueComment(
+                        number=0,
+                        body=["This is the main issue body"],
+                        tags=[],
+                        updated_at="2018-08-19 18:18",
+                    )
+                ],
+                metadata=[],
+            )
+        ]
+
+        # Check the issue doesn't change when there is
+        # no edit applied.
+        assert self.github.issues[0].all_comments[0].body == [
+            "This is the main issue body"
+        ]
+        assert self.github.issues[0].all_comments[0].updated_at == "2018-01-01 10:00"
+        self.github.update_comments(issue_list, "edit")
+        assert self.github.issues[0].all_comments[0].body == [
+            "This is the main issue body"
+        ]
+        assert self.github.issues[0].all_comments[0].updated_at == "2018-01-01 10:00"
+
+        # Check non matching comment edits are skipped.
+        issue_list[0].all_comments[0].tags = ["edit"]
+        self.nvim.message_print_count = 0
+        self.nvim.messages = []
+
+        assert len(self.nvim.messages) == 0
+        self.github.update_comments(issue_list, "edit")
+        assert len(self.nvim.messages) == 2
+
+        # Sort the updated time and then actually test a valid edit is applied.
+        issue_list[0].all_comments[0].updated_at = "2018-01-01 10:00"
+        issue_list[0].all_comments[0].body = ["Line 1", "Line 2"]
+
+        self.github.update_comments(issue_list, "edit")
+        assert self.api.repo.issues[0].comments[0].body == "Line 1\nLine 2"
+        # Check the number of issues increases and that the
+        # new issue is correct.
+        # assert len(self.api.repo.issues) == 2
+        # self.github.upload_issues(issue_list, "new")
+        # assert len(self.api.repo.issues) == 3
+
+        # assert self.api.repo.issues[2].number == 3
+        # assert self.api.repo.issues[2].title == "New Issue"
+        # assert self.api.repo.issues[2].body == "Line 1\r\nLine 2"
+
+        # issue_list[2].all_comments.append(
+        #     GitHubIssueComment(
+        #         number=1, body=[], tags=["new"], updated_at="0000-00-00 00:00"
+        #     )
+        # )
+
+        # # Check the number of comments doesn't change when the comment is
+        # # incomplete.
+        # assert len(self.api.repo.issues[2].comments) == 0
+        # self.github.upload_comments(issue_list, "new")
+        # assert len(self.api.repo.issues[2].comments) == 0
+
+        # issue_list[2].all_comments[1].body = ["New Line 1", "Newer Line 2"]
+
+        # # Check the number of comments increases and that the
+        # # new comment is correct.
+        # assert len(self.api.repo.issues[2].comments) == 0
+        # self.github.upload_comments(issue_list, "new")
+        # assert len(self.api.repo.issues[2].comments) == 1
+
+        # assert self.api.repo.issues[2].comments[0].number == 0
+        # assert self.api.repo.issues[2].comments[0].body == "New Line 1\r\nNewer Line 2"

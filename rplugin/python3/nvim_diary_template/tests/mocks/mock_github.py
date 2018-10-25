@@ -124,6 +124,9 @@ class MockGitHubIssue:
     def get_comments(self) -> List[MockGitHubComment]:
         return self.comments
 
+    def edit(self, body: str) -> None:
+        self.body = body
+
     def create_comment(self, body: str) -> MockGitHubComment:
         next_comment_number: int = 0
         if len(self.comments) != 0:
@@ -136,11 +139,19 @@ class MockGitHubIssue:
         return new_comment
 
 
-@dataclass
 class MockGitHubComment:
-    number: int
-    body: str
-    updated_at: datetime
+    def __init__(
+        self,
+        number: int = 0,
+        body: str = "",
+        updated_at: datetime = parser.parse("2018-01-01 10:00"),
+    ) -> None:
+        self.number: int = number
+        self.body: str = body
+        self.updated_at: datetime = updated_at
+
+    def edit(self, body: str) -> None:
+        self.body = body
 
 
 @dataclass
