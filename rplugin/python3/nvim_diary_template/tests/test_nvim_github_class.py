@@ -239,7 +239,7 @@ class SimpleNvimGithubTest(unittest.TestCase):
                 all_comments=[
                     GitHubIssueComment(
                         number=0,
-                        body=["This is the main issue body"],
+                        body=["Line 1", "Line 2"],
                         tags=[],
                         updated_at="2018-08-19 18:18",
                     )
@@ -248,17 +248,11 @@ class SimpleNvimGithubTest(unittest.TestCase):
             )
         ]
 
-        # Check the issue doesn't change when there is
-        # no edit applied.
-        assert self.github.issues[0].all_comments[0].body == [
-            "This is the main issue body"
-        ]
-        assert self.github.issues[0].all_comments[0].updated_at == "2018-01-01 10:00"
+        # Check the issue doesn't change when there is no edit applied.
+        assert self.api.repo.issues[0].body == "This is the main issue body"
         self.github.update_comments(issue_list, "edit")
-        assert self.github.issues[0].all_comments[0].body == [
-            "This is the main issue body"
-        ]
-        assert self.github.issues[0].all_comments[0].updated_at == "2018-01-01 10:00"
+        assert self.api.repo.issues[0].body == "This is the main issue body"
+        assert self.nvim.messages[-1] == "Updated 0 comments on GitHub. "
 
         # Check non matching comment edits are skipped.
         issue_list[0].all_comments[0].tags = ["edit"]
@@ -271,39 +265,35 @@ class SimpleNvimGithubTest(unittest.TestCase):
 
         # Sort the updated time and then actually test a valid edit is applied.
         issue_list[0].all_comments[0].updated_at = "2018-01-01 10:00"
-        issue_list[0].all_comments[0].body = ["Line 1", "Line 2"]
+        issue_list[0].all_comments[0].body = ["Line 1", "Line 2", "Line 3"]
 
         self.github.update_comments(issue_list, "edit")
-        assert self.api.repo.issues[0].comments[0].body == "Line 1\nLine 2"
-        # Check the number of issues increases and that the
-        # new issue is correct.
-        # assert len(self.api.repo.issues) == 2
-        # self.github.upload_issues(issue_list, "new")
-        # assert len(self.api.repo.issues) == 3
+        assert self.api.repo.issues[0].body == "Line 1\r\nLine 2\r\nLine 3"
 
-        # assert self.api.repo.issues[2].number == 3
-        # assert self.api.repo.issues[2].title == "New Issue"
-        # assert self.api.repo.issues[2].body == "Line 1\r\nLine 2"
+        # Check that issue update doesn't change the issue when not needed.
+        assert self.api.repo.issues[0].body == "Line 1\r\nLine 2\r\nLine 3"
+        self.github.update_issues(issue_list, "edit")
+        assert self.api.repo.issues[0].body == "Line 1\r\nLine 2\r\nLine 3"
 
-        # issue_list[2].all_comments.append(
-        #     GitHubIssueComment(
-        #         number=1, body=[], tags=["new"], updated_at="0000-00-00 00:00"
-        #     )
-        # )
+        # Check the non-matching issues are ignored.
+        issue_list[0].metadata = ["edit"]
+        issue_list[0].all_comments[0].updated_at = "2019-01-01 10:00"
+        self.nvim.message_print_count = 0
+        self.nvim.messages = []
 
-        # # Check the number of comments doesn't change when the comment is
-        # # incomplete.
-        # assert len(self.api.repo.issues[2].comments) == 0
-        # self.github.upload_comments(issue_list, "new")
-        # assert len(self.api.repo.issues[2].comments) == 0
+        assert len(self.nvim.messages) == 0
+        self.github.update_issues(issue_list, "edit")
+        assert len(self.nvim.messages) == 2
 
-        # issue_list[2].all_comments[1].body = ["New Line 1", "Newer Line 2"]
+        issue_list[0].all_comments[0].updated_at = "2018-01-01 10:00"
 
-        # # Check the number of comments increases and that the
-        # # new comment is correct.
-        # assert len(self.api.repo.issues[2].comments) == 0
-        # self.github.upload_comments(issue_list, "new")
-        # assert len(self.api.repo.issues[2].comments) == 1
+        # Check a valid edit is applied correctly
+        issue_list[0].title = "New Title"
+        issue_list[0].labels = ["backlog", "personal", "blocked"]
 
-        # assert self.api.repo.issues[2].comments[0].number == 0
-        # assert self.api.repo.issues[2].comments[0].body == "New Line 1\r\nNewer Line 2"
+        self.github.update_issues(issue_list, "edit")
+
+        assert self.api.repo.issues[0].title == "New Title"
+        newLabels: List[Any] = [label.name for label in self.api.repo.issues[0].labels]
+
+        assert newLabels == ["backlog", "personal", "blocked"]

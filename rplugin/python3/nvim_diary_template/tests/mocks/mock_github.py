@@ -124,8 +124,14 @@ class MockGitHubIssue:
     def get_comments(self) -> List[MockGitHubComment]:
         return self.comments
 
-    def edit(self, body: str) -> None:
+    def edit(self, body: str, title: str = "", labels: List[str] = []) -> None:
         self.body = body
+
+        if title != "":
+            self.title = title
+
+        if labels != []:
+            self.labels = [MockGitHubLabel(label) for label in labels]
 
     def create_comment(self, body: str) -> MockGitHubComment:
         next_comment_number: int = 0
