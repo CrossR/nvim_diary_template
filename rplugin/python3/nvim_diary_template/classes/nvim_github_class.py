@@ -46,6 +46,8 @@ class SimpleNvimGithub:
 
         if service is not None:
             self.service: Github = service
+        else:
+            self.service = None
 
         if self.service is None:
             self.service = self.setup_github_api()
