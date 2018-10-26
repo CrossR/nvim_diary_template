@@ -123,7 +123,7 @@ class SimpleNvimGithub:
         Get the labels for the current repo.
         """
 
-        if self.service is None:
+        if self.service_not_valid():
             self.nvim.err_write("Github service not currently running...\n")
             return []
 
@@ -137,7 +137,7 @@ class SimpleNvimGithub:
         Get all the repos the current user is associated with.
         """
 
-        if self.service is None:
+        if self.service_not_valid():
             self.nvim.err_write("Github service not currently running...\n")
             return []
 
@@ -154,7 +154,7 @@ class SimpleNvimGithub:
         Returns a list of all the open issues, including all comments.
         """
 
-        if self.service is None:
+        if self.service_not_valid():
             self.nvim.err_write("Github service not currently running...\n")
             return []
 
@@ -322,7 +322,7 @@ class SimpleNvimGithub:
         Upload comments with the specific tag to GitHub.
         """
 
-        if self.service is None:
+        if self.service_not_valid():
             self.nvim.err_write("Github service not currently running...\n")
             return [], []
 
@@ -367,7 +367,7 @@ class SimpleNvimGithub:
         Upload issues with the specific tag to GitHub.
         """
 
-        if self.service is None:
+        if self.service_not_valid():
             self.nvim.err_write("Github service not currently running...\n")
             return [], []
 
@@ -406,7 +406,7 @@ class SimpleNvimGithub:
         Update existing comments with the specific tag on GitHub.
         """
 
-        if self.service is None:
+        if self.service_not_valid():
             self.nvim.err_write("Github service not currently running...\n")
             return [], []
 
@@ -491,7 +491,7 @@ class SimpleNvimGithub:
         Update existing issues with the specific tag on GitHub.
         """
 
-        if self.service is None:
+        if self.service_not_valid():
             self.nvim.err_write("Github service not currently running...\n")
             return [], []
 
@@ -542,7 +542,7 @@ class SimpleNvimGithub:
         We assume the buffer is always correct.
         """
 
-        if self.service is None:
+        if self.service_not_valid():
             self.nvim.err_write("Github service not currently running...\n")
             return
 

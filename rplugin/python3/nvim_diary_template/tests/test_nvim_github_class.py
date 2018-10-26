@@ -139,38 +139,57 @@ class SimpleNvimGithubTest(unittest.TestCase):
         assert result[0] == filtered_list
         assert result[1] == change_list
 
-    def test_upload_new(self) -> None:
+    def test_upload_comments(self) -> None:
         issue_list: List[GitHubIssue] = [
             GitHubIssue(
-                number=1,
-                title="Test Issue",
+                number=0,
+                title="",
                 complete=False,
-                labels=["backlog", "personal"],
+                labels=[],
                 all_comments=[
                     GitHubIssueComment(
                         number=0,
-                        body=["Line 1", "Line 2"],
+                        body=["This is the main issue body"],
                         tags=[],
                         updated_at="2018-08-19 18:18",
-                    )
-                ],
-                metadata=[],
-            ),
-            GitHubIssue(
-                number=2,
-                title="Test Issue 2",
-                complete=True,
-                labels=["personal"],
-                all_comments=[
+                    ),
                     GitHubIssueComment(
-                        number=0,
-                        body=["Line 1", "Line 2"],
-                        tags=[],
-                        updated_at="2018-08-19 18:18",
-                    )
+                        number=1, body=[], tags=["new"], updated_at="0000-00-00 00:00"
+                    ),
                 ],
                 metadata=[],
-            ),
+            )
+        ]
+
+        # Check the service is checked before being used.
+        self.github.repo_name = ""
+        assert self.nvim.message_print_count == 0
+        self.github.upload_comments(issue_list, "new")
+        assert self.nvim.message_print_count == 1
+
+        self.github.repo_name = "CrossR/nvim_diary_template"
+        self.nvim.message_print_count = 0
+        self.nvim.errors = []
+
+        # Check the number of comments doesn't change when the comment is
+        # incomplete.
+        assert len(self.api.repo.issues[0].comments) == 1
+        self.github.upload_comments(issue_list, "new")
+        assert len(self.api.repo.issues[0].comments) == 1
+
+        issue_list[0].all_comments[1].body = ["New Line 1", "Newer Line 2"]
+
+        # Check the number of comments increases and that the
+        # new comment is correct.
+        assert len(self.api.repo.issues[1].comments) == 2
+        self.github.upload_comments(issue_list, "new")
+        assert len(self.api.repo.issues[1].comments) == 3
+
+        assert self.api.repo.issues[1].comments[2].number == 2
+        assert self.api.repo.issues[1].comments[2].body == "New Line 1\r\nNewer Line 2"
+
+    def test_upload_issues(self) -> None:
+        issue_list: List[GitHubIssue] = [
             GitHubIssue(
                 number=0,
                 title="",
@@ -185,8 +204,18 @@ class SimpleNvimGithubTest(unittest.TestCase):
                     )
                 ],
                 metadata=["new"],
-            ),
+            )
         ]
+
+        # Check the service is checked before being used.
+        self.github.repo_name = ""
+        assert self.nvim.message_print_count == 0
+        self.github.upload_issues(issue_list, "new")
+        assert self.nvim.message_print_count == 1
+
+        self.github.repo_name = "CrossR/nvim_diary_template"
+        self.nvim.message_print_count = 0
+        self.nvim.errors = []
 
         # Check the number of issues doesn't change when the issue is
         # incomplete.
@@ -194,7 +223,7 @@ class SimpleNvimGithubTest(unittest.TestCase):
         self.github.upload_issues(issue_list, "new")
         assert len(self.api.repo.issues) == 2
 
-        issue_list[2].title = "New Issue"
+        issue_list[0].title = "New Testing Issue"
 
         # Check the number of issues increases and that the
         # new issue is correct.
@@ -203,33 +232,10 @@ class SimpleNvimGithubTest(unittest.TestCase):
         assert len(self.api.repo.issues) == 3
 
         assert self.api.repo.issues[2].number == 3
-        assert self.api.repo.issues[2].title == "New Issue"
+        assert self.api.repo.issues[2].title == "New Testing Issue"
         assert self.api.repo.issues[2].body == "Line 1\r\nLine 2"
 
-        issue_list[2].all_comments.append(
-            GitHubIssueComment(
-                number=1, body=[], tags=["new"], updated_at="0000-00-00 00:00"
-            )
-        )
-
-        # Check the number of comments doesn't change when the comment is
-        # incomplete.
-        assert len(self.api.repo.issues[2].comments) == 0
-        self.github.upload_comments(issue_list, "new")
-        assert len(self.api.repo.issues[2].comments) == 0
-
-        issue_list[2].all_comments[1].body = ["New Line 1", "Newer Line 2"]
-
-        # Check the number of comments increases and that the
-        # new comment is correct.
-        assert len(self.api.repo.issues[2].comments) == 0
-        self.github.upload_comments(issue_list, "new")
-        assert len(self.api.repo.issues[2].comments) == 1
-
-        assert self.api.repo.issues[2].comments[0].number == 0
-        assert self.api.repo.issues[2].comments[0].body == "New Line 1\r\nNewer Line 2"
-
-    def test_upload_edits(self) -> None:
+    def test_update_comments(self) -> None:
         issue_list: List[GitHubIssue] = [
             GitHubIssue(
                 number=1,
@@ -247,6 +253,16 @@ class SimpleNvimGithubTest(unittest.TestCase):
                 metadata=[],
             )
         ]
+
+        # Check the service is checked before being used.
+        self.github.repo_name = ""
+        assert self.nvim.message_print_count == 0
+        self.github.update_comments(issue_list, "edit")
+        assert self.nvim.message_print_count == 1
+
+        self.github.repo_name = "CrossR/nvim_diary_template"
+        self.nvim.message_print_count = 0
+        self.nvim.errors = []
 
         # Check the issue doesn't change when there is no edit applied.
         assert self.api.repo.issues[0].body == "This is the main issue body"
@@ -270,10 +286,39 @@ class SimpleNvimGithubTest(unittest.TestCase):
         self.github.update_comments(issue_list, "edit")
         assert self.api.repo.issues[0].body == "Line 1\r\nLine 2\r\nLine 3"
 
-        # Check that issue update doesn't change the issue when not needed.
-        assert self.api.repo.issues[0].body == "Line 1\r\nLine 2\r\nLine 3"
+    def test_update_issues(self) -> None:
+        issue_list: List[GitHubIssue] = [
+            GitHubIssue(
+                number=1,
+                title="Test Issue",
+                complete=False,
+                labels=["backlog", "personal"],
+                all_comments=[
+                    GitHubIssueComment(
+                        number=0,
+                        body=["Line 1", "Line 2"],
+                        tags=[],
+                        updated_at="2018-08-19 18:18",
+                    )
+                ],
+                metadata=[],
+            )
+        ]
+
+        # Check the service is checked before being used.
+        self.github.repo_name = ""
+        assert self.nvim.message_print_count == 0
         self.github.update_issues(issue_list, "edit")
-        assert self.api.repo.issues[0].body == "Line 1\r\nLine 2\r\nLine 3"
+        assert self.nvim.message_print_count == 1
+
+        self.github.repo_name = "CrossR/nvim_diary_template"
+        self.nvim.message_print_count = 0
+        self.nvim.errors = []
+
+        # Check that issue update doesn't change the issue when not needed.
+        assert self.api.repo.issues[0].body == "This is the main issue body"
+        self.github.update_issues(issue_list, "edit")
+        assert self.api.repo.issues[0].body == "This is the main issue body"
 
         # Check the non-matching issues are ignored.
         issue_list[0].metadata = ["edit"]
@@ -295,5 +340,4 @@ class SimpleNvimGithubTest(unittest.TestCase):
 
         assert self.api.repo.issues[0].title == "New Title"
         newLabels: List[Any] = [label.name for label in self.api.repo.issues[0].labels]
-
         assert newLabels == ["backlog", "personal", "blocked"]

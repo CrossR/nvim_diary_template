@@ -135,8 +135,10 @@ class MockGitHubIssue:
 
     def create_comment(self, body: str) -> MockGitHubComment:
         next_comment_number: int = 0
+
         if len(self.comments) != 0:
             next_comment_number = self.comments[-1].number + 1
+
         new_comment: MockGitHubComment = MockGitHubComment(
             number=next_comment_number, body=body, updated_at=datetime.now()
         )
