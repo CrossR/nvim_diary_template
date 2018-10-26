@@ -5,9 +5,9 @@ from dateutil import parser
 
 from ..classes.github_issue_class import GitHubIssue, GitHubIssueComment
 from ..classes.nvim_github_class import SimpleNvimGithub
+from ..classes.plugin_options import PluginOptions
 from .mocks.mock_github import MockGitHubComment, MockGitHubService, get_mock_github
 from .mocks.mock_nvim import MockNvim
-from .mocks.mock_options import MockPluginOptions
 
 
 class SimpleNvimGithubTest(unittest.TestCase):
@@ -20,7 +20,7 @@ class SimpleNvimGithubTest(unittest.TestCase):
         api_setup = get_mock_github()
 
         self.api: MockGitHubService = api_setup[0]
-        self.options: MockPluginOptions = api_setup[1]
+        self.options: PluginOptions = api_setup[1]
 
         self.github: SimpleNvimGithub = SimpleNvimGithub(  # type: ignore
             self.nvim, self.options, self.api

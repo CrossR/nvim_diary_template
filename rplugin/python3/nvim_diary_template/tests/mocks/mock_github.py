@@ -8,13 +8,13 @@ from dataclasses import dataclass
 from dateutil import parser
 
 from ...classes.github_issue_class import GitHubIssue
+from ...classes.plugin_options import PluginOptions
 from ...utils.constants import ISO_FORMAT
-from .mock_options import MockPluginOptions
 
 
-def get_mock_github() -> Tuple[MockGitHubService, MockPluginOptions]:
+def get_mock_github() -> Tuple[MockGitHubService, PluginOptions]:
     new_api: MockGitHubService = MockGitHubService()
-    options: MockPluginOptions = MockPluginOptions()
+    options: PluginOptions = PluginOptions()
 
     # Setup options
     options.config_path = mkdtemp()

@@ -7,7 +7,7 @@ well as any associated helpers.
 
 import os
 from pathlib import Path
-from typing import Any, List
+from typing import Any, List, Optional
 from neovim import Nvim
 
 
@@ -21,7 +21,7 @@ class PluginOptions:
     value exists in the users' config.
     """
 
-    def __init__(self, nvim: Nvim) -> None:
+    def __init__(self, nvim: Optional[Nvim] = None) -> None:
 
         self.active: bool = True
         self.notes_path: str = os.path.join(str(Path.home()), "vimwiki")
@@ -38,8 +38,9 @@ class PluginOptions:
         self.user_name: str = ""
         self.sort_issues_on_upload: bool = False
 
-        for key, default_value in self.__dict__.items():
-            value: Any = nvim.vars.get(f"nvim_diary_template#{key}", default_value)
-            nvim.vars[f"nvim_diary_template#{key}"] = value
+        if nvim is not None:
+            for key, default_value in self.__dict__.items():
+                value: Any = nvim.vars.get(f"nvim_diary_template#{key}", default_value)
+                nvim.vars[f"nvim_diary_template#{key}"] = value
 
-            setattr(self, key, value)
+                setattr(self, key, value)
