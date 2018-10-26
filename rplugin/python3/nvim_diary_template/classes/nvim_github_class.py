@@ -44,7 +44,8 @@ class SimpleNvimGithub:
         self.repo_name: str = options.repo_name
         self.options: PluginOptions = options
 
-        self.service: Optional[Github] = service
+        if service is not None:
+            self.service: Github = service
 
         if self.service is None:
             self.service = self.setup_github_api()
