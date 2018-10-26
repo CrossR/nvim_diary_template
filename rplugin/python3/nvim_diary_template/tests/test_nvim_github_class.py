@@ -22,7 +22,7 @@ class SimpleNvimGithubTest(unittest.TestCase):
         self.api: MockGitHubService = api_setup[0]
         self.options: PluginOptions = api_setup[1]
 
-        self.github: SimpleNvimGithub = SimpleNvimGithub(  # type: ignore
+        self.github: SimpleNvimGithub = SimpleNvimGithub(
             self.nvim, self.options, self.api
         )
 
