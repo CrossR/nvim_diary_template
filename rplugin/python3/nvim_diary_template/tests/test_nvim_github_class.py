@@ -1,11 +1,13 @@
 import unittest
 from typing import Any, List
 
-from .mocks.mock_github import get_mock_github, MockGitHubService
-from .mocks.mock_options import MockPluginOptions
-from .mocks.mock_nvim import MockNvim
-from ..classes.nvim_github_class import SimpleNvimGithub
+from dateutil import parser
+
 from ..classes.github_issue_class import GitHubIssue, GitHubIssueComment
+from ..classes.nvim_github_class import SimpleNvimGithub
+from .mocks.mock_github import MockGitHubComment, MockGitHubService, get_mock_github
+from .mocks.mock_nvim import MockNvim
+from .mocks.mock_options import MockPluginOptions
 
 
 class SimpleNvimGithubTest(unittest.TestCase):
@@ -235,7 +237,7 @@ class SimpleNvimGithubTest(unittest.TestCase):
         assert self.api.repo.issues[2].title == "New Testing Issue"
         assert self.api.repo.issues[2].body == "Line 1\r\nLine 2"
 
-    def test_update_comments(self) -> None:
+    def test_update_comments_body(self) -> None:
         issue_list: List[GitHubIssue] = [
             GitHubIssue(
                 number=1,
@@ -285,6 +287,59 @@ class SimpleNvimGithubTest(unittest.TestCase):
 
         self.github.update_comments(issue_list, "edit")
         assert self.api.repo.issues[0].body == "Line 1\r\nLine 2\r\nLine 3"
+
+    def test_update_comment_normal(self) -> None:
+        issue_list: List[GitHubIssue] = [
+            GitHubIssue(
+                number=1,
+                title="Test Issue",
+                complete=False,
+                labels=["backlog", "personal"],
+                all_comments=[
+                    GitHubIssueComment(
+                        number=0,
+                        body=["This is the main issue body"],
+                        tags=[],
+                        updated_at="2018-01-01 10:00",
+                    ),
+                    GitHubIssueComment(
+                        number=1,
+                        body=["Line 1", "Line 2"],
+                        tags=[],
+                        updated_at="2018-08-19 18:18",
+                    ),
+                    GitHubIssueComment(
+                        number=2,
+                        body=["After the edit"],
+                        tags=["edit"],
+                        updated_at="2018-08-19 18:18",
+                    ),
+                ],
+                metadata=[],
+            )
+        ]
+
+        self.api.repo.issues[0].comments.append(
+            MockGitHubComment(
+                number=1,
+                body="Before the edit",
+                updated_at=parser.parse("2018-01-01 10:00"),
+            )
+        )
+
+        # Check non matching comment edits are skipped.
+        self.nvim.message_print_count = 0
+        self.nvim.messages = []
+
+        assert len(self.nvim.messages) == 0
+        self.github.update_comments(issue_list, "edit")
+        assert len(self.nvim.messages) == 2
+
+        # Sort the updated time and then actually test a valid edit is applied.
+        issue_list[0].all_comments[2].updated_at = "2018-01-01 10:00"
+
+        self.github.update_comments(issue_list, "edit")
+        assert self.api.repo.issues[0].comments[1].body == "After the edit"
 
     def test_update_issues(self) -> None:
         issue_list: List[GitHubIssue] = [
