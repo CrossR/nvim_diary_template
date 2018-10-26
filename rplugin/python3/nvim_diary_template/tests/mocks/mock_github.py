@@ -112,6 +112,7 @@ class MockGitHubIssue:
         labels: List[MockGitHubLabel] = [],
         comments: List[MockGitHubComment] = [],
         updated_at: datetime = parser.parse("2018-01-01 10:00"),
+        state: str = "open",
     ) -> None:
         self.number: int = number
         self.title: str = title
@@ -120,18 +121,25 @@ class MockGitHubIssue:
         self.labels: List[MockGitHubLabel] = labels
         self.comments: List[MockGitHubComment] = comments
         self.updated_at: datetime = updated_at
+        self.state: str = state
 
     def get_comments(self) -> List[MockGitHubComment]:
         return self.comments
 
-    def edit(self, body: str, title: str = "", labels: List[str] = []) -> None:
-        self.body = body
+    def edit(
+        self, body: str = "", title: str = "", labels: List[str] = [], state: str = ""
+    ) -> None:
+        if body != "":
+            self.body = body
 
         if title != "":
             self.title = title
 
         if labels != []:
             self.labels = [MockGitHubLabel(label) for label in labels]
+
+        if state != []:
+            self.state = state
 
     def create_comment(self, body: str) -> MockGitHubComment:
         next_comment_number: int = 0

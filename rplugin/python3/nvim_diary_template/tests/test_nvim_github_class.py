@@ -396,3 +396,53 @@ class SimpleNvimGithubTest(unittest.TestCase):
         assert self.api.repo.issues[0].title == "New Title"
         newLabels: List[Any] = [label.name for label in self.api.repo.issues[0].labels]
         assert newLabels == ["backlog", "personal", "blocked"]
+
+    def test_complete_issues(self) -> None:
+        issue_list: List[GitHubIssue] = [
+            GitHubIssue(
+                number=1,
+                title="Test Issue",
+                complete=True,
+                labels=["backlog", "personal"],
+                all_comments=[
+                    GitHubIssueComment(
+                        number=0,
+                        body=["This is the main issue body"],
+                        tags=[],
+                        updated_at="2018-01-01 10:00",
+                    ),
+                    GitHubIssueComment(
+                        number=1,
+                        body=["Line 1", "Line 2"],
+                        tags=[],
+                        updated_at="2018-08-19 18:18",
+                    ),
+                ],
+                metadata=[],
+            )
+        ]
+
+        # Check the service is checked before being used.
+        self.github.repo_name = ""
+        assert self.nvim.message_print_count == 0
+        self.github.complete_issues(issue_list)
+        assert self.nvim.message_print_count == 1
+
+        self.github.repo_name = "CrossR/nvim_diary_template"
+        self.nvim.message_print_count = 0
+        self.nvim.errors = []
+
+        # Check the state toggles correctly
+        assert self.api.repo.issues[0].state == "open"
+        self.github.complete_issues(issue_list)
+        assert self.api.repo.issues[0].state == "closed"
+
+        issue_list[0].complete = False
+        assert self.api.repo.issues[0].state == "closed"
+        self.github.complete_issues(issue_list)
+        assert self.api.repo.issues[0].state == "open"
+
+        # Check doesn't change if already correct.
+        assert self.api.repo.issues[0].state == "open"
+        self.github.complete_issues(issue_list)
+        assert self.api.repo.issues[0].state == "open"
