@@ -446,3 +446,17 @@ class SimpleNvimGithubTest(unittest.TestCase):
         assert self.api.repo.issues[0].state == "open"
         self.github.complete_issues(issue_list)
         assert self.api.repo.issues[0].state == "open"
+
+    def test_service_not_valid(self) -> None:
+
+        # Setup an object with no service to check that.
+        test_github: SimpleNvimGithub = SimpleNvimGithub(self.nvim, self.options, None)
+        assert test_github.service_not_valid() == True
+
+        # Check an object with no repo name is not valid.
+        self.github.repo_name = ""
+        assert self.github.service_not_valid() == True
+
+        # Check a valid repo now.
+        self.github.repo_name = "CrossR/nvim_diary_template"
+        assert self.github.service_not_valid() == False
