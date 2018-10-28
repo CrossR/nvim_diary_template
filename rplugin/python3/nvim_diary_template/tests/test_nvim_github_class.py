@@ -447,16 +447,28 @@ class SimpleNvimGithubTest(unittest.TestCase):
         self.github.complete_issues(issue_list)
         assert self.api.repo.issues[0].state == "open"
 
-    def test_service_not_valid(self) -> None:
+    def test_missing_service(self) -> None:
 
         # Setup an object with no service to check that.
         test_github: SimpleNvimGithub = SimpleNvimGithub(self.nvim, self.options, None)
         assert test_github.service_not_valid() == True
 
-        # Check an object with no repo name is not valid.
-        self.github.repo_name = ""
-        assert self.github.service_not_valid() == True
+        self.nvim.message_print_count = 0
+        self.nvim.errors = []
 
-        # Check a valid repo now.
-        self.github.repo_name = "CrossR/nvim_diary_template"
-        assert self.github.service_not_valid() == False
+        assert test_github.get_repo_labels() == []
+        assert test_github.get_associated_repos() == []
+        assert test_github.get_all_open_issues() == []
+
+        # Test uploads now.
+        assert test_github.upload_comments([], "new") == ([], [])
+        assert test_github.upload_issues([], "new") == ([], [])
+        assert test_github.update_issues([], "edit") == ([], [])
+        assert test_github.update_comments([], "edit") == ([], [])
+        test_github.complete_issues([])
+
+        # There should have been 8 messages, all the same.
+        # Converting the list should result in 1 item, due to the
+        # fact there is only one unique item.
+        assert self.nvim.message_print_count == 8
+        assert len(set(self.nvim.errors)) == 1
