@@ -9,7 +9,7 @@ from random import choices
 from typing import Any, Dict, List
 
 from ..helpers.file_helpers import check_cache, generate_diary_index, set_cache
-from .mocks.mock_options import MockPluginOptions
+from ..classes.plugin_options import PluginOptions
 
 
 class file_helpersTest(unittest.TestCase):
@@ -18,7 +18,7 @@ class file_helpersTest(unittest.TestCase):
     """
 
     def setUp(self) -> None:
-        self.options = MockPluginOptions()
+        self.options = PluginOptions()
         self.config = tempfile.mkdtemp()
         self.options.config_path = self.config
 

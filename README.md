@@ -1,4 +1,10 @@
-# nvim_diary_template
+# Nvim Diary Template
+
+<p align="center">
+<a href="https://travis-ci.org/CrossR/nvim_diary_template"><img alt="Build Status" src="https://travis-ci.org/CrossR/nvim_diary_template.svg?branch=master"></a>
+<a href="https://codecov.io/gh/CrossR/nvim_diary_template"><img src="https://codecov.io/gh/CrossR/nvim_diary_template/branch/master/graph/badge.svg"/></a>
+<a href="https://github.com/ambv/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
+</p>
 
 Test repo for a plugin to generate a suitable template for VimWiki (for me).
 This was mainly made to let me mess with various Python features, like the
