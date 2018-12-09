@@ -66,7 +66,7 @@ def make_diary(
     # Add in issues section
     issues: List[GitHubIssue] = []
     if options.use_github_repo and github_service and github_service.active:
-        issues = github_service.issues
+        issues = github_service.active_issues
 
     issue_markdown: List[str] = produce_issue_markdown(issues)
     full_markdown.extend(issue_markdown)
@@ -76,7 +76,7 @@ def make_diary(
     if options.use_google_calendar and gcal_service and gcal_service.active:
         date_today_object: date = parser.parse(diary_date).date()
         if date_today_object == date.today():
-            days_events = gcal_service.events
+            days_events = gcal_service.active_events
         else:
             days_events = gcal_service.get_events_for_date(date_today_object)
 
