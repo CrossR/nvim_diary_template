@@ -69,6 +69,23 @@ class SimpleNvimGoogleCal:
         return self.options.config_path
 
     @property
+    def active_events(self) -> List[CalendarEvent]:
+        """active_events
+
+        Return the current events, assuming they are valid.
+        If they are out of date, re-run the getting from cache.
+        """
+
+        active_events: Union[List[Dict[str, Any]], List[CalendarEvent]] = check_cache(
+            self.config_path,
+            "events",
+            EVENT_CACHE_DURATION,
+            lambda: self.get_events_for_date(date.today()),
+        )
+
+        return get_calendar_objects(active_events)
+
+    @property
     def active(self) -> bool:
         """active
 

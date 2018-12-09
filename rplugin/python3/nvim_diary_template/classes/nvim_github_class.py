@@ -76,6 +76,23 @@ class SimpleNvimGithub:
         )
 
     @property
+    def active_issues(self) -> List[GitHubIssue]:
+        """active_issues
+
+        Return the current issues, assuming they are valid.
+        If they are out of date, re-run the getting from cache.
+        """
+
+        active_issues: Union[List[Dict[str, Any]], List[GitHubIssue]] = check_cache(
+            self.config_path,
+            "open_issues",
+            ISSUE_CACHE_DURATION,
+            self.get_all_open_issues,
+        )
+
+        return get_github_objects(active_issues)
+
+    @property
     def active(self) -> bool:
         """active
 
