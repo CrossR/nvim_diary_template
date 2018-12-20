@@ -47,7 +47,7 @@ def make_diary(
             nvim.err_write("Buffer is not empty, can't create diary.\n")
         return
 
-    # If options is none, then everything else proably wasn't setup either.
+    # If options is none, then everything else probably wasn't setup either.
     if options is None:
         nvim.err_write("Options weren't initialised, aborting.\n")
         return
