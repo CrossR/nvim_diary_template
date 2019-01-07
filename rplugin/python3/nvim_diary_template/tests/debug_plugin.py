@@ -18,4 +18,4 @@ NVIM: neovim.Nvim = neovim.attach("socket", path=f"\\\\.\\pipe\\{CURRENT_PIPE}")
 plugin: DiaryTemplatePlugin = DiaryTemplatePlugin(NVIM)
 
 plugin.check_options()
-plugin.make_diary()
+plugin.make_diary_command()
