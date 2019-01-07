@@ -2,7 +2,7 @@
 
 Functions to build and parse the issue section of the markdown.
 """
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Union
 
 from neovim import Nvim
 
@@ -111,7 +111,7 @@ def remove_tag_from_issues(
     issues: List[GitHubIssue],
     tag: str,
     scope: str = "all",
-    ignore_list: Optional[List[Dict[str, int]]] = None,
+    ignore_list: Optional[Union[List[int], List[Dict[str, int]]]] = None,
 ) -> List[GitHubIssue]:
     """remove_tag_from_issues
 
@@ -121,7 +121,7 @@ def remove_tag_from_issues(
     """
 
     if ignore_list is None:
-        ignore_list = []
+        ignore_list = [-1]
 
     for index, issue in enumerate(issues):
 
