@@ -52,11 +52,10 @@ class DiaryTemplatePlugin:
     @neovim.autocmd("BufEnter", pattern=FILE_TYPE_WILDCARD, sync=True)
     def event_buf_enter(self) -> None:
         self.check_options()
-        self.make_diary(called_from_autocommand=True)
+        self.make_diary_command(called_from_autocommand=True)
 
     @neovim.command("DiaryMake")
-    def make_diary(self, called_from_autocommand: bool = False) -> None:
-        self.check_options()
+    def make_diary_command(self, called_from_autocommand: bool = False) -> None:
         make_diary(
             self._nvim,
             self.options,
