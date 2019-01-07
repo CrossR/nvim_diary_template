@@ -1,7 +1,7 @@
-# pylint: disable=missing-docstring
+# pylint: disable=missing-docstring, W0201
 from datetime import date
 from functools import wraps
-from typing import Any, Callable, List
+from typing import Callable, List
 
 import neovim
 from dateutil import parser
@@ -36,15 +36,18 @@ from .utils.parse_markdown import (
 class DiaryTemplatePlugin:
     def __init__(self, nvim: neovim.Nvim) -> None:
         self._nvim: neovim.Nvim = nvim
-        self._gcal_service: Any = None
-        self._github_service: Any = None
-        self.options: Any = None
+        self._fully_setup: bool = False
 
     def check_options(self) -> None:
-        if self.options is None:
-            self.options = PluginOptions(self._nvim)
-            self._gcal_service = SimpleNvimGoogleCal(self._nvim, self.options)
-            self._github_service = SimpleNvimGithub(self._nvim, self.options)
+        if not self._fully_setup:
+            self.options: PluginOptions = PluginOptions(self._nvim)
+            self._gcal_service: SimpleNvimGoogleCal = SimpleNvimGoogleCal(
+                self._nvim, self.options
+            )
+            self._github_service: SimpleNvimGithub = SimpleNvimGithub(
+                self._nvim, self.options
+            )
+            self._fully_setup = True
 
     @neovim.autocmd("BufEnter", pattern=FILE_TYPE_WILDCARD, sync=True)
     def event_buf_enter(self) -> None:
@@ -53,6 +56,7 @@ class DiaryTemplatePlugin:
 
     @neovim.command("DiaryMake")
     def make_diary(self, called_from_autocommand: bool = False) -> None:
+        self.check_options()
         make_diary(
             self._nvim,
             self.options,
@@ -68,6 +72,7 @@ class DiaryTemplatePlugin:
         )
 
         buffer_date: date = parser.parse(get_diary_date(self._nvim)).date()
+        # buffer_date: date = parser.parse(get_diary_date(self._nvim)).date()
         self._gcal_service.upload_to_calendar(markdown_events, buffer_date)
         remove_events_not_from_today(self._nvim)
 
@@ -136,9 +141,11 @@ class DiaryTemplatePlugin:
         issues, ignore_list = self._github_service.upload_issues(issues, "new")
         issues = remove_tag_from_issues(issues, "new", "issues", ignore_list)
 
-        issues, ignore_list = self._github_service.upload_comments(issues, "new")
+        issues, comment_ignore_list = self._github_service.upload_comments(
+            issues, "new"
+        )
         issues_without_new_tag: List[GitHubIssue] = remove_tag_from_issues(
-            issues, "new", "comments", ignore_list
+            issues, "new", "comments", comment_ignore_list
         )
 
         set_issues_from_issues_list(
@@ -155,9 +162,9 @@ class DiaryTemplatePlugin:
         issues, ignore_list = self._github_service.update_comments(issues, "edit")
         issues = remove_tag_from_issues(issues, "edit", "comments", ignore_list)
 
-        issues, ignore_list = self._github_service.update_issues(issues, "edit")
+        issues, issue_ignore_list = self._github_service.update_issues(issues, "edit")
         issues_without_edit_tag: List[GitHubIssue] = remove_tag_from_issues(
-            issues, "edit", "issues", ignore_list
+            issues, "edit", "issues", issue_ignore_list
         )
 
         set_issues_from_issues_list(
