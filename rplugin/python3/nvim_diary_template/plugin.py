@@ -1,4 +1,5 @@
 # pylint: disable=missing-docstring
+from datetime import date
 from functools import wraps
 from typing import Any, Callable, List
 
@@ -66,19 +67,19 @@ class DiaryTemplatePlugin:
             self._nvim, ISO_FORMAT
         )
 
-        buffer_date: str = get_diary_date(self._nvim)
+        buffer_date: date = parser.parse(get_diary_date(self._nvim)).date()
         self._gcal_service.upload_to_calendar(markdown_events, buffer_date)
         remove_events_not_from_today(self._nvim)
 
     @neovim.command("DiaryGetCalendar")
     def grab_from_calendar(self) -> None:
-        buffer_date: str = get_diary_date(self._nvim)
+        buffer_date: date = parser.parse(get_diary_date(self._nvim)).date()
 
         markdown_events: List[CalendarEvent] = parse_markdown_file_for_events(
             self._nvim, ISO_FORMAT
         )
         cal_events: List[CalendarEvent] = self._gcal_service.get_events_for_date(
-            parser.parse(buffer_date).date()
+            buffer_date
         )
 
         combined_events: List[CalendarEvent] = combine_events(
