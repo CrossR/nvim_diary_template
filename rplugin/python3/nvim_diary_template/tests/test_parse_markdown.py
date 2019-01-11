@@ -102,6 +102,7 @@ class parse_markdownTest(unittest.TestCase):
             "",
             "- 10:00 - 11:00: Event 1",
             "- 19:00 - 22:00: Event 2",
+            "- 11:00 - 22:00: Event 4 {cal:Nvim Notes}",
         ]
 
         remove_events_not_from_today(self.nvim)
