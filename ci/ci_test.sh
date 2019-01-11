@@ -41,10 +41,10 @@ if [ "${LINT_CODE:-0}" -eq 1 ]; then
         exit ${FAIL}
     fi
 
-    LogMessage "Running black source code syntax with Black..."
+    LogMessage "Running black on deoplete sources..."
     poetry run black rplugin/python3/deoplete --check
     RETURN_CODE=$?
-    LogMessage "Finished running black on deopletet source..."
+    LogMessage "Finished running black on deoplete sources..."
 
     LogMessage "black returned ${RETURN_CODE}..."
 

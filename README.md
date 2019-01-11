@@ -17,6 +17,7 @@ reminder where and how things are setup.
     - Make a Diary entry, and have it auto-populated with todays events
       from GCal.
     - Any new events that are added, can be synced to GCal.
+    - Deoplete source for calendar names to specify which calendar to be used.
     - **TODO**: Add rename and remove syntax, such that events can be removed
       or edited.
 - GitHub Issues Integration:
@@ -33,6 +34,12 @@ reminder where and how things are setup.
 ## Screenshot:
 
 ![The basic setup with GitHub and GCal integration](./docs/screenshot.PNG)
+
+The diary file is auto-populated with the days Google Calendar events, as
+well as any open issues from the repo that the plugin is connected to. The
+issues are folded (twice, once for the issue itself, and once for each
+comment) and can be edited and uploaded back to GitHub. They may also be
+sorted depending on their urgency.
 
 ## Config:
 
