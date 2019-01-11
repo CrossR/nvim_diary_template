@@ -17,7 +17,7 @@ from .helpers.issue_helpers import (
     insert_new_issue,
     toggle_issue_completion,
 )
-from .helpers.markdown_helpers import sort_markdown_events
+from .helpers.markdown_helpers import format_markdown_events, sort_markdown_events
 from .helpers.neovim_helpers import get_diary_date
 from .utils.constants import FILE_TYPE_WILDCARD, ISO_FORMAT
 from .utils.make_issues import remove_tag_from_issues, set_issues_from_issues_list
@@ -74,6 +74,7 @@ class DiaryTemplatePlugin:
         # buffer_date: date = parser.parse(get_diary_date(self._nvim)).date()
         self._gcal_service.upload_to_calendar(markdown_events, buffer_date)
         remove_events_not_from_today(self._nvim)
+        format_markdown_events(self._nvim)
 
     @neovim.command("DiaryGetCalendar")
     def grab_from_calendar(self) -> None:

@@ -62,6 +62,7 @@ class parse_markdownTest(unittest.TestCase):
             "- 10:00 - 11:00: Event 1",
             "- 19:00 - 22:00: Event 2",
             "- 25/01/2018 12:00 - 25/01/2018 13:00: Meeting with Alex",
+            "- 11:00 - 22:00: Event 4 {cal:Nvim Notes}",
         ]
 
     def test_remove_events_not_from_today(self) -> None:
@@ -101,6 +102,7 @@ class parse_markdownTest(unittest.TestCase):
             "",
             "- 10:00 - 11:00: Event 1",
             "- 19:00 - 22:00: Event 2",
+            "- 11:00 - 22:00: Event 4 {cal:Nvim Notes}",
         ]
 
         remove_events_not_from_today(self.nvim)
@@ -124,6 +126,12 @@ class parse_markdownTest(unittest.TestCase):
                 name="Meeting with Alex",
                 start=parser.parse("2018-01-25 12:00").strftime(ISO_FORMAT),
                 end=parser.parse("2018-01-25 13:00").strftime(ISO_FORMAT),
+            ),
+            CalendarEvent(
+                name="Event 4",
+                start=parser.parse("2018-01-01 11:00").strftime(ISO_FORMAT),
+                end=parser.parse("2018-01-01 22:00").strftime(ISO_FORMAT),
+                calendar="Nvim Notes",
             ),
         ]
 

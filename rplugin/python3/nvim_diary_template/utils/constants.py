@@ -45,6 +45,7 @@ ISSUE_METADATA = r"\+[a-zA-Z0-9]+"
 ISSUE_LABELS = r"\+label:[a-zA-Z0-9]+"
 
 EVENT_REGEX = r"(?<=: ).*$"
+CALENDAR_REGEX = r"{cal:([A-Za-z0-9 ]+)}"
 
 HEADING_REGEX = r"^## .*"
 

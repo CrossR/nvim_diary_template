@@ -16,3 +16,4 @@ class CalendarEvent:
     name: str
     start: str
     end: str
+    calendar: str = ""
