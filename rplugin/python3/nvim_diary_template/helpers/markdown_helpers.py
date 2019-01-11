@@ -31,3 +31,20 @@ def sort_markdown_events(nvim: Nvim) -> None:
         return
 
     set_schedule_from_events_list(nvim, sorted_events, True)
+
+
+def format_markdown_events(nvim: Nvim) -> None:
+    """format_markdown_events
+
+    Given the markdown file, will format the events
+    in the file and then update them in place.
+
+    This is also used to remove any extra metadata once it has been used.
+    """
+
+    unsorted_events: List[CalendarEvent] = parse_markdown_file_for_events(
+        nvim, TIME_FORMAT
+    )
+    sorted_events: List[CalendarEvent] = sort_events(unsorted_events)
+
+    set_schedule_from_events_list(nvim, sorted_events, True)
