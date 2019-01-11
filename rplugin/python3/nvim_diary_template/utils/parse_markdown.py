@@ -81,6 +81,10 @@ def parse_buffer_events(
 
         if event_calendar_specified:
             event_calendar: str = event_calendar_specified.group(1)
+
+            event_details = event_details.replace(
+                f"{{cal:{event_calendar}}}", ""
+            ).strip()
         else:
             event_calendar = ""
 
