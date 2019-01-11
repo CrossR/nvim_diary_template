@@ -30,15 +30,15 @@ class Source(Base):
         pattern = path.join(cache_path, f"nvim_diary_template_calendars_cache_*.json")
 
         try:
-            label_file_cache = glob.glob(pattern)[0]
+            calendar_file_cache = glob.glob(pattern)[0]
 
-            with open(label_file_cache, "r", errors="replace") as f:
-                label_list = json.load(f)
+            with open(calendar_file_cache, "r", errors="replace") as f:
+                calendar_list = json.load(f)
 
         except (IndexError, FileNotFoundError):
-            label_list = []
+            calendar_list = []
 
-        return [{"word": f"{{cal:{l}}}"} for l in label_list]
+        return [{"word": f"{{cal:{l}}}"} for l in calendar_list]
 
     def get_complete_position(self, context):
         match_pos = context["position"][2] - LENGTH_OF_PATTERN - 1
