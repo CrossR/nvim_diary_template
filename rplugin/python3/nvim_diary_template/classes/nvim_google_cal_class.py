@@ -213,9 +213,10 @@ class SimpleNvimGoogleCal:
             event for event in markdown_events if event not in todays_events
         ]
 
-        target_calendar: str = self.get_calendar_id()
-
         for event in missing_events:
+
+            target_calendar: str = self.get_calendar_id(event.calendar)
+
             gcal_event: Dict[str, str] = create_google_event(
                 event, self.options.timezone
             )
@@ -236,13 +237,14 @@ class SimpleNvimGoogleCal:
             f"Added {len(missing_events)} events to {self.options.google_cal_name} calendar.\n"
         )
 
-    def get_calendar_id(self) -> str:
+    def get_calendar_id(self, target_calendar: str = "") -> str:
         """get_calendar_id
 
         Gets the ID of a calendar from its name.
         """
 
-        target_calendar: str = self.options.google_cal_name
+        if target_calendar == "":
+            target_calendar = self.options.google_cal_name
 
         if target_calendar == "primary":
             return "primary"
