@@ -14,7 +14,7 @@ class Source(Base):
     def __init__(self, vim):
         Base.__init__(self, vim)
 
-        self.__pattern = re.compile(f"\+label:")
+        self.__pattern = re.compile(r"\+label:")
 
         self.name = "gh_label"
         self.mark = "[GHL]"
