@@ -22,6 +22,7 @@ from ..helpers.neovim_helpers import (
     set_line_content,
 )
 from ..utils.constants import (
+    CALENDAR_REGEX,
     DATETIME_REGEX,
     EVENT_REGEX,
     ISO_FORMAT,
@@ -73,8 +74,23 @@ def parse_buffer_events(
             0
         ] if event_name_search is not None else ""
 
+        # Check if an event was given in the buffer, and put it in the object if it was.
+        event_calendar_specified: Optional[Match[str]] = re.search(
+            CALENDAR_REGEX, event
+        )
+
+        if event_calendar_specified:
+            event_calendar: str = event_calendar_specified.group(1)
+        else:
+            event_calendar = ""
+
         formatted_events.append(
-            CalendarEvent(name=event_details, start=start_date, end=end_date)
+            CalendarEvent(
+                name=event_details,
+                start=start_date,
+                end=end_date,
+                calendar=event_calendar,
+            )
         )
 
     return formatted_events
