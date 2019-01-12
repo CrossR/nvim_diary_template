@@ -10,6 +10,7 @@ from dateutil import parser, tz
 from neovim import Nvim
 
 from ..classes.github_issue_class import GitHubIssue, GitHubIssueComment
+from ..classes.plugin_options import PluginOptions
 from ..helpers.neovim_helpers import (
     get_buffer_contents,
     get_section_line,
@@ -302,7 +303,7 @@ def get_latest_update(comments: List[GitHubIssueComment]) -> str:
     return latest_update
 
 
-def sort_issues(issues: List[GitHubIssue]) -> List[GitHubIssue]:
+def sort_issues(options: PluginOptions, issues: List[GitHubIssue]) -> List[GitHubIssue]:
     """sort_issues
 
     A helper function to sort the given issues.
@@ -321,10 +322,10 @@ def sort_issues(issues: List[GitHubIssue]) -> List[GitHubIssue]:
         issues, key=lambda i: (i.all_comments[-1].updated_at,), reverse=True
     )
 
-    return sorted(issues, key=lambda i: (sort_completion_state(i),))
+    return sorted(issues, key=lambda i: (sort_completion_state(options, i),))
 
 
-def sort_completion_state(issue: GitHubIssue) -> int:
+def sort_completion_state(options: PluginOptions, issue: GitHubIssue) -> int:
     """sort_completion_state
 
     Simple helper function to return a value for the issue current state for
@@ -333,19 +334,23 @@ def sort_completion_state(issue: GitHubIssue) -> int:
     The higher the value, the lower they will be on the list.
     """
 
-    if issue.complete:
-        return 10000
+    highest_score: int = -1
+    try:
+        if issue.complete and highest_score < options.sort_order["issue.complete"]:
+            highest_score = options.sort_order["issue.complete"]
 
-    if "backlog" in issue.labels:
-        return 5000
+        for label in issue.labels:
+            if label in options.sort_order:
+                if options.sort_order[label] > highest_score:
+                    highest_score = options.sort_order[label]
 
-    if "blocked" in issue.labels:
-        return 1000
+        # If the score was never set, just give it the default value.
+        if highest_score == -1:
+            highest_score = options.sort_order["default"]
 
-    if "inprogress" in issue.labels:
+        return highest_score
+    except IndexError:
         return 0
-
-    return 100
 
 
 def get_github_objects(

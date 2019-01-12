@@ -7,6 +7,7 @@ from typing import Dict, List, Optional, Union
 from neovim import Nvim
 
 from ..classes.github_issue_class import GitHubIssue, GitHubIssueComment
+from ..classes.plugin_options import PluginOptions
 from ..helpers.issue_helpers import check_markdown_style, sort_issues
 from ..helpers.neovim_helpers import get_buffer_contents, get_section_line
 from ..utils.constants import (
@@ -19,7 +20,9 @@ from ..utils.constants import (
 )
 
 
-def format_issues(issues: List[GitHubIssue], should_sort: bool) -> List[str]:
+def format_issues(
+    options: PluginOptions, issues: List[GitHubIssue], should_sort: bool
+) -> List[str]:
     """format_issues
 
     Given some issues, will produce formatted lines for them.
@@ -28,7 +31,7 @@ def format_issues(issues: List[GitHubIssue], should_sort: bool) -> List[str]:
     issue_lines: List[str] = []
 
     if should_sort:
-        issues = sort_issues(issues)
+        issues = sort_issues(options, issues)
 
     # For every issue, format it into markdown lines that are easily read.
     for issue in issues:
@@ -92,7 +95,9 @@ def format_issue_comments(comments: List[GitHubIssueComment]) -> List[str]:
     return formatted_comments
 
 
-def produce_issue_markdown(issue_list: List[GitHubIssue]) -> List[str]:
+def produce_issue_markdown(
+    options: PluginOptions, issue_list: List[GitHubIssue]
+) -> List[str]:
     """produce_issue_markdown
 
     Given a list of issues, will produce a basic bit of markdown
@@ -101,7 +106,7 @@ def produce_issue_markdown(issue_list: List[GitHubIssue]) -> List[str]:
 
     markdown_lines: List[str] = [ISSUE_HEADING, ""]
 
-    issue_lines: List[str] = format_issues(issue_list, True)
+    issue_lines: List[str] = format_issues(options, issue_list, True)
     markdown_lines.extend(issue_lines)
 
     return markdown_lines
@@ -152,7 +157,7 @@ def remove_tag_from_issues(
 
 
 def set_issues_from_issues_list(
-    nvim: Nvim, issues: List[GitHubIssue], should_sort: bool
+    nvim: Nvim, options: PluginOptions, issues: List[GitHubIssue], should_sort: bool
 ) -> None:
     """set_issues_from_issues_list
 
@@ -160,7 +165,7 @@ def set_issues_from_issues_list(
     """
 
     # Get the formatted lines to set.
-    issue_lines: List[str] = format_issues(issues, should_sort)
+    issue_lines: List[str] = format_issues(options, issues, should_sort)
 
     buffer_number: int = nvim.current.buffer.number
     current_buffer: List[str] = get_buffer_contents(nvim)

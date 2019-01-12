@@ -3,6 +3,7 @@ from copy import deepcopy
 from typing import Dict, List
 
 from ..classes.github_issue_class import GitHubIssue, GitHubIssueComment
+from ..classes.plugin_options import PluginOptions
 from ..utils.make_issues import (
     produce_issue_markdown,
     remove_tag_from_issues,
@@ -18,6 +19,7 @@ class make_issuesTest(unittest.TestCase):
 
     def setUp(self) -> None:
         self.nvim = MockNvim()
+        self.options = PluginOptions()
         self.set_buffer()
 
         self.issues: List[GitHubIssue] = [
@@ -125,7 +127,7 @@ class make_issuesTest(unittest.TestCase):
             "",
         ]
 
-        result: List[str] = produce_issue_markdown(self.issues)
+        result: List[str] = produce_issue_markdown(self.options, self.issues)
         assert result == final_buffer
 
     def test_remove_tag_from_issues(self) -> None:
@@ -196,7 +198,7 @@ class make_issuesTest(unittest.TestCase):
         ]
 
         # Check buffer is properly set.
-        set_issues_from_issues_list(self.nvim, self.issues, True)
+        set_issues_from_issues_list(self.nvim, self.options, self.issues, True)
         assert self.nvim.current.buffer.lines == final_buffer
 
         final_buffer = [
@@ -244,5 +246,5 @@ class make_issuesTest(unittest.TestCase):
 
         # Check sorting works.
         self.set_buffer()
-        set_issues_from_issues_list(self.nvim, self.issues, False)
+        set_issues_from_issues_list(self.nvim, self.options, self.issues, False)
         assert self.nvim.current.buffer.lines == final_buffer

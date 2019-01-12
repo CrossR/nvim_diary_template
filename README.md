@@ -27,7 +27,7 @@ reminder where and how things are setup.
     - Issues you make online and in-diary are synced, along with all
       comments.
     - Support for Github labels (including Deoplete source), including sorting
-      by labels (needs config adding for this, currently a set sort order).
+      by labels.
 - Diary outline generation:
     - Builds a diary file with metadata in and the defined headings.
 
@@ -124,4 +124,24 @@ The heading list (outside of Issues and Schedule), can be set with:
 
 ```viml
 let g:nvim_diary_template#daily_headings = ["Notes", "Meetings"]
+```
+
+The issue sort order is based on the labels that a given issue has, as well
+as the completion state. The highest number for a given issue is used to sort
+it.
+
+The `issue.complete` value is assigned to any completed issue.
+
+Issues are sorted such that the lower the score, the higher it appears on the
+list. That is, with the default settings, completed issues are at the bottom
+and in progress issues are at the top.
+
+```viml
+let g:nvim_diary_template#sort_order = {
+            \ "issue.complete": 10000,
+            \ "backlog": 5000,
+            \ "blocked": 1000,
+            \ "default": 100,
+            \ "inprogress": 0,
+            \ }
 ```
