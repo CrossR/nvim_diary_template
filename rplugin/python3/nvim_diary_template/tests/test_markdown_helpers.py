@@ -85,7 +85,6 @@ class markdown_helpersTest(unittest.TestCase):
             "- 14:00 - 16:00: Event 4",
             "- 14:00 - 15:00: Event 3 {cal:Events}",
             "- 10:00 - 11:00: Event 1",
-            "",
         ]
 
         final_buffer: List[str] = [

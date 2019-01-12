@@ -71,8 +71,8 @@ class DiaryTemplatePlugin:
         )
 
         buffer_date: date = parser.parse(get_diary_date(self._nvim)).date()
-        # buffer_date: date = parser.parse(get_diary_date(self._nvim)).date()
         self._gcal_service.upload_to_calendar(markdown_events, buffer_date)
+
         remove_events_not_from_today(self._nvim)
         format_markdown_events(self._nvim)
 
