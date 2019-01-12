@@ -47,4 +47,4 @@ def format_markdown_events(nvim: Nvim) -> None:
     )
     sorted_events: List[CalendarEvent] = sort_events(unsorted_events)
 
-    set_schedule_from_events_list(nvim, sorted_events, True)
+    set_schedule_from_events_list(nvim, sorted_events, False)
