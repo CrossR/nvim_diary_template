@@ -5,6 +5,7 @@ from typing import Any, Dict, List
 import pytest
 
 from ..classes.github_issue_class import GitHubIssue, GitHubIssueComment
+from ..classes.plugin_options import PluginOptions
 from ..helpers.issue_helpers import (
     check_markdown_style,
     get_github_objects,
@@ -26,6 +27,7 @@ class issue_helpersTest(unittest.TestCase):
 
     def setUp(self) -> None:
         self.nvim: MockNvim = MockNvim()
+        self.options: PluginOptions = PluginOptions()
         self.nvim.current.buffer.lines = [
             "<!---",
             "    Date: 2018-01-01",
@@ -329,7 +331,7 @@ class issue_helpersTest(unittest.TestCase):
             deepcopy(issue_2),
         ]
 
-        result: List[GitHubIssue] = sort_issues(unsorted_list)
+        result: List[GitHubIssue] = sort_issues(self.options, unsorted_list)
         assert result == sorted_list
 
     def test_get_github_objects(self) -> None:
