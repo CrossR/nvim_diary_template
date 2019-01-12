@@ -68,7 +68,7 @@ def make_diary(
     if options.use_github_repo and github_service and github_service.active:
         issues = github_service.active_issues
 
-    issue_markdown: List[str] = produce_issue_markdown(issues)
+    issue_markdown: List[str] = produce_issue_markdown(options, issues)
     full_markdown.extend(issue_markdown)
 
     # Add in that days calendar entries

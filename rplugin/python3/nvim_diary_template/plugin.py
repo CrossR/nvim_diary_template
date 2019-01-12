@@ -111,12 +111,12 @@ class DiaryTemplatePlugin:
             self._nvim, markdown_issues, github_issues
         )
 
-        set_issues_from_issues_list(self._nvim, combined_issues, True)
+        set_issues_from_issues_list(self._nvim, self.options, combined_issues, True)
 
     @neovim.command("DiarySortIssues")
     def sort_issues(self) -> None:
         markdown_issues: List[GitHubIssue] = parse_markdown_file_for_issues(self._nvim)
-        set_issues_from_issues_list(self._nvim, markdown_issues, True)
+        set_issues_from_issues_list(self._nvim, self.options, markdown_issues, True)
 
     @neovim.command("DiaryInsertIssue")
     def insert_issue(self) -> None:
@@ -149,7 +149,10 @@ class DiaryTemplatePlugin:
         )
 
         set_issues_from_issues_list(
-            self._nvim, issues_without_new_tag, self.options.sort_issues_on_upload
+            self._nvim,
+            self.options,
+            issues_without_new_tag,
+            self.options.sort_issues_on_upload,
         )
 
         if not buffered:
@@ -168,7 +171,10 @@ class DiaryTemplatePlugin:
         )
 
         set_issues_from_issues_list(
-            self._nvim, issues_without_edit_tag, self.options.sort_issues_on_upload
+            self._nvim,
+            self.options,
+            issues_without_edit_tag,
+            self.options.sort_issues_on_upload,
         )
 
         if not buffered:
@@ -186,7 +192,7 @@ class DiaryTemplatePlugin:
         # Despite no changes happening here, we want to set the issues again to
         # sort them.
         set_issues_from_issues_list(
-            self._nvim, issues, self.options.sort_issues_on_upload
+            self._nvim, self.options, issues, self.options.sort_issues_on_upload
         )
 
         if not buffered:

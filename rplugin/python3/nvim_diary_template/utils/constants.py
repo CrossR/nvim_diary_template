@@ -71,6 +71,6 @@ DEFAULT_SORT_ORDER = {
     "issue.complete": 10000,
     "backlog": 5000,
     "blocked": 1000,
-    "inprogess": 0,
+    "inprogress": 0,
     "default": 100,
 }
