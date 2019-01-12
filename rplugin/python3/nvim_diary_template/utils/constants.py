@@ -36,6 +36,7 @@ TODO_IN_PROGRESS_REGEX = r"\[[.oO]\]"
 GITHUB_TODO = "[x]"
 VIMWIKI_TODO = "[X]"
 
+# Issue related Regex
 ISSUE_START = r"^### \[[ X]\] Issue \{[0-9]+\}:"
 ISSUE_TITLE = r"^#### Title: "
 ISSUE_COMMENT = (
@@ -44,11 +45,12 @@ ISSUE_COMMENT = (
 ISSUE_METADATA = r"\+[a-zA-Z0-9]+"
 ISSUE_LABELS = r"\+label:[a-zA-Z0-9]+"
 
+# Event related Regex
 EVENT_REGEX = r"(?<=: ).*$"
 CALENDAR_REGEX = r"{cal:(.+)}"
 
+# Markdown related
 HEADING_REGEX = r"^## .*"
-
 BULLET_POINT_REGEX = r"[ ]*?-"
 
 # Markdown Constants
@@ -62,3 +64,13 @@ PADDING = "    "
 PADDING_SIZE = 4
 EMPTY_TODO = "[ ]"
 BULLET_POINT = "-"
+
+# Options
+
+DEFAULT_SORT_ORDER = {
+    "issue.complete": 10000,
+    "backlog": 5000,
+    "blocked": 1000,
+    "inprogess": 0,
+    "default": 100,
+}

@@ -7,8 +7,11 @@ well as any associated helpers.
 
 import os
 from pathlib import Path
-from typing import Any, List, Optional
+from typing import Any, Dict, List, Optional
+
 from neovim import Nvim
+
+from ..utils.constants import DEFAULT_SORT_ORDER
 
 
 class PluginOptions:
@@ -37,6 +40,7 @@ class PluginOptions:
         self.repo_name: str = ""
         self.user_name: str = ""
         self.sort_issues_on_upload: bool = False
+        self.sort_order: Dict[str, int] = DEFAULT_SORT_ORDER
 
         if nvim is not None:
             for key, default_value in self.__dict__.items():
