@@ -57,7 +57,7 @@ class SimpleNvimGoogleCal:
             lambda: self.get_events_for_date(date.today()),
         )
 
-        self.events = get_calendar_objects(loaded_events)
+        self.events: List[CalendarEvent] = get_calendar_objects(loaded_events)
 
     @property
     def config_path(self) -> str:
@@ -193,7 +193,15 @@ class SimpleNvimGoogleCal:
 
             events_in_timeframe.extend(events["items"])
 
-        return format_google_events(events_in_timeframe, str(current_date))
+        event_list: List[CalendarEvent] = format_google_events(
+            events_in_timeframe, str(current_date)
+        )
+
+        # If we've gone through the trouble of getting the events for today, should store them.
+        if current_date == date.today():
+            self.events = event_list
+
+        return event_list
 
     def upload_to_calendar(
         self, markdown_events: List[CalendarEvent], diary_date: date
