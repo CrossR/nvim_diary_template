@@ -241,9 +241,7 @@ class SimpleNvimGoogleCal:
         updated_events: List[CalendarEvent] = self.get_events_for_date(diary_date)
         set_cache(self.config_path, updated_events, "events")
 
-        self.nvim.out_write(
-            f"Added {len(missing_events)} events to {self.options.google_cal_name} calendar.\n"
-        )
+        self.nvim.out_write(f"Added {len(missing_events)} events to Google calendar.\n")
 
     def get_calendar_id(self, target_calendar: str = "") -> str:
         """get_calendar_id
