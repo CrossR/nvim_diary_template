@@ -24,7 +24,7 @@ DATE_FORMAT = "%Y-%m-%d"
 ISO_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"
 
 # Regex constants
-DATETIME_REGEX = r"[0-9]{1,2}\/[0-9]{1,2}\/[0-9]{4} [0-9]{1,2}:[0-9]{1,2}"
+DATETIME_REGEX = r"[0-9]{1,2}[\/\-.][0-9]{1,2}[\/\-.][0-9]{4} [0-9]{1,2}:[0-9]{2}"
 TIME_REGEX = r"[0-9]{1,2}:[0-9]{1,2}"
 
 # To-do Existence and State Regex
