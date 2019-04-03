@@ -103,8 +103,6 @@ def generate_diary_index(options: PluginOptions) -> None:
     """generate_diary_index
 
     A helper function to generate the diary index page.
-    This is currently needed as VimWiki will not make this file
-    in the background.
     """
 
     diary_index_file = path.join(options.notes_path, DIARY_FOLDER, DIARY_INDEX_FILE)

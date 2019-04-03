@@ -18,7 +18,7 @@ class Source(Base):
 
         self.name = "gh_label"
         self.mark = "[GHL]"
-        self.filetypes = ["vimwiki"]
+        self.filetypes = ["markdown"]
         self.min_pattern_length = 0
         self.rank = 550
         self.config_folder = self.vim.eval("g:nvim_diary_template#config_path")

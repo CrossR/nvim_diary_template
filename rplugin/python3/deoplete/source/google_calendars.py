@@ -18,7 +18,7 @@ class Source(Base):
 
         self.name = "google_cals"
         self.mark = "[GCAL]"
-        self.filetypes = ["vimwiki"]
+        self.filetypes = ["markdown"]
         self.min_pattern_length = 0
         self.rank = 550
         self.config_folder = self.vim.eval("g:nvim_diary_template#config_path")

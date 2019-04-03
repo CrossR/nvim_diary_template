@@ -7,31 +7,31 @@ let g:nvim_diary_template#config_path = get(g:, 'nvim_diary_template#config_path
 augroup nvim_diary_template_keybinds
     autocmd!
     " Edit existing issue/comments binds
-    autocmd FileType vimwiki nnoremap <silent><buffer> <leader>wec :DiaryEditComment<CR>
-    autocmd FileType vimwiki nnoremap <silent><buffer> <leader>wei :DiaryEditIssue<CR>
-    autocmd FileType vimwiki nnoremap <silent><buffer> <leader>wci :DiaryCompleteIssue<CR>
+    autocmd FileType markdown nnoremap <silent><buffer> <leader>wec :DiaryEditComment<CR>
+    autocmd FileType markdown nnoremap <silent><buffer> <leader>wei :DiaryEditIssue<CR>
+    autocmd FileType markdown nnoremap <silent><buffer> <leader>wci :DiaryCompleteIssue<CR>
 
     " Insert new issue/comments binds
-    autocmd FileType vimwiki nnoremap <silent><buffer> <leader>wic :DiaryInsertComment<CR>
-    autocmd FileType vimwiki nnoremap <silent><buffer> <leader>wii :DiaryInsertIssue<CR>
+    autocmd FileType markdown nnoremap <silent><buffer> <leader>wic :DiaryInsertComment<CR>
+    autocmd FileType markdown nnoremap <silent><buffer> <leader>wii :DiaryInsertIssue<CR>
 
     " Upload edited/new issues and comments
-    autocmd FileType vimwiki nnoremap <silent><buffer> <leader>wun :DiaryUploadNew<CR>
-    autocmd FileType vimwiki nnoremap <silent><buffer> <leader>wue :DiaryUploadEdits<CR>
-    autocmd FileType vimwiki nnoremap <silent><buffer> <leader>wuc :DiaryUploadCompletion<CR>
-    autocmd FileType vimwiki nnoremap <silent><buffer> <leader>wua :DiaryUploadIssues<CR>
+    autocmd FileType markdown nnoremap <silent><buffer> <leader>wun :DiaryUploadNew<CR>
+    autocmd FileType markdown nnoremap <silent><buffer> <leader>wue :DiaryUploadEdits<CR>
+    autocmd FileType markdown nnoremap <silent><buffer> <leader>wuc :DiaryUploadCompletion<CR>
+    autocmd FileType markdown nnoremap <silent><buffer> <leader>wua :DiaryUploadIssues<CR>
 
     " Grab/Sort Issues
-    autocmd FileType vimwiki nnoremap <silent><buffer> <leader>wgi :DiaryGetIssues<CR>
-    autocmd FileType vimwiki nnoremap <silent><buffer> <leader>wsi :DiarySortIssues<CR>
+    autocmd FileType markdown nnoremap <silent><buffer> <leader>wgi :DiaryGetIssues<CR>
+    autocmd FileType markdown nnoremap <silent><buffer> <leader>wsi :DiarySortIssues<CR>
 
     " Calendar Binds
-    autocmd FileType vimwiki nnoremap <silent><buffer> <leader>wgc :DiaryGetCalendar<CR>
-    autocmd FileType vimwiki nnoremap <silent><buffer> <leader>wug :DiaryUploadCalendar<CR>
+    autocmd FileType markdown nnoremap <silent><buffer> <leader>wgc :DiaryGetCalendar<CR>
+    autocmd FileType markdown nnoremap <silent><buffer> <leader>wug :DiaryUploadCalendar<CR>
 
-    autocmd FileType vimwiki setlocal foldtext=DiaryFoldText()
-    autocmd FileType vimwiki setlocal foldmethod=expr
-    autocmd FileType vimwiki setlocal foldexpr=GetDiaryFold(v:lnum)
+    autocmd FileType markdown setlocal foldtext=DiaryFoldText()
+    autocmd FileType markdown setlocal foldmethod=expr
+    autocmd FileType markdown setlocal foldexpr=GetDiaryFold(v:lnum)
 augroup END
 
 let s:issue_start = '^### \[[ X]\] Issue {\d\{1,}}:'

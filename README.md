@@ -6,11 +6,11 @@
 <a href="https://github.com/ambv/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
 </p>
 
-Test repo for a plugin to generate a suitable template for VimWiki (for me).
-This was mainly made to let me mess with various Python features, like the
-NeoVim API, poetry, mypy and more, there is a million and one simpler ways to
-achieve this. The README here currently mainly stands more to give myself a
-reminder where and how things are setup.
+Test repo for a plugin to generate a suitable template for a markdown diary
+(for me). This was mainly made to let me mess with various Python features,
+like the NeoVim API, poetry, mypy and more, there is a million and one
+simpler ways to achieve this. The README here currently mainly stands more to
+give myself a reminder where and how things are setup.
 
 ## Features:
 - Google Calendar Integration:
