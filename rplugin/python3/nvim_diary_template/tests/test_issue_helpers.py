@@ -39,11 +39,11 @@ class issue_helpersTest(unittest.TestCase):
             "",
             "## Issues",
             "",
-            "### [ ] Issue {1}: +label:work",
+            "#### [ ] Issue {1}: +label:work",
             "",
-            "#### Title: Test Issue 1",
+            "##### Title: Test Issue 1",
             "",
-            "#### Comment {0} - 2018-01-01 12:00:",
+            "##### Comment {0} - 2018-01-01 12:00:",
             "Test comment body.",
             "",
             "## Schedule",
@@ -63,11 +63,11 @@ class issue_helpersTest(unittest.TestCase):
             "",
             "## Issues",
             "",
-            "### [ ] Issue {1}: +label:work",
+            "#### [ ] Issue {1}: +label:work",
             "",
-            "#### Title: Test Issue 1",
+            "##### Title: Test Issue 1",
             "",
-            "#### Comment {0} - 2018-01-01 12:00:",
+            "##### Comment {0} - 2018-01-01 12:00:",
             "Test comment body.",
             "",
             "## Schedule",
@@ -84,14 +84,14 @@ class issue_helpersTest(unittest.TestCase):
 
         # Move the cursor and then insert for an issue.
         self.nvim.current.window.cursor = (17, 0)
-        final_buffer[10] = "### [ ] Issue {1}: +label:work +edit"
+        final_buffer[10] = "#### [ ] Issue {1}: +label:work +edit"
         insert_edit_tag(self.nvim, "issue")
         assert self.nvim.current.buffer.lines == final_buffer
 
         # Reset the buffer and insert for comment.
-        final_buffer[10] = "### [ ] Issue {1}: +label:work"
+        final_buffer[10] = "#### [ ] Issue {1}: +label:work"
         self.nvim.current.buffer.lines = deepcopy(final_buffer)
-        final_buffer[14] = "#### Comment {0} - 2018-01-01 12:00: +edit"
+        final_buffer[14] = "##### Comment {0} - 2018-01-01 12:00: +edit"
         insert_edit_tag(self.nvim, "comment")
         assert self.nvim.current.buffer.lines == final_buffer
 
@@ -122,18 +122,18 @@ class issue_helpersTest(unittest.TestCase):
             "",
             "## Issues",
             "",
-            "### [ ] Issue {1}: +label:work",
+            "#### [ ] Issue {1}: +label:work",
             "",
-            "#### Title: Test Issue 1",
+            "##### Title: Test Issue 1",
             "",
-            "#### Comment {0} - 2018-01-01 12:00:",
+            "##### Comment {0} - 2018-01-01 12:00:",
             "Test comment body.",
             "",
-            "### [ ] Issue {00}: +new",
+            "#### [ ] Issue {00}: +new",
             "",
-            "#### Title: ",
+            "##### Title: ",
             "",
-            "#### Comment {0} - 0000-00-00 00:00: +new",
+            "##### Comment {0} - 0000-00-00 00:00: +new",
             "",
             "## Schedule",
             "",
@@ -143,7 +143,7 @@ class issue_helpersTest(unittest.TestCase):
         # Check a new issue is added, and the cursor is moved correctly.
         insert_new_issue(self.nvim)
         assert self.nvim.current.buffer.lines == final_buffer
-        assert self.nvim.current.window.cursor == (20, 11)
+        assert self.nvim.current.window.cursor == (20, 12)
 
     def test_insert_new_comment(self) -> None:
         final_buffer: List[str] = [
@@ -157,14 +157,14 @@ class issue_helpersTest(unittest.TestCase):
             "",
             "## Issues",
             "",
-            "### [ ] Issue {1}: +label:work",
+            "#### [ ] Issue {1}: +label:work",
             "",
-            "#### Title: Test Issue 1",
+            "##### Title: Test Issue 1",
             "",
-            "#### Comment {0} - 2018-01-01 12:00:",
+            "##### Comment {0} - 2018-01-01 12:00:",
             "Test comment body.",
             "",
-            "#### Comment {1} - 0000-00-00 00:00: +new",
+            "##### Comment {1} - 0000-00-00 00:00: +new",
             "",
             "",
             "## Schedule",
@@ -197,11 +197,11 @@ class issue_helpersTest(unittest.TestCase):
             "",
             "## Issues",
             "",
-            "### [ ] Issue {1}: +label:work",
+            "#### [ ] Issue {1}: +label:work",
             "",
-            "#### Title: Test Issue 1",
+            "##### Title: Test Issue 1",
             "",
-            "#### Comment {0} - 2018-01-01 12:00:",
+            "##### Comment {0} - 2018-01-01 12:00:",
             "Test comment body.",
             "",
             "## Schedule",
@@ -216,12 +216,12 @@ class issue_helpersTest(unittest.TestCase):
 
         # Move the cursor and then complete the issue.
         self.nvim.current.window.cursor = (17, 0)
-        final_buffer[10] = "### [X] Issue {1}: +label:work"
+        final_buffer[10] = "#### [X] Issue {1}: +label:work"
         toggle_issue_completion(self.nvim)
         assert self.nvim.current.buffer.lines == final_buffer
 
         # Toggle back
-        final_buffer[10] = "### [ ] Issue {1}: +label:work"
+        final_buffer[10] = "#### [ ] Issue {1}: +label:work"
         toggle_issue_completion(self.nvim)
         assert self.nvim.current.buffer.lines == final_buffer
 
