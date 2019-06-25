@@ -19,8 +19,8 @@ from ..helpers.neovim_helpers import (
 from ..utils.constants import (
     EMPTY_TODO,
     GITHUB_TODO,
-    HEADING_3,
     HEADING_4,
+    HEADING_5,
     ISSUE_COMMENT,
     ISSUE_HEADING,
     ISSUE_START,
@@ -93,9 +93,9 @@ def insert_new_issue(nvim: Nvim) -> None:
     current_buffer: List[str] = get_buffer_contents(nvim)
     new_line_number: int = get_section_line(current_buffer, SCHEDULE_HEADING) - 1
 
-    issue_start: str = f"{HEADING_3} {EMPTY_TODO} Issue {{00}}: +new"
-    title_line: str = f"{HEADING_4} Title: "
-    comment_line: str = f"{HEADING_4} Comment {{0}} - 0000-00-00 00:00: +new"
+    issue_start: str = f"{HEADING_4} {EMPTY_TODO} Issue {{00}}: +new"
+    title_line: str = f"{HEADING_5} Title: "
+    comment_line: str = f"{HEADING_5} Comment {{0}} - 0000-00-00 00:00: +new"
 
     new_issue: List[str] = ["", issue_start, "", title_line, "", comment_line]
 
@@ -160,7 +160,7 @@ def insert_new_comment(nvim: Nvim) -> None:
     # Add a new issue comment line, and set the line, before moving the cursor
     # there.
     header_line: str = (
-        f"{HEADING_4} Comment {{{comment_number + 1}}} - 0000-00-00 00:00: +new"
+        f"{HEADING_5} Comment {{{comment_number + 1}}} - 0000-00-00 00:00: +new"
     )
     new_comment: List[str] = ["", header_line, ""]
 

@@ -34,8 +34,8 @@ augroup nvim_diary_template_keybinds
     autocmd FileType markdown setlocal foldexpr=GetDiaryFold(v:lnum)
 augroup END
 
-let s:issue_start = '^### \[[ X]\] Issue {\d\{1,}}:'
-let s:comment_start = '^#### Comment {\d\{1,}} - '
+let s:issue_start = '^#### \[[ X]\] Issue {\d\{1,}}:'
+let s:comment_start = '^##### Comment {\d\{1,}} - '
 let s:date_time_regex = '\d\{4}-\d\{2}-\d\{2} \d\{2}:\d\{2}'
 let s:label = '+label:\a\{1,}'
 
@@ -63,7 +63,7 @@ function! DiaryFoldText()
 
     " Add the completion status, then the issue number, then title.
     " Finally append each label
-    let l:issue_fold_text = "### " . l:completed_status
+    let l:issue_fold_text = "#### " . l:completed_status
     let l:issue_fold_text = l:issue_fold_text . " Issue {" . l:issue_number . "} - Title: "
     let l:issue_fold_text = l:issue_fold_text . l:issue_topic . "."
 
@@ -83,7 +83,7 @@ function! DiaryFoldText()
     let l:comment_number = matchstr(l:start_line, '\d\{1,}')
     let l:comment_date_time = matchstr(l:start_line, s:date_time_regex)
 
-    return '#### Comment {' . l:comment_number . "} - " . l:comment_date_time . ": " . l:comment_brief . "."
+    return '##### Comment {' . l:comment_number . "} - " . l:comment_date_time . ": " . l:comment_brief . "."
   else
     return l:start_line
 
@@ -94,6 +94,7 @@ function! GetDiaryFold(lnum)
   let l:indent_level = IndentLevel(a:lnum)
 
   let l:heading = '^## '
+  let l:sub_heading = '^### '
 
   " If its a top level heading, it shouldn't be folded.
   if l:line =~? l:heading
@@ -105,6 +106,15 @@ function! GetDiaryFold(lnum)
     return '0'
   endif
 
+  " If its a sub level heading, it shouldn't be folded.
+  if l:line =~? l:sub_heading
+    return '0'
+  endif
+
+  " If its next to a sub level heading, it shouldn't be folded to maintain the new line.
+  if getline(a:lnum + 1) =~? l:sub_heading
+    return '0'
+  endif
   " If its the start of an issue, fold to level 1.
   if l:line =~? s:issue_start
     return '>1'
