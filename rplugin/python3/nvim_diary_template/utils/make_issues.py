@@ -32,6 +32,7 @@ def format_issues(
 
     issue_lines: List[str] = []
     full_issue_list: DefaultDict[str, List[GitHubIssue]] = defaultdict(list)
+    full_issue_list["other"] = []
 
     if should_sort:
         issues = sort_issues(options, issues)
@@ -44,12 +45,14 @@ def format_issues(
         else:
             full_issue_list["other"].append(issue)
 
+    final_issue_list = dict(reversed(list(full_issue_list.items())))
+
     # For every issue, format it into markdown lines that are easily read.
     group_name: str
     group: List[GitHubIssue]
-    for group_name, group in full_issue_list.items():
+    for group_name, group in final_issue_list.items():
 
-        if [group_name] != list(full_issue_list.keys()):
+        if [group_name] != list(full_issue_list.keys()) and group != []:
             issue_lines.append(f"{HEADING_3} {group_name.title()}")
             issue_lines.append("")
 
