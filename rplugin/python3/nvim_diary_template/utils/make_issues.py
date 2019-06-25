@@ -2,8 +2,7 @@
 
 Functions to build and parse the issue section of the markdown.
 """
-from collections import defaultdict
-from typing import DefaultDict, Dict, List, Optional, Union
+from typing import Dict, List, Optional, Union
 
 from neovim import Nvim
 
@@ -31,7 +30,13 @@ def format_issues(
     """
 
     issue_lines: List[str] = []
-    full_issue_list: DefaultDict[str, List[GitHubIssue]] = defaultdict(list)
+    full_issue_list: Dict[str, List[GitHubIssue]] = {}
+
+    # Pre-make lists
+    # This is chosen over defaultdicts since we want to ensure the insert order.
+    # Also means the ordering of the option is the ordering of the issues.
+    for label in options.issue_groups:
+        full_issue_list[label] = []
     full_issue_list["other"] = []
 
     if should_sort:
@@ -45,12 +50,10 @@ def format_issues(
         else:
             full_issue_list["other"].append(issue)
 
-    final_issue_list = dict(reversed(list(full_issue_list.items())))
-
     # For every issue, format it into markdown lines that are easily read.
     group_name: str
     group: List[GitHubIssue]
-    for group_name, group in final_issue_list.items():
+    for group_name, group in full_issue_list.items():
 
         if [group_name] != list(full_issue_list.keys()) and group != []:
             issue_lines.append(f"{HEADING_3} {group_name.title()}")
