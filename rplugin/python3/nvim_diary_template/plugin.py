@@ -1,7 +1,6 @@
 # pylint: disable=missing-docstring, W0201
 from datetime import date
-from functools import wraps
-from typing import Any, Callable, List
+from typing import Any, List
 
 import neovim
 from dateutil import parser
@@ -216,21 +215,3 @@ class DiaryTemplatePlugin:
 
     def flush_messages(self) -> None:
         self._nvim.out_write("\n")
-
-
-def if_active(function: Callable[[DiaryTemplatePlugin], None]) -> Callable[[], None]:
-    """if_active
-
-    A decorator for a function, such that it is only run when
-    nvim_diary_template is ready.
-
-    Taken from numirias/semshi
-    """
-
-    @wraps(function)
-    def wrapper(self: DiaryTemplatePlugin) -> None:
-        if not self.options.active:
-            return
-        function(self)
-
-    return wrapper
