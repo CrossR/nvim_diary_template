@@ -295,6 +295,90 @@ class issue_helpersTest(unittest.TestCase):
         assert self.nvim.current.buffer.lines == final_buffer
         assert self.nvim.current.window.cursor == (31, 12)
 
+        # Check that an issue is added in the correct subgroup
+        final_buffer = [
+            "<!---",
+            "    Date: 2018-01-01",
+            "    Tags:",
+            "--->",
+            "# Diary for 2018-01-01",
+            "",
+            "## Notes",
+            "",
+            "## Issues",
+            "",
+            "### Work",
+            "",
+            "#### [ ] Issue {1}: +label:work",
+            "",
+            "##### Title: Test Issue 1",
+            "",
+            "##### Comment {0} - 2018-01-01 12:00:",
+            "Test comment body.",
+            "",
+            "#### [ ] Issue {00}: +new",
+            "",
+            "##### Title: ",
+            "",
+            "##### Comment {0} - 0000-00-00 00:00: +new",
+            "",
+            "### Personal",
+            "",
+            "#### [ ] Issue {2}: +label:personal",
+            "",
+            "##### Title: Test Issue 1",
+            "",
+            "##### Comment {0} - 2018-01-01 12:00:",
+            "Test comment body.",
+            "",
+            "## Schedule",
+            "",
+            "",
+        ]
+
+        # Set the buffer to contain groups.
+        self.options.issue_groups = [["work", "personal"]]
+        self.nvim.current.buffer.lines = [
+            "<!---",
+            "    Date: 2018-01-01",
+            "    Tags:",
+            "--->",
+            "# Diary for 2018-01-01",
+            "",
+            "## Notes",
+            "",
+            "## Issues",
+            "",
+            "### Work",
+            "",
+            "#### [ ] Issue {1}: +label:work",
+            "",
+            "##### Title: Test Issue 1",
+            "",
+            "##### Comment {0} - 2018-01-01 12:00:",
+            "Test comment body.",
+            "",
+            "### Personal",
+            "",
+            "#### [ ] Issue {2}: +label:personal",
+            "",
+            "##### Title: Test Issue 1",
+            "",
+            "##### Comment {0} - 2018-01-01 12:00:",
+            "Test comment body.",
+            "",
+            "## Schedule",
+            "",
+            "",
+        ]
+
+        # Set the cursor inside the Work group, so an issue
+        # should be added there.
+        self.nvim.current.window.cursor = (12, 0)
+        insert_new_issue(self.nvim)
+        assert self.nvim.current.buffer.lines == final_buffer
+        # assert self.nvim.current.window.cursor == (31, 12)
+
     def test_insert_new_group_comment(self) -> None:
         final_buffer: List[str] = [
             "<!---",
