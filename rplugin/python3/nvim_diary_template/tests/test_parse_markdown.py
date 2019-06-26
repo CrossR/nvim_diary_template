@@ -217,6 +217,8 @@ class parse_markdownTest(unittest.TestCase):
             " * Line 2",
             " * Line 3",
             "",
+            "### Other",
+            "",
             "#### [ ] Issue {00}: +new",
             "",
             "##### Title: New Issue 2",
