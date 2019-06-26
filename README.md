@@ -145,3 +145,10 @@ let g:nvim_diary_template#sort_order = {
             \ "inprogress": 0,
             \ }
 ```
+
+The issue grouping (i.e. add a subheading under issues for certain issues, and
+"Other" for the remaining) can be set with
+
+```viml
+let g:nvim_diary_template#issue_groups = ['work', 'personal']
+```
