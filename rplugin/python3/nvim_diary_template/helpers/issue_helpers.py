@@ -25,6 +25,7 @@ from ..utils.constants import (
     ISSUE_HEADING,
     ISSUE_START,
     SCHEDULE_HEADING,
+    SUBGROUP_HEADING,
     TODO_IN_PROGRESS_REGEX,
     VIMWIKI_TODO,
 )
@@ -128,10 +129,11 @@ def insert_new_comment(nvim: Nvim) -> None:
     relevant_buffer: List[str] = current_buffer[current_line:schedule_header_index]
     new_line_number: int = -1
 
-    # Search the buffer forwards and find the start of the next issue, to
-    # insert before it. Then, find the last comment number and increment it.
+    # Search the buffer forwards and find the start of the next issue, or the
+    # sub-group heading to insert before it. Then, find the last comment number
+    # and increment it.
     for index, line in enumerate(relevant_buffer):
-        if re.findall(ISSUE_START, line):
+        if re.findall(ISSUE_START, line) or re.findall(SUBGROUP_HEADING, line):
             new_line_number = index
 
             break
