@@ -24,6 +24,7 @@ augroup nvim_diary_template_keybinds
     " Grab/Sort Issues
     autocmd FileType markdown nnoremap <silent><buffer> <leader>wgi :DiaryGetIssues<CR>
     autocmd FileType markdown nnoremap <silent><buffer> <leader>wsi :DiarySortIssues<CR>
+    autocmd FileType markdown nnoremap <silent><buffer> <leader>wsg :DiarySwapGroupSorting<CR>
 
     " Calendar Binds
     autocmd FileType markdown nnoremap <silent><buffer> <leader>wgc :DiaryGetCalendar<CR>
