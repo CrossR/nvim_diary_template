@@ -318,14 +318,12 @@ class issue_helpersTest(unittest.TestCase):
             "",
             "##### Comment {1} - 0000-00-00 00:00: +new",
             "",
+            "",
             "### Personal",
             "",
             "#### [ ] Issue {2}: +label:personal",
             "",
             "##### Title: Test Issue 1",
-            "",
-            "##### Comment {0} - 2018-01-01 12:00:",
-            "Test comment body.",
             "",
             "##### Comment {0} - 2018-01-01 12:00:",
             "Test comment body.",
@@ -382,7 +380,7 @@ class issue_helpersTest(unittest.TestCase):
         self.nvim.current.window.cursor = (13, 0)
         insert_new_comment(self.nvim)
         assert self.nvim.current.buffer.lines == final_buffer
-        assert self.nvim.current.window.cursor == (19, 0)
+        assert self.nvim.current.window.cursor == (21, 0)
 
     def test_toggle_issue_completion(self) -> None:
         final_buffer: List[str] = [
