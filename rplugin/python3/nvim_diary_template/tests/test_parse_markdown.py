@@ -189,6 +189,97 @@ class parse_markdownTest(unittest.TestCase):
         result: List[GitHubIssue] = parse_markdown_file_for_issues(self.nvim)
         assert result == issues
 
+    def test_parse_markdown_file_for_grouped_issues(self) -> None:
+        self.nvim.current.buffer.lines = [
+            "<!---",
+            "    Date: 2018-01-01",
+            "    Tags:",
+            "--->",
+            "# Diary for 2018-01-01",
+            "",
+            "## Notes",
+            "",
+            "## Issues",
+            "",
+            "### Work",
+            "",
+            "#### [ ] Issue {1}: +label:work",
+            "",
+            "##### Title: Test Issue 1",
+            "",
+            "##### Comment {0} - 2018-01-01 12:00:",
+            "Test comment body.",
+            "",
+            "##### Comment {1} - 0000-00-00 00:00: +new",
+            "Test comment list:",
+            "",
+            " * Line 1",
+            " * Line 2",
+            " * Line 3",
+            "",
+            "#### [ ] Issue {00}: +new",
+            "",
+            "##### Title: New Issue 2",
+            "",
+            "##### Comment {0} - 0000-00-00 00:00: +new",
+            "New issue body.",
+            "",
+            "## Schedule",
+            "",
+            "- 10:00 - 11:00: Event 1",
+            "- 19:00 - 22:00: Event 2",
+            "- 25/01/2018 12:00 - 25/01/2018 13:00: Meeting with Alex",
+            "- 11:00 - 22:00: Event 4 {cal:Nvim Notes}",
+        ]
+
+        issues: List[GitHubIssue] = [
+            GitHubIssue(
+                number=1,
+                title="Test Issue 1",
+                complete=False,
+                labels=["work"],
+                metadata=[],
+                all_comments=[
+                    GitHubIssueComment(
+                        number=0,
+                        body=["Test comment body."],
+                        tags=[],
+                        updated_at="2018-01-01 12:00",
+                    ),
+                    GitHubIssueComment(
+                        number=1,
+                        body=[
+                            "Test comment list:",
+                            "",
+                            " * Line 1",
+                            " * Line 2",
+                            " * Line 3",
+                        ],
+                        tags=["new"],
+                        updated_at="0000-00-00 00:00",
+                    ),
+                ],
+            ),
+            GitHubIssue(
+                number=0,
+                title="New Issue 2",
+                complete=False,
+                labels=[],
+                metadata=["new"],
+                all_comments=[
+                    GitHubIssueComment(
+                        number=0,
+                        body=["New issue body."],
+                        tags=["new"],
+                        updated_at="0000-00-00 00:00",
+                    )
+                ],
+            ),
+        ]
+
+        result: List[GitHubIssue] = parse_markdown_file_for_issues(self.nvim)
+        assert result == issues
+
     def test_combine_events(self) -> None:
         markdown_events: List[CalendarEvent] = [
             CalendarEvent(name="Event 1", start="10:00", end="11:00"),
