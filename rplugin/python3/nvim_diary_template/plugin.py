@@ -1,7 +1,7 @@
 # pylint: disable=missing-docstring, W0201
 from datetime import date
 from functools import wraps
-from typing import Callable, List
+from typing import Any, Callable, List
 
 import neovim
 from dateutil import parser
@@ -205,6 +205,14 @@ class DiaryTemplatePlugin:
         self.upload_issue_completions(True)
 
         self.flush_messages()
+
+    @neovim.command("DiarySwapGroupSorting")
+    def swap_group_sorting(self) -> None:
+        def rotate(input_list: List[Any], pivot: int) -> List[Any]:
+            return input_list[pivot:] + input_list[:pivot]
+
+        self.options.issue_groups = rotate(self.options.issue_groups, 1)
+        self.sort_issues()
 
     def flush_messages(self) -> None:
         self._nvim.out_write("\n")

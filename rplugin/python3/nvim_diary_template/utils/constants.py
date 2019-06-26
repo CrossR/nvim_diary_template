@@ -44,6 +44,7 @@ ISSUE_COMMENT = (
 )
 ISSUE_METADATA = r"\+[a-zA-Z0-9]+"
 ISSUE_LABELS = r"\+label:[a-zA-Z0-9]+"
+SUBGROUP_HEADING = r"^### [a-zA-Z0-9]"
 
 # Event related Regex
 EVENT_REGEX = r"(?<=: ).*$"
@@ -65,6 +66,11 @@ PADDING = "    "
 PADDING_SIZE = 4
 EMPTY_TODO = "[ ]"
 BULLET_POINT = "-"
+
+# Formatting constants
+TITLE_LEVEL = 1
+CATEGORY_LEVEL = 2
+SUBGROUP_HEADING_LEVEL = 3
 
 # Options
 

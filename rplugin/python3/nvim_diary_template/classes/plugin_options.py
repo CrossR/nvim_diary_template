@@ -33,7 +33,7 @@ class PluginOptions:
         self.auto_generate_diary_index = False
         self.use_google_calendar: bool = True
         self.calendar_filter_list: List[str] = []
-        self.issue_groups: List[str] = []
+        self.issue_groups: List[List[str]] = [[]]
         self.add_to_google_cal: bool = False
         self.google_cal_name: str = "primary"
         self.timezone: str = "Europe/London"

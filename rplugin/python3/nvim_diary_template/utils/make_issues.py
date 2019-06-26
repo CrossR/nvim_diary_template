@@ -35,7 +35,7 @@ def format_issues(
     # Pre-make lists
     # This is chosen over defaultdicts since we want to ensure the insert order.
     # Also means the ordering of the option is the ordering of the issues.
-    for label in options.issue_groups:
+    for label in options.issue_groups[0]:
         full_issue_list[label] = []
     full_issue_list["other"] = []
 
@@ -44,7 +44,7 @@ def format_issues(
 
     issue: GitHubIssue
     for issue in issues:
-        common_label = list(set(issue.labels).intersection(options.issue_groups))
+        common_label = list(set(issue.labels).intersection(options.issue_groups[0]))
         if common_label != []:
             full_issue_list[common_label[0]].append(issue)
         else:

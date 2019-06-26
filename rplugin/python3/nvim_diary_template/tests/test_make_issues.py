@@ -248,3 +248,108 @@ class make_issuesTest(unittest.TestCase):
         self.set_buffer()
         set_issues_from_issues_list(self.nvim, self.options, self.issues, False)
         assert self.nvim.current.buffer.lines == final_buffer
+
+    def test_set_issues_from_issues_list_with_groups(self) -> None:
+        final_buffer: List[str] = [
+            "<!---",
+            "    Date: 2018-01-01",
+            "    Tags:",
+            "--->",
+            "# Diary for 2018-01-01",
+            "",
+            "## Notes",
+            "",
+            "## Issues",
+            "",
+            "### Work",
+            "",
+            "#### [ ] Issue {3}: +label:inprogress +label:work",
+            "",
+            "##### Title: Test Issue 3",
+            "",
+            "##### Comment {0} - 2018-08-19 18:18:",
+            "Line 1",
+            "Line 2",
+            "",
+            "##### Comment {1} - 2018-08-19 12:18: +edit",
+            "Line 2-1",
+            "Line 2-2",
+            "",
+            "### Personal",
+            "",
+            "#### [ ] Issue {1}: +label:backlog +label:personal",
+            "",
+            "##### Title: Test Issue",
+            "",
+            "##### Comment {0} - 2018-08-19 18:18:",
+            "Line 1",
+            "Line 2",
+            "",
+            "#### [X] Issue {2}: +label:personal",
+            "",
+            "##### Title: Test Issue 2",
+            "",
+            "##### Comment {0} - 2018-08-19 18:18:",
+            "Line 1",
+            "Line 2",
+            "",
+            "## Schedule",
+            "",
+        ]
+
+        # Check buffer is properly set.
+        self.options.issue_groups = [["work", "personal"]]
+        set_issues_from_issues_list(self.nvim, self.options, self.issues, True)
+        assert self.nvim.current.buffer.lines == final_buffer
+
+        final_buffer = [
+            "<!---",
+            "    Date: 2018-01-01",
+            "    Tags:",
+            "--->",
+            "# Diary for 2018-01-01",
+            "",
+            "## Notes",
+            "",
+            "## Issues",
+            "",
+            "### Work",
+            "",
+            "#### [ ] Issue {3}: +label:inprogress +label:work",
+            "",
+            "##### Title: Test Issue 3",
+            "",
+            "##### Comment {0} - 2018-08-19 18:18:",
+            "Line 1",
+            "Line 2",
+            "",
+            "##### Comment {1} - 2018-08-19 12:18: +edit",
+            "Line 2-1",
+            "Line 2-2",
+            "",
+            "### Personal",
+            "",
+            "#### [ ] Issue {1}: +label:backlog +label:personal",
+            "",
+            "##### Title: Test Issue",
+            "",
+            "##### Comment {0} - 2018-08-19 18:18:",
+            "Line 1",
+            "Line 2",
+            "",
+            "#### [X] Issue {2}: +label:personal",
+            "",
+            "##### Title: Test Issue 2",
+            "",
+            "##### Comment {0} - 2018-08-19 18:18:",
+            "Line 1",
+            "Line 2",
+            "",
+            "## Schedule",
+            "",
+        ]
+
+        # Check sorting works.
+        self.set_buffer()
+        set_issues_from_issues_list(self.nvim, self.options, self.issues, False)
+        assert self.nvim.current.buffer.lines == final_buffer

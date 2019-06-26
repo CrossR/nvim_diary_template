@@ -3,8 +3,9 @@
 Simple helpers to help interfacing with NeoVim.
 """
 
+import re
 from os import path
-from typing import List
+from typing import List, Iterable
 
 from neovim import Nvim
 
@@ -65,19 +66,45 @@ def set_line_content(
 def get_section_line(buffer_contents: List[str], section_line: str) -> int:
     """get_section_line
 
-    Given a buffer, get the line that the schedule section starts on.
+    Given a buffer, get the line that the given section starts on.
     """
 
     section_index: int = -1
 
-    # Do the search in reverse since we know the schedule comes last
-    for line_index, line in enumerate(reversed(buffer_contents)):
+    # Do the search in reverse since on average that will be better.
+    buffer_iterator: Iterable[str] = reversed(buffer_contents)
+
+    for line_index, line in enumerate(buffer_iterator):
         if line == section_line:
             section_index = line_index
 
     final_index: int = len(buffer_contents) - section_index
 
     return final_index
+
+
+def get_next_heading_of_level(buffer_contents: List[str], level: int) -> int:
+    """get_next_heading_of_level
+
+    Given a buffer, get the line that the next buffer of the given level occurs on.
+    Will either be the given level, or any lower level. Lower in this content means
+    that if given 3, a heading of level 3, 2 or 1 will be valid.
+
+    This should most likley be used with get_section_line, to validate that the
+    chosen heading falls inside the correct area.
+    """
+
+    section_index: int = -1
+
+    # Search forward in the buffer and find the next line of interest.
+    buffer_iterator: Iterable[str] = iter(buffer_contents)
+
+    for line_index, line in enumerate(buffer_iterator):
+        if re.findall(rf"^#{{1,{level}}} ", line):
+            section_index = line_index
+            break
+
+    return section_index
 
 
 def buffered_info_message(nvim: Nvim, message: str) -> None:
