@@ -33,6 +33,7 @@ from ..utils.constants import (
     ISSUE_START,
     ISSUE_TITLE,
     SCHEDULE_HEADING,
+    SUBGROUP_HEADING,
     TIME_FORMAT,
     TIME_REGEX,
     TODO_IS_CHECKED,
@@ -178,6 +179,18 @@ def parse_buffer_issues(issue_lines: List[str]) -> List[GitHubIssue]:
             ].all_comments
             current_comment: List[str] = current_issue[comment_number].body
             current_comment.append(line)
+
+        # However, we need to make sure we haven't hit a sub-group heading,
+        # so check for that as well. If it was, remove the line and also
+        # the previous line (if its whitespace).
+        # We also want to close the issue, since its finished now.
+        if (
+            re.findall(SUBGROUP_HEADING, line)
+            and issue_number != -1
+            and comment_number != -1
+        ):
+            current_comment.pop()
+            comment_number = -1
 
     # Strip any trailing new lines from the comments
     for issue in formatted_issues:

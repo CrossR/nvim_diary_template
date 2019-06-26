@@ -44,6 +44,7 @@ ISSUE_COMMENT = (
 )
 ISSUE_METADATA = r"\+[a-zA-Z0-9]+"
 ISSUE_LABELS = r"\+label:[a-zA-Z0-9]+"
+SUBGROUP_HEADING = r"^### [a-zA-Z0-9]"
 
 # Event related Regex
 EVENT_REGEX = r"(?<=: ).*$"
