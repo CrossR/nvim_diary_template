@@ -298,7 +298,7 @@ class make_issuesTest(unittest.TestCase):
         ]
 
         # Check buffer is properly set.
-        self.options.issue_groups = ["work", "personal"]
+        self.options.issue_groups = [["work", "personal"]]
         set_issues_from_issues_list(self.nvim, self.options, self.issues, True)
         assert self.nvim.current.buffer.lines == final_buffer
 

@@ -139,7 +139,7 @@ class make_markdown_fileTest(unittest.TestCase):
 
         nvim = MockNvim()
         nvim.current.buffer.name = "/home/crossr/diary/2018-01-01.md"
-        options.issue_groups = ["personal"]
+        options.issue_groups = [["personal"]]
         make_diary(nvim, options, gcal, github)
         final_grouped_markdown: List[str] = [
             "<!---",

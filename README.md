@@ -147,8 +147,11 @@ let g:nvim_diary_template#sort_order = {
 ```
 
 The issue grouping (i.e. add a subheading under issues for certain issues, and
-"Other" for the remaining) can be set with
+"Other" for the remaining) can be set with the following
 
 ```viml
-let g:nvim_diary_template#issue_groups = ['work', 'personal']
+let g:nvim_diary_template#issue_groups = [['work', 'personal']]
 ```
+
+Where this is a list of lists, for alternative sorting methods. Calling
+`:DiarySwapGroupSorting` will move to the next sorting style.

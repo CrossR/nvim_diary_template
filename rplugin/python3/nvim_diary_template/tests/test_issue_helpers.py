@@ -255,7 +255,7 @@ class issue_helpersTest(unittest.TestCase):
         ]
 
         # Set the buffer to contain groups.
-        self.options.issue_groups = ["work", "personal"]
+        self.options.issue_groups = [["work", "personal"]]
         self.nvim.current.buffer.lines = [
             "<!---",
             "    Date: 2018-01-01",
@@ -334,7 +334,7 @@ class issue_helpersTest(unittest.TestCase):
         ]
 
         # Set the buffer to contain groups.
-        self.options.issue_groups = ["work", "personal"]
+        self.options.issue_groups = [["work", "personal"]]
         self.nvim.current.buffer.lines = [
             "<!---",
             "    Date: 2018-01-01",
