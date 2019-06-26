@@ -14,6 +14,7 @@ from ..utils.constants import (
     EMPTY_TODO,
     HEADING_3,
     HEADING_4,
+    HEADING_5,
     ISSUE_HEADING,
     SCHEDULE_HEADING,
     VIMWIKI_TODO,
@@ -29,34 +30,58 @@ def format_issues(
     """
 
     issue_lines: List[str] = []
+    full_issue_list: Dict[str, List[GitHubIssue]] = {}
+
+    # Pre-make lists
+    # This is chosen over defaultdicts since we want to ensure the insert order.
+    # Also means the ordering of the option is the ordering of the issues.
+    for label in options.issue_groups:
+        full_issue_list[label] = []
+    full_issue_list["other"] = []
 
     if should_sort:
         issues = sort_issues(options, issues)
 
-    # For every issue, format it into markdown lines that are easily read.
+    issue: GitHubIssue
     for issue in issues:
-
-        if issue.complete:
-            issue_start = f"{HEADING_3} {VIMWIKI_TODO} Issue {{{issue.number}}}:"
+        common_label = list(set(issue.labels).intersection(options.issue_groups))
+        if common_label != []:
+            full_issue_list[common_label[0]].append(issue)
         else:
-            issue_start = f"{HEADING_3} {EMPTY_TODO} Issue {{{issue.number}}}:"
+            full_issue_list["other"].append(issue)
 
-        title_line = f"{HEADING_4} Title: {issue.title}"
+    # For every issue, format it into markdown lines that are easily read.
+    group_name: str
+    group: List[GitHubIssue]
+    for group_name, group in full_issue_list.items():
 
-        # Apply the labels, and tags.
-        for label in issue.labels:
-            issue_start += f" +label:{label}"
+        if [group_name] != list(full_issue_list.keys()) and group != []:
+            issue_lines.append(f"{HEADING_3} {group_name.title()}")
+            issue_lines.append("")
 
-        for tag in issue.metadata:
-            issue_start += f" +{tag}"
+        for issue in group:
 
-        formatted_comments: List[str] = format_issue_comments(issue.all_comments)
+            if issue.complete:
+                issue_start = f"{HEADING_4} {VIMWIKI_TODO} Issue {{{issue.number}}}:"
+            else:
+                issue_start = f"{HEADING_4} {EMPTY_TODO} Issue {{{issue.number}}}:"
 
-        issue_lines.append(issue_start.strip())
-        issue_lines.append("")
-        issue_lines.append(title_line)
-        issue_lines.append("")
-        issue_lines.extend(formatted_comments)
+            title_line = f"{HEADING_5} Title: {issue.title}"
+
+            # Apply the labels, and tags.
+            for label in issue.labels:
+                issue_start += f" +label:{label}"
+
+            for tag in issue.metadata:
+                issue_start += f" +{tag}"
+
+            formatted_comments: List[str] = format_issue_comments(issue.all_comments)
+
+            issue_lines.append(issue_start.strip())
+            issue_lines.append("")
+            issue_lines.append(title_line)
+            issue_lines.append("")
+            issue_lines.extend(formatted_comments)
 
     return issue_lines
 
@@ -73,7 +98,7 @@ def format_issue_comments(comments: List[GitHubIssueComment]) -> List[str]:
 
     for comment_num, comment in enumerate(comments):
 
-        header_line = f"{HEADING_4} Comment {{{comment_num}}} - {comment.updated_at}:"
+        header_line = f"{HEADING_5} Comment {{{comment_num}}} - {comment.updated_at}:"
 
         # Apply the tags if there are any.
         for tag in comment.tags:

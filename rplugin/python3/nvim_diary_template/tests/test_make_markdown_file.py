@@ -4,6 +4,7 @@ from typing import Any, Dict, List
 from dateutil import parser
 
 from ..classes.calendar_event_class import CalendarEvent
+from ..classes.plugin_options import PluginOptions
 from ..classes.nvim_github_class import SimpleNvimGithub
 from ..utils.constants import ISO_FORMAT
 from ..utils.make_markdown_file import generate_markdown_metadata, make_diary
@@ -24,7 +25,7 @@ class make_markdown_fileTest(unittest.TestCase):
         api_setup = get_mock_github()
 
         github_api: Any = api_setup[0]
-        options: Any = api_setup[1]
+        options: PluginOptions = api_setup[1]
 
         github: SimpleNvimGithub = SimpleNvimGithub(nvim, options, github_api)
 
@@ -99,31 +100,31 @@ class make_markdown_fileTest(unittest.TestCase):
             "",
             "## Issues",
             "",
-            "### [ ] Issue {2}: +label:inprogress +label:work",
+            "#### [ ] Issue {2}: +label:inprogress +label:work",
             "",
-            "#### Title: Test Issue 2",
+            "##### Title: Test Issue 2",
             "",
-            "#### Comment {0} - 2018-01-01 10:00:",
+            "##### Comment {0} - 2018-01-01 10:00:",
             "This is the second issue body:",
             "    * Item 1",
             "    * Item 2",
             "",
-            "#### Comment {1} - 2018-08-19 19:18:",
+            "##### Comment {1} - 2018-08-19 19:18:",
             "Line 1",
             "Line 2",
             "",
-            "#### Comment {2} - 2018-08-19 13:18:",
+            "##### Comment {2} - 2018-08-19 13:18:",
             "Line 2-1",
             "Line 2-2",
             "",
-            "### [ ] Issue {1}: +label:backlog +label:personal",
+            "#### [ ] Issue {1}: +label:backlog +label:personal",
             "",
-            "#### Title: Test Issue",
+            "##### Title: Test Issue",
             "",
-            "#### Comment {0} - 2018-01-01 10:00:",
+            "##### Comment {0} - 2018-01-01 10:00:",
             "This is the main issue body",
             "",
-            "#### Comment {1} - 2018-08-19 19:18:",
+            "##### Comment {1} - 2018-08-19 19:18:",
             "Line 1",
             "Line 2",
             "",
@@ -135,6 +136,62 @@ class make_markdown_fileTest(unittest.TestCase):
         ]
 
         assert final_markdown == nvim.current.buffer.lines
+
+        nvim = MockNvim()
+        nvim.current.buffer.name = "/home/crossr/diary/2018-01-01.md"
+        options.issue_groups = ["personal"]
+        make_diary(nvim, options, gcal, github)
+        final_grouped_markdown: List[str] = [
+            "<!---",
+            "    Date: 2018-01-01",
+            "    Tags:",
+            "--->",
+            "# Diary for 2018-01-01",
+            "",
+            "## Notes",
+            "",
+            "## Issues",
+            "",
+            "### Personal",
+            "",
+            "#### [ ] Issue {1}: +label:backlog +label:personal",
+            "",
+            "##### Title: Test Issue",
+            "",
+            "##### Comment {0} - 2018-01-01 10:00:",
+            "This is the main issue body",
+            "",
+            "##### Comment {1} - 2018-08-19 19:18:",
+            "Line 1",
+            "Line 2",
+            "",
+            "### Other",
+            "",
+            "#### [ ] Issue {2}: +label:inprogress +label:work",
+            "",
+            "##### Title: Test Issue 2",
+            "",
+            "##### Comment {0} - 2018-01-01 10:00:",
+            "This is the second issue body:",
+            "    * Item 1",
+            "    * Item 2",
+            "",
+            "##### Comment {1} - 2018-08-19 19:18:",
+            "Line 1",
+            "Line 2",
+            "",
+            "##### Comment {2} - 2018-08-19 13:18:",
+            "Line 2-1",
+            "Line 2-2",
+            "",
+            "## Schedule",
+            "",
+            "- 10:00 - 11:00: Event 1",
+            "- 19:00 - 22:00: Event 2",
+            "",
+        ]
+
+        assert final_grouped_markdown == nvim.current.buffer.lines
 
     def test_generate_markdown_metadata(self) -> None:
 
