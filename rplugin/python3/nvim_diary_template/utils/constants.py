@@ -67,6 +67,11 @@ PADDING_SIZE = 4
 EMPTY_TODO = "[ ]"
 BULLET_POINT = "-"
 
+# Formatting constants
+TITLE_LEVEL = 1
+CATEGORY_LEVEL = 2
+SUBGROUP_HEADING_LEVEL = 3
+
 # Options
 
 DEFAULT_SORT_ORDER = {

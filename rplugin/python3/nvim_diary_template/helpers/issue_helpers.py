@@ -13,6 +13,7 @@ from ..classes.github_issue_class import GitHubIssue, GitHubIssueComment
 from ..classes.plugin_options import PluginOptions
 from ..helpers.neovim_helpers import (
     get_buffer_contents,
+    get_next_heading_of_level,
     get_section_line,
     set_line_content,
 )
@@ -26,6 +27,7 @@ from ..utils.constants import (
     ISSUE_START,
     SCHEDULE_HEADING,
     SUBGROUP_HEADING,
+    SUBGROUP_HEADING_LEVEL,
     TODO_IN_PROGRESS_REGEX,
     VIMWIKI_TODO,
 )
@@ -91,8 +93,19 @@ def insert_new_issue(nvim: Nvim) -> None:
     """
 
     # Grab the indexes needed to find the issue we are in.
+    current_cursor_pos: int = nvim.current.window.cursor[0]
     current_buffer: List[str] = get_buffer_contents(nvim)
-    new_line_number: int = get_section_line(current_buffer, SCHEDULE_HEADING) - 1
+
+    issue_heading: int = get_section_line(current_buffer, ISSUE_HEADING)
+    schedule_heading: int = get_section_line(current_buffer, SCHEDULE_HEADING)
+
+    if current_cursor_pos < issue_heading:
+        new_line_number = schedule_heading - 1
+    else:
+        offset: int = get_next_heading_of_level(
+            current_buffer[current_cursor_pos:], SUBGROUP_HEADING_LEVEL
+        )
+        new_line_number = current_cursor_pos + offset
 
     issue_start: str = f"{HEADING_4} {EMPTY_TODO} Issue {{00}}: +new"
     title_line: str = f"{HEADING_5} Title: "
