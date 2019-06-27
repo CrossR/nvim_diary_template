@@ -140,3 +140,13 @@ endfunction
 function! IndentLevel(lnum)
     return indent(a:lnum) / &shiftwidth
 endfunction
+
+if has('nvim')
+  finish
+endif
+
+let s:diary_plugin = yarp#py3('diary_template_wrapper')
+
+func! DiaryEcho(v)
+  return s:diary_plugin.call('diary_echo', a:v)
+endfunc

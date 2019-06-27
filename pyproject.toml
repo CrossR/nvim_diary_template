@@ -4,6 +4,9 @@ version = "0.1.0"
 description = "A diary template creator plugin for Neovim."
 authors = ["CrossR <sc13rjc@leeds.ac.uk>"]
 readme = "README.md"
+packages = [
+    { include = "nvim_diary_template", from = "rplugin/python3/" },
+]
 
 [tool.poetry.dependencies]
 python = "^3.6"
@@ -12,7 +15,7 @@ google-api-python-client = "^1.7"
 python-dateutil = "^2.7"
 PyGithub = "^1.40"
 oauth2client = "^4.1"
-pynvim = "^0.3.1"
+pynvim = "^0.3.2"
 
 [tool.poetry.dev-dependencies]
 black = "^18.3-alpha.0"

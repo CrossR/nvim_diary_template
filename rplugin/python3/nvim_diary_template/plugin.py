@@ -213,5 +213,9 @@ class DiaryTemplatePlugin:
         self.options.issue_groups = rotate(self.options.issue_groups, 1)
         self.sort_issues()
 
+    @neovim.function("DiaryEcho", sync=True)
+    def diary_echo(self, args):
+        return "Echo " + str(args)
+
     def flush_messages(self) -> None:
         self._nvim.out_write("\n")
