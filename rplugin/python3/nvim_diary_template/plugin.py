@@ -53,8 +53,9 @@ class DiaryTemplatePlugin:
         self.check_options()
         self.make_diary_command(called_from_autocommand=True)
 
-    @neovim.command("DiaryMake")
+    @neovim.function("DiaryMake", sync=True)
     def make_diary_command(self, called_from_autocommand: bool = False) -> None:
+        self.check_options()
         make_diary(
             self._nvim,
             self.options,

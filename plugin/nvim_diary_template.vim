@@ -150,3 +150,7 @@ let s:diary_plugin = yarp#py3('diary_template_wrapper')
 func! DiaryEcho(v)
   return s:diary_plugin.call('diary_echo', a:v)
 endfunc
+
+func! DiaryMake()
+  return s:diary_plugin.call('diary_make')
+endfunc
