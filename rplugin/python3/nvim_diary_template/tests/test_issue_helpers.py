@@ -162,7 +162,15 @@ class issue_helpersTest(unittest.TestCase):
         ]
 
         # Check a new issue is added, and the cursor is moved correctly.
-        insert_new_issue(self.nvim)
+        insert_new_issue(self.nvim, self.options)
+        assert self.nvim.current.buffer.lines == final_buffer
+        assert self.nvim.current.window.cursor == (27, 12)
+
+        # Reset and try with default labels as well.
+        self.setUp()
+        self.options.default_labels = ["todo", "personal"]
+        final_buffer[24] = "#### [ ] Issue {00}: +new +label:todo +label:personal"
+        insert_new_issue(self.nvim, self.options)
         assert self.nvim.current.buffer.lines == final_buffer
         assert self.nvim.current.window.cursor == (27, 12)
 
@@ -291,7 +299,7 @@ class issue_helpersTest(unittest.TestCase):
         ]
 
         # Check a new issue is added, and the cursor is moved correctly.
-        insert_new_issue(self.nvim)
+        insert_new_issue(self.nvim, self.options)
         assert self.nvim.current.buffer.lines == final_buffer
         assert self.nvim.current.window.cursor == (31, 12)
 
@@ -375,7 +383,7 @@ class issue_helpersTest(unittest.TestCase):
         # Set the cursor inside the Work group, so an issue
         # should be added there.
         self.nvim.current.window.cursor = (12, 0)
-        insert_new_issue(self.nvim)
+        insert_new_issue(self.nvim, self.options)
         assert self.nvim.current.buffer.lines == final_buffer
         # assert self.nvim.current.window.cursor == (31, 12)
 
