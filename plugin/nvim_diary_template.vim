@@ -5,6 +5,9 @@ let g:nvim_diary_template#notes_path = get(g:, 'nvim_diary_template#notes_path',
 let g:nvim_diary_template#config_path = get(g:, 'nvim_diary_template#config_path', g:nvim_diary_template#notes_path . '/config')
 
 " Wrap functions in commands
+command DiaryInit call DiaryInit()
+command DiaryOptionsInit call DiaryOptionsInit()
+
 command DiaryEditComment call DiaryEditComment()
 command DiaryEditIssue call DiaryEditIssue()
 command DiaryCompleteIssue call DiaryCompleteIssue()
@@ -54,11 +57,18 @@ augroup nvim_diary_template_keybinds
     autocmd FileType markdown setlocal foldtext=DiaryFoldText()
     autocmd FileType markdown setlocal foldmethod=expr
     autocmd FileType markdown setlocal foldexpr=GetDiaryFold(v:lnum)
+
+    autocmd BufEnter *.md call SetupDiaryPlug()
 augroup END
 
 " Function to be called on startup.
 " Either just init the options, or make the diary too.
 function! SetupDiaryPlug()
+
+  if expand("%:p") !~ "diary"
+    return
+  endif
+
   if line('$') == 0
     call DiaryOptionsInit()
     return
@@ -68,11 +78,3 @@ function! SetupDiaryPlug()
   call DiaryInit()
 
 endfunction
-
-if !has('nvim')
-    augroup nvim_diary_template_init
-        autocmd!
-        " Initialise the options on Buffer enter.
-        autocmd BufEnter *.md call SetupDiaryPlug()
-    augroup END
-endif
