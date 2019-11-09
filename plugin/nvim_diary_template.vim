@@ -1,4 +1,4 @@
-" Initalise some options
+" Initialise some options
 
 let g:nvim_diary_template#active = get(g:, 'nvim_diary_template#active', v:true)
 let g:nvim_diary_template#notes_path = get(g:, 'nvim_diary_template#notes_path', '')
@@ -141,16 +141,4 @@ function! IndentLevel(lnum)
     return indent(a:lnum) / &shiftwidth
 endfunction
 
-if has('nvim')
-  finish
-endif
-
-let s:diary_plugin = yarp#py3('diary_template_wrapper')
-
-func! DiaryEcho(v)
-  return s:diary_plugin.call('diary_echo', a:v)
-endfunc
-
-func! DiaryMake()
-  return s:diary_plugin.call('diary_make')
-endfunc
+" TODO: Bind commands to functions

@@ -64,7 +64,7 @@ class DiaryTemplatePlugin:
             auto_command=called_from_autocommand,
         )
 
-    @neovim.command("DiaryUploadCalendar")
+    @neovim.function("DiaryUploadCalendar", sync=True)
     def upload_to_calendar(self) -> None:
         markdown_events: List[CalendarEvent] = parse_markdown_file_for_events(
             self._nvim, ISO_FORMAT
@@ -76,7 +76,7 @@ class DiaryTemplatePlugin:
         remove_events_not_from_today(self._nvim)
         format_markdown_events(self._nvim)
 
-    @neovim.command("DiaryGetCalendar")
+    @neovim.function("DiaryGetCalendar", sync=True)
     def grab_from_calendar(self) -> None:
         buffer_date: date = parser.parse(get_diary_date(self._nvim)).date()
 
@@ -93,16 +93,16 @@ class DiaryTemplatePlugin:
         set_schedule_from_events_list(self._nvim, combined_events, False)
         self.sort_calendar()
 
-    @neovim.command("DiaryUpdateCalendar")
+    @neovim.function("DiaryUpdateCalendar", sync=True)
     def update_calendar(self) -> None:
         self.upload_to_calendar()
         self.grab_from_calendar()
 
-    @neovim.command("DiarySortCalendar")
+    @neovim.function("DiarySortCalendar", sync=True)
     def sort_calendar(self) -> None:
         sort_markdown_events(self._nvim)
 
-    @neovim.command("DiaryGetIssues")
+    @neovim.function("DiaryGetIssues", sync=True)
     def get_issues(self) -> None:
         markdown_issues: List[GitHubIssue] = parse_markdown_file_for_issues(self._nvim)
         github_issues: List[GitHubIssue] = self._github_service.get_all_open_issues()
@@ -113,28 +113,28 @@ class DiaryTemplatePlugin:
 
         set_issues_from_issues_list(self._nvim, self.options, combined_issues, True)
 
-    @neovim.command("DiarySortIssues")
+    @neovim.function("DiarySortIssues", sync=True)
     def sort_issues(self) -> None:
         markdown_issues: List[GitHubIssue] = parse_markdown_file_for_issues(self._nvim)
         set_issues_from_issues_list(self._nvim, self.options, markdown_issues, True)
 
-    @neovim.command("DiaryInsertIssue")
+    @neovim.function("DiaryInsertIssue", sync=True)
     def insert_issue(self) -> None:
         insert_new_issue(self._nvim)
 
-    @neovim.command("DiaryInsertComment")
+    @neovim.function("DiaryInsertComment", sync=True)
     def insert_comment(self) -> None:
         insert_new_comment(self._nvim)
 
-    @neovim.command("DiaryEditComment")
+    @neovim.function("DiaryEditComment", sync=True)
     def edit_comment(self) -> None:
         insert_edit_tag(self._nvim, "comment")
 
-    @neovim.command("DiaryEditIssue")
+    @neovim.function("DiaryEditIssue", sync=True)
     def edit_issue(self) -> None:
         insert_edit_tag(self._nvim, "issue")
 
-    @neovim.command("DiaryUploadNew")
+    @neovim.function("DiaryUploadNew", sync=True)
     def upload_new_issues(self, buffered: bool = False) -> None:
         issues: List[GitHubIssue] = parse_markdown_file_for_issues(self._nvim)
 
@@ -158,7 +158,7 @@ class DiaryTemplatePlugin:
         if not buffered:
             self.flush_messages()
 
-    @neovim.command("DiaryUploadEdits")
+    @neovim.function("DiaryUploadEdits", sync=True)
     def upload_edited_issues(self, buffered: bool = False) -> None:
         issues: List[GitHubIssue] = parse_markdown_file_for_issues(self._nvim)
 
@@ -180,11 +180,11 @@ class DiaryTemplatePlugin:
         if not buffered:
             self.flush_messages()
 
-    @neovim.command("DiaryCompleteIssue")
+    @neovim.function("DiaryCompleteIssue", sync=True)
     def toggle_completion(self) -> None:
         toggle_issue_completion(self._nvim)
 
-    @neovim.command("DiaryUploadCompletion")
+    @neovim.function("DiaryUploadCompletion", sync=True)
     def upload_issue_completions(self, buffered: bool = False) -> None:
         issues: List[GitHubIssue] = parse_markdown_file_for_issues(self._nvim)
         self._github_service.complete_issues(issues)
@@ -198,7 +198,7 @@ class DiaryTemplatePlugin:
         if not buffered:
             self.flush_messages()
 
-    @neovim.command("DiaryUploadIssues")
+    @neovim.function("DiaryUploadIssues", sync=True)
     def upload_all_issues(self) -> None:
         self.upload_new_issues(True)
         self.upload_edited_issues(True)
@@ -206,17 +206,13 @@ class DiaryTemplatePlugin:
 
         self.flush_messages()
 
-    @neovim.command("DiarySwapGroupSorting")
+    @neovim.function("DiarySwapGroupSorting", sync=True)
     def swap_group_sorting(self) -> None:
         def rotate(input_list: List[Any], pivot: int) -> List[Any]:
             return input_list[pivot:] + input_list[:pivot]
 
         self.options.issue_groups = rotate(self.options.issue_groups, 1)
         self.sort_issues()
-
-    @neovim.function("DiaryEcho", sync=True)
-    def diary_echo(self, args):
-        return "Echo " + str(args)
 
     def flush_messages(self) -> None:
         self._nvim.out_write("\n")
