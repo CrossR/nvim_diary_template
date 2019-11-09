@@ -37,6 +37,7 @@ class DiaryTemplatePlugin:
         self._nvim: neovim.Nvim = nvim
         self._fully_setup: bool = False
 
+    @neovim.function("DiaryOptionsInit", sync=False)
     def check_options(self) -> None:
         if not self._fully_setup:
             self.options: PluginOptions = PluginOptions(self._nvim)
@@ -48,8 +49,8 @@ class DiaryTemplatePlugin:
             )
             self._fully_setup = True
 
-    @neovim.autocmd("BufEnter", pattern=FILE_TYPE_WILDCARD, sync=True)
-    def event_buf_enter(self) -> None:
+    @neovim.function("DiaryInit", sync=True)
+    def init_diary(self) -> None:
         self.check_options()
         self.make_diary_command(called_from_autocommand=True)
 

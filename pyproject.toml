@@ -1,8 +1,8 @@
 [tool.poetry]
 name = "nvim_diary_template"
-version = "0.1.0"
-description = "A diary template creator plugin for Neovim."
-authors = ["CrossR <sc13rjc@leeds.ac.uk>"]
+version = "0.2.0"
+description = "A diary template creator plugin for (Neo)Vim."
+authors = ["CrossR <r.cross@lancaster.ac.uk>"]
 readme = "README.md"
 packages = [
     { include = "nvim_diary_template", from = "rplugin/python3/" },

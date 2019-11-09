@@ -6,6 +6,14 @@ endif
 
 let s:diary_plugin = yarp#py3('diary_template_wrapper')
 
+function! DiaryInit()
+    return s:diary_plugin.call('init_diary')
+endfunc
+
+function! DiaryOptionsInit()
+    return s:diary_plugin.call('check_options')
+endfunc
+
 function! DiaryMake()
     return s:diary_plugin.call('make_diary_command')
 endfunc
