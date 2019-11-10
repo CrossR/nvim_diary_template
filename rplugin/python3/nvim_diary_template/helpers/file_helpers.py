@@ -104,6 +104,7 @@ def set_cache(config_path: str, data: List[Any], data_name: str) -> None:
     for old_cache_file in old_cache_files:
         remove(old_cache_file)
 
+
 def cache_valid(cache_set_time: datetime, cache_max_age: timedelta) -> bool:
     """cache_valid
 
