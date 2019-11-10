@@ -2,7 +2,7 @@
 from datetime import date
 from typing import Any, List
 
-import neovim
+import pynvim
 from dateutil import parser
 
 from .classes.calendar_event_class import CalendarEvent
@@ -31,13 +31,13 @@ from .utils.parse_markdown import (
 )
 
 
-@neovim.plugin
+@pynvim.plugin
 class DiaryTemplatePlugin:
-    def __init__(self, nvim: neovim.Nvim) -> None:
-        self._nvim: neovim.Nvim = nvim
+    def __init__(self, nvim: pynvim.Nvim) -> None:
+        self._nvim: pynvim.Nvim = nvim
         self._fully_setup: bool = False
 
-    @neovim.function("DiaryOptionsInit", sync=False)
+    @pynvim.function("DiaryOptionsInit", sync=False)
     def check_options(self, *_: List[str]) -> None:
         if not self._fully_setup:
             self.options: PluginOptions = PluginOptions(self._nvim)
@@ -49,12 +49,12 @@ class DiaryTemplatePlugin:
             )
             self._fully_setup = True
 
-    @neovim.function("DiaryInit", sync=True)
+    @pynvim.function("DiaryInit", sync=True)
     def init_diary(self, *_: List[str]) -> None:
         self.check_options()
         self.make_diary_command(called_from_autocommand=True)
 
-    @neovim.function("DiaryMake", sync=True)
+    @pynvim.function("DiaryMake", sync=True)
     def make_diary_command(
         self, called_from_autocommand: bool = False, *_: List[str]
     ) -> None:
@@ -67,7 +67,7 @@ class DiaryTemplatePlugin:
             auto_command=called_from_autocommand,
         )
 
-    @neovim.function("DiaryUploadCalendar", sync=True)
+    @pynvim.function("DiaryUploadCalendar", sync=True)
     def upload_to_calendar(self, *_: List[str]) -> None:
         markdown_events: List[CalendarEvent] = parse_markdown_file_for_events(
             self._nvim, ISO_FORMAT
@@ -79,7 +79,7 @@ class DiaryTemplatePlugin:
         remove_events_not_from_today(self._nvim)
         format_markdown_events(self._nvim)
 
-    @neovim.function("DiaryGetCalendar", sync=True)
+    @pynvim.function("DiaryGetCalendar", sync=True)
     def grab_from_calendar(self, *_: List[str]) -> None:
         buffer_date: date = parser.parse(get_diary_date(self._nvim)).date()
 
@@ -96,16 +96,16 @@ class DiaryTemplatePlugin:
         set_schedule_from_events_list(self._nvim, combined_events, False)
         self.sort_calendar()
 
-    @neovim.function("DiaryUpdateCalendar", sync=True)
+    @pynvim.function("DiaryUpdateCalendar", sync=True)
     def update_calendar(self, *_: List[str]) -> None:
         self.upload_to_calendar()
         self.grab_from_calendar()
 
-    @neovim.function("DiarySortCalendar", sync=True)
+    @pynvim.function("DiarySortCalendar", sync=True)
     def sort_calendar(self, *_: List[str]) -> None:
         sort_markdown_events(self._nvim)
 
-    @neovim.function("DiaryGetIssues", sync=True)
+    @pynvim.function("DiaryGetIssues", sync=True)
     def get_issues(self, *_: List[str]) -> None:
         markdown_issues: List[GitHubIssue] = parse_markdown_file_for_issues(self._nvim)
         github_issues: List[GitHubIssue] = self._github_service.get_all_open_issues()
@@ -116,28 +116,28 @@ class DiaryTemplatePlugin:
 
         set_issues_from_issues_list(self._nvim, self.options, combined_issues, True)
 
-    @neovim.function("DiarySortIssues", sync=True)
+    @pynvim.function("DiarySortIssues", sync=True)
     def sort_issues(self, *_: List[str]) -> None:
         markdown_issues: List[GitHubIssue] = parse_markdown_file_for_issues(self._nvim)
         set_issues_from_issues_list(self._nvim, self.options, markdown_issues, True)
 
-    @neovim.function("DiaryInsertIssue", sync=True)
+    @pynvim.function("DiaryInsertIssue", sync=True)
     def insert_issue(self, *_: List[str]) -> None:
         insert_new_issue(self._nvim, self.options)
 
-    @neovim.function("DiaryInsertComment", sync=True)
+    @pynvim.function("DiaryInsertComment", sync=True)
     def insert_comment(self, *_: List[str]) -> None:
         insert_new_comment(self._nvim)
 
-    @neovim.function("DiaryEditComment", sync=True)
+    @pynvim.function("DiaryEditComment", sync=True)
     def edit_comment(self, *_: List[str]) -> None:
         insert_edit_tag(self._nvim, "comment")
 
-    @neovim.function("DiaryEditIssue", sync=True)
+    @pynvim.function("DiaryEditIssue", sync=True)
     def edit_issue(self, *_: List[str]) -> None:
         insert_edit_tag(self._nvim, "issue")
 
-    @neovim.function("DiaryUploadNew", sync=True)
+    @pynvim.function("DiaryUploadNew", sync=True)
     def upload_new_issues(self, buffered: bool = False) -> None:
         issues: List[GitHubIssue] = parse_markdown_file_for_issues(self._nvim)
 
@@ -161,7 +161,7 @@ class DiaryTemplatePlugin:
         if not buffered:
             self.flush_messages()
 
-    @neovim.function("DiaryUploadEdits", sync=True)
+    @pynvim.function("DiaryUploadEdits", sync=True)
     def upload_edited_issues(self, buffered: bool = False) -> None:
         issues: List[GitHubIssue] = parse_markdown_file_for_issues(self._nvim)
 
@@ -183,11 +183,11 @@ class DiaryTemplatePlugin:
         if not buffered:
             self.flush_messages()
 
-    @neovim.function("DiaryCompleteIssue", sync=True)
+    @pynvim.function("DiaryCompleteIssue", sync=True)
     def toggle_completion(self, *_: List[str]) -> None:
         toggle_issue_completion(self._nvim)
 
-    @neovim.function("DiaryUploadCompletion", sync=True)
+    @pynvim.function("DiaryUploadCompletion", sync=True)
     def upload_issue_completions(self, buffered: bool = False) -> None:
         issues: List[GitHubIssue] = parse_markdown_file_for_issues(self._nvim)
         self._github_service.complete_issues(issues)
@@ -201,7 +201,7 @@ class DiaryTemplatePlugin:
         if not buffered:
             self.flush_messages()
 
-    @neovim.function("DiaryUploadIssues", sync=True)
+    @pynvim.function("DiaryUploadIssues", sync=True)
     def upload_all_issues(self, *_: List[str]) -> None:
         self.upload_new_issues(True)
         self.upload_edited_issues(True)
@@ -209,7 +209,7 @@ class DiaryTemplatePlugin:
 
         self.flush_messages()
 
-    @neovim.function("DiarySwapGroupSorting", sync=True)
+    @pynvim.function("DiarySwapGroupSorting", sync=True)
     def swap_group_sorting(self, *_: List[str]) -> None:
         def rotate(input_list: List[Any], pivot: int) -> List[Any]:
             return input_list[pivot:] + input_list[:pivot]

@@ -10,7 +10,7 @@ from typing import Any, Dict, List, Optional, Union
 
 from googleapiclient import discovery, errors
 from httplib2 import Http, HttpLib2Error
-from neovim import Nvim
+from pynvim import Nvim
 from oauth2client import file
 
 from ..classes.calendar_event_class import CalendarEvent

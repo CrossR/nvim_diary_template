@@ -7,7 +7,7 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 from dateutil import parser, tz
-from neovim import Nvim
+from pynvim import Nvim
 
 from ..classes.github_issue_class import GitHubIssue, GitHubIssueComment
 from ..classes.plugin_options import PluginOptions

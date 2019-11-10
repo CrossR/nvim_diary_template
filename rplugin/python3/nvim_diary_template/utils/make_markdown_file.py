@@ -8,7 +8,7 @@ from datetime import date
 from typing import Dict, List
 
 from dateutil import parser
-from neovim import Nvim
+from pynvim import Nvim
 
 from ..classes.calendar_event_class import CalendarEvent
 from ..classes.github_issue_class import GitHubIssue
