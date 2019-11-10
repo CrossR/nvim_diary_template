@@ -47,7 +47,13 @@ Install with `vim-plug` like so, as well as ensuring the python env used with
 Neovim has the required packages.
 
 ```viml
-Plug 'CrossR/nvim_diary_template', { 'do': ':UpdateRemotePlugins' }
+if has('nvim')
+    Plug 'CrossR/nvim_diary_template', { 'do': ':UpdateRemotePlugins', 'for': 'markdown' }
+else
+    Plug 'CrossR/nvim_diary_template', { 'for': 'markdown' }
+    Plug 'roxma/vim-hug-neovim-rpc'
+    Plug 'roxma/nvim-yarp'
+endif
 ```
 
 ### Basics:

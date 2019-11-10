@@ -12,7 +12,7 @@ from nvim_diary_template.plugin import DiaryTemplatePlugin
 # http://pynvim.readthedocs.io/en/latest/development.html#usage-through-the-python-repl
 PIPES: List[str] = os.listdir("\\\\.\\pipe")
 CURRENT_PIPE: str = [pipe for pipe in PIPES if pipe.startswith("nvim")][0]
-NVIM: pynvim.Nvim = neovim.attach("socket", path=f"\\\\.\\pipe\\{CURRENT_PIPE}")
+NVIM: pynvim.Nvim = pynvim.attach("socket", path=f"\\\\.\\pipe\\{CURRENT_PIPE}")
 
 # Initialise the options, then run the required function.
 plugin: DiaryTemplatePlugin = DiaryTemplatePlugin(NVIM)
