@@ -4,7 +4,7 @@ Functions to build and parse the issue section of the markdown.
 """
 from typing import Dict, List, Optional, Union
 
-from neovim import Nvim
+from pynvim import Nvim
 
 from ..classes.github_issue_class import GitHubIssue, GitHubIssueComment
 from ..classes.plugin_options import PluginOptions

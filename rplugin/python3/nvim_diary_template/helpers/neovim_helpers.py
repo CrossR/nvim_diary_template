@@ -7,7 +7,7 @@ import re
 from os import path
 from typing import List, Iterable
 
-from neovim import Nvim
+from pynvim import Nvim
 
 
 def is_buffer_empty(nvim: Nvim) -> bool:

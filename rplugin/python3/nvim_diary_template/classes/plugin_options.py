@@ -9,7 +9,7 @@ import os
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from neovim import Nvim
+from pynvim import Nvim
 
 from ..utils.constants import DEFAULT_SORT_ORDER
 

@@ -5,7 +5,7 @@ Simple helpers to help deal with parsed markdown lines.
 
 from typing import List
 
-from neovim import Nvim
+from pynvim import Nvim
 
 from ..classes.calendar_event_class import CalendarEvent
 from ..helpers.event_helpers import sort_events
