@@ -52,7 +52,7 @@ class SimpleNvimGoogleCalTest(unittest.TestCase):
         assert self.google.active == True
         self.google.service = None
         assert self.google.active == False
-    
+
     def test_get_all_calendars(self) -> None:
         all_calendars: Dict[str, str] = {
             "NVim Notes": "NvimNotesCal123",
@@ -114,7 +114,7 @@ class SimpleNvimGoogleCalTest(unittest.TestCase):
             ),
         ]
 
-        self.google.upload_to_calendar(all_events,  date.today())
+        self.google.upload_to_calendar(all_events, date.today())
         # 3 inserts + 6 calendar event look ups.
         assert self.google.service._events_call_num == 9
 

@@ -85,7 +85,7 @@ class MockGCalFunc:
         return MockGCalFunc(self._json_response)
 
     def insert(self, **_: List[Any]) -> MockGCalFunc:
-       return(MockGCalFunc({})) 
+        return MockGCalFunc({})
 
     def execute(self) -> Dict[Any, Any]:
         return self._json_response
