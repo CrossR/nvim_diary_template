@@ -32,13 +32,13 @@ class SimpleNvimGoogleCalTest(unittest.TestCase):
         event_list: List[CalendarEvent] = [
             CalendarEvent(
                 name="Event 1",
-                start=parser.parse("2019-11-10T12:00:00Z").strftime(ISO_FORMAT),
-                end=parser.parse("2019-11-10T13:00:00Z").strftime(ISO_FORMAT),
+                start="2019-11-10T12:00:00Z",
+                end="2019-11-10T13:00:00Z",
             ),
             CalendarEvent(
                 name="Event 2",
-                start=parser.parse("2019-11-10T17:30:00Z").strftime(ISO_FORMAT),
-                end=parser.parse("2019-11-10T18:30:00Z").strftime(ISO_FORMAT),
+                start="2019-11-10T17:30:00Z",
+                end="2019-11-10T18:30:00Z",
             ),
         ]
 

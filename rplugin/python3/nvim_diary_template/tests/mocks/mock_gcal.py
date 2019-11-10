@@ -76,16 +76,21 @@ class MockGCalService:
         self._event_json: Dict[Any, Any] = {}
         self._cal_json: Dict[Any, Any] = {}
 
+        self._first_event_call = False
+
     def get_events_for_date(self, date_today: date) -> List[CalendarEvent]:
         return self._events
 
-    def events(self) -> MockGCalFunc:
-        sub_func = MockGCalFunc(self._event_json)
-        return sub_func
-
     def calendarList(self) -> MockGCalFunc:
-        sub_func = MockGCalFunc(self._cal_json)
-        return sub_func
+        return MockGCalFunc(self._cal_json)
+
+    def events(self) -> MockGCalFunc:
+
+        if self._first_event_call:
+            return MockGCalFunc({"items": []})
+
+        self._first_event_call = True
+        return MockGCalFunc(self._event_json)
 
 
 class MockGCalFunc:
