@@ -92,7 +92,7 @@ class MockGCalFunc:
     def __init__(self, input_json: Dict[Any, Any]) -> None:
         self._json_response: Dict[Any, Any] = input_json
 
-    def list(self, *_: List[Any]) -> MockGCalFunc:
+    def list(self, **_: List[Any]) -> MockGCalFunc:
         sub_func = MockGCalFunc(self._json_response)
         return sub_func
 
