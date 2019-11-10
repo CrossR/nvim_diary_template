@@ -58,10 +58,12 @@ def make_diary(
     diary_metadata: Dict[str, str] = {"Date": diary_date}
 
     full_markdown.extend(generate_markdown_metadata(diary_metadata))
+    set_buffer_contents(nvim, full_markdown)
 
     for heading in options.daily_headings:
         full_markdown.append(f"## {heading}")
         full_markdown.append("")
+    set_buffer_contents(nvim, full_markdown)
 
     # Add in issues section
     issues: List[GitHubIssue] = []
@@ -70,6 +72,7 @@ def make_diary(
 
     issue_markdown: List[str] = produce_issue_markdown(options, issues)
     full_markdown.extend(issue_markdown)
+    set_buffer_contents(nvim, full_markdown)
 
     # Add in that days calendar entries
     days_events: List[CalendarEvent] = []

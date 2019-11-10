@@ -49,12 +49,12 @@ class DiaryTemplatePlugin:
             )
             self._fully_setup = True
 
-    @pynvim.function("DiaryInit", sync=True)
+    @pynvim.function("DiaryInit", sync=False)
     def init_diary(self, *_: List[str]) -> None:
         self.check_options()
         self.make_diary_command(called_from_autocommand=True)
 
-    @pynvim.function("DiaryMake", sync=True)
+    @pynvim.function("DiaryMake", sync=False)
     def make_diary_command(
         self, called_from_autocommand: bool = False, *_: List[str]
     ) -> None:
