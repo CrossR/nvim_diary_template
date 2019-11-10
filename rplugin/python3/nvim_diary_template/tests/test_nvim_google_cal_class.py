@@ -28,7 +28,7 @@ class SimpleNvimGoogleCalTest(unittest.TestCase):
             self.nvim, self.options, self.api
         )
 
-    def test_get_all_open_issues(self) -> None:
+    def test_get_all_open_events(self) -> None:
         event_list: List[CalendarEvent] = [
             CalendarEvent(
                 name="Event 1",
@@ -44,3 +44,83 @@ class SimpleNvimGoogleCalTest(unittest.TestCase):
 
         result: List[CalendarEvent] = self.google.get_events_for_date(date.today())
         assert result == event_list
+
+        result = self.google.active_events
+        assert result == event_list
+
+    def test_service_is_not_ready(self) -> None:
+        assert self.google.active == True
+        self.google.service = None
+        assert self.google.active == False
+    
+    def test_get_all_calendars(self) -> None:
+        all_calendars: Dict[str, str] = {
+            "NVim Notes": "NvimNotesCal123",
+            "University Calendar": "UniCal123",
+            "GMail Events": "gmail_events",
+            "Personal Cal": "personal",
+            "Contacts": "contactCal",
+            "Holidays in United Kingdom": "holInUk",
+        }
+
+        result: Dict[str, str] = self.google.get_all_calendars()
+        assert result == all_calendars
+
+    def test_filter_calendars(self) -> None:
+        filtered_calendars: Dict[str, str] = {
+            "NVim Notes": "NvimNotesCal123",
+            "University Calendar": "UniCal123",
+            "GMail Events": "gmail_events",
+            "Personal Cal": "personal",
+        }
+
+        self.google.options.calendar_filter_list = [
+            "Contacts",
+            "Holidays in United Kingdom",
+        ]
+
+        result: List[Dict[str, str]] = self.google.filter_calendars()
+        assert result == filtered_calendars
+
+    def test_upload_to_calendar(self) -> None:
+        all_events: List[CalendarEvent] = [
+            CalendarEvent(
+                name="Event 1",
+                start=parser.parse("2019-11-10T12:00:00Z").strftime(ISO_FORMAT),
+                end=parser.parse("2019-11-10T13:00:00Z").strftime(ISO_FORMAT),
+            ),
+            CalendarEvent(
+                name="Event 2",
+                start=parser.parse("2019-11-10T17:30:00Z").strftime(ISO_FORMAT),
+                end=parser.parse("2019-11-10T18:30:00Z").strftime(ISO_FORMAT),
+            ),
+            CalendarEvent(
+                name="Event 3",
+                start=parser.parse("2019-11-10T18:30:00Z").strftime(ISO_FORMAT),
+                end=parser.parse("2019-11-10T19:30:00Z").strftime(ISO_FORMAT),
+            ),
+            CalendarEvent(
+                name="Event 4",
+                start=parser.parse("2019-11-10T20:30:00Z").strftime(ISO_FORMAT),
+                end=parser.parse("2019-11-10T22:30:00Z").strftime(ISO_FORMAT),
+            ),
+        ]
+
+        self.google.events = [
+            CalendarEvent(
+                name="Event 3",
+                start=parser.parse("2019-11-10T18:30:00Z").strftime(ISO_FORMAT),
+                end=parser.parse("2019-11-10T19:30:00Z").strftime(ISO_FORMAT),
+            ),
+        ]
+
+        self.google.upload_to_calendar(all_events,  date.today())
+        # 3 inserts + 6 calendar event look ups.
+        assert self.google.service._events_call_num == 9
+
+    def test_get_calendar_id(self) -> None:
+        assert self.google.get_calendar_id() == "NvimNotesCal123"
+        assert self.google.get_calendar_id("primary") == "primary"
+
+        for cal_name, cal_id in self.google.all_calendars.items():
+            assert self.google.get_calendar_id(cal_name) == cal_id

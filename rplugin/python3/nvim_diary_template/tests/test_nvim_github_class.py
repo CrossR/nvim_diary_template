@@ -85,6 +85,9 @@ class SimpleNvimGithubTest(unittest.TestCase):
         result: List[GitHubIssue] = self.github.get_all_open_issues()
         assert result == issue_list
 
+        result = self.github.active_issues
+        assert result == issue_list
+
     def test_filter_comments(self) -> None:
         self.github.active_issues[1].all_comments[2].tags = ["edit"]
 
@@ -472,3 +475,8 @@ class SimpleNvimGithubTest(unittest.TestCase):
         # fact there is only one unique item.
         assert self.nvim.message_print_count == 8
         assert len(set(self.nvim.errors)) == 1
+
+    def test_service_not_valid(self) -> None:
+        assert self.github.active == True
+        self.github.service = None
+        assert self.github.active == False

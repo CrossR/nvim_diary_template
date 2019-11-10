@@ -15,6 +15,7 @@ def get_mock_gcal() -> Tuple[MockGCalService, PluginOptions]:
     # Setup options
     options.config_path = mkdtemp()
     options.repo_name = "CrossR/nvim_diary_template"
+    options.google_cal_name = "NVim Notes"
 
     # Setup the GCal Mock API
     new_api._event_json = {
@@ -39,30 +40,12 @@ def get_mock_gcal() -> Tuple[MockGCalService, PluginOptions]:
     new_api._cal_json = {
         "kind": "calendar#calendarList",
         "items": [
-            {
-                "id": "NvimNotesCal123",
-                "summary": "NVim Notes",
-            },
-            {
-                "id": "UniCal123",
-                "summary": "University Calendar",
-            },
-            {
-                "id": "gmail_events",
-                "summary": "GMail Events",
-            },
-            {
-                "id": "personal",
-                "summary": "Personal Cal",
-            },
-            {
-                "id": "contactCal",
-                "summary": "Contacts",
-            },
-            {
-                "id": "holInUk",
-                "summary": "Holidays in United Kingdom",
-            },
+            {"id": "NvimNotesCal123", "summary": "NVim Notes",},
+            {"id": "UniCal123", "summary": "University Calendar",},
+            {"id": "gmail_events", "summary": "GMail Events",},
+            {"id": "personal", "summary": "Personal Cal",},
+            {"id": "contactCal", "summary": "Contacts",},
+            {"id": "holInUk", "summary": "Holidays in United Kingdom",},
         ],
     }
 
@@ -76,7 +59,7 @@ class MockGCalService:
         self._event_json: Dict[Any, Any] = {}
         self._cal_json: Dict[Any, Any] = {}
 
-        self._first_event_call = False
+        self._events_call_num = 0
 
     def get_events_for_date(self, date_today: date) -> List[CalendarEvent]:
         return self._events
@@ -86,10 +69,11 @@ class MockGCalService:
 
     def events(self) -> MockGCalFunc:
 
-        if self._first_event_call:
+        if self._events_call_num > 0:
+            self._events_call_num += 1
             return MockGCalFunc({"items": []})
 
-        self._first_event_call = True
+        self._events_call_num += 1
         return MockGCalFunc(self._event_json)
 
 
@@ -98,8 +82,10 @@ class MockGCalFunc:
         self._json_response: Dict[Any, Any] = input_json
 
     def list(self, **_: List[Any]) -> MockGCalFunc:
-        sub_func = MockGCalFunc(self._json_response)
-        return sub_func
+        return MockGCalFunc(self._json_response)
+
+    def insert(self, **_: List[Any]) -> MockGCalFunc:
+       return(MockGCalFunc({})) 
 
     def execute(self) -> Dict[Any, Any]:
         return self._json_response

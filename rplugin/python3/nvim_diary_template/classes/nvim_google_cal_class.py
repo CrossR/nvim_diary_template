@@ -163,11 +163,7 @@ class SimpleNvimGoogleCal:
             return []
 
         page_token = None
-        print(self.service)
-        print(self.service.calendarList)
         calendar_list = self.service.calendarList().list(pageToken=page_token).execute()
-
-        print(calendar_list)
 
         all_calendars: Dict[str, str] = {}
 
