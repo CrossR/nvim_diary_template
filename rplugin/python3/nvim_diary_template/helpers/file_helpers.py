@@ -31,12 +31,16 @@ def check_cache(
     data_name: str,
     data_age: timedelta,
     fallback_function: Callable[[], Any],
+    early_return: bool = False,
 ) -> Any:
     """check_cache
 
     A function to check for valid cache files.
     If one is found, then it can be used, but otherwise the original function
     is called to generate the data and cache it.
+
+    The early return parameter allows the checking of a cache, without actually
+    loading any data from it, in cases where the cache is up to date.
     """
 
     cache_path: str = path.join(config_path, "cache")
@@ -59,6 +63,10 @@ def check_cache(
         difference: timedelta = today - cache_file_creation_date
 
         if difference <= data_age:
+
+            if early_return:
+                return []
+
             with open(cache_file_name) as cache_file:
                 data: Any = json.load(cache_file)
         else:

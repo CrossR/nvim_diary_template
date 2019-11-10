@@ -55,17 +55,12 @@ class SimpleNvimGithub:
         if self.service_not_valid():
             return
 
-        loaded_issues: Union[List[Dict[str, Any]], List[GitHubIssue]] = check_cache(
-            self.config_path,
-            "open_issues",
-            ISSUE_CACHE_DURATION,
-            self.get_all_open_issues,
-        )
-
-        self.issues: List[GitHubIssue] = get_github_objects(loaded_issues)
-
         check_cache(
-            self.config_path, "repo_labels", LABELS_CACHE_DURATION, self.get_repo_labels
+            self.config_path,
+            "repo_labels",
+            LABELS_CACHE_DURATION,
+            self.get_repo_labels,
+            True,
         )
 
         check_cache(
@@ -73,6 +68,7 @@ class SimpleNvimGithub:
             "user_repos",
             REPO_CACHE_DURATION,
             self.get_associated_repos,
+            True,
         )
 
     @property
