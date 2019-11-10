@@ -1,4 +1,3 @@
-# pylint: disable=R0902
 """nvim_google_cal_class
 
 The google calendar class, with Neovim options to log information
@@ -48,7 +47,6 @@ class SimpleNvimGoogleCal:
             self.get_all_calendars,
         )
 
-        self.filter_list: List[str] = options.calendar_filter_list
         self.filtered_calendars: Dict[str, str] = self.filter_calendars()
 
         self.events: List[CalendarEvent] = []
@@ -143,7 +141,7 @@ class SimpleNvimGoogleCal:
         return {
             cal_name: cal_id
             for cal_name, cal_id in self.all_calendars.items()
-            if cal_name not in self.filter_list
+            if cal_name not in self.options.calendar_filter_list
         }
 
     def get_all_calendars(self) -> Union[List[str], Dict[str, str]]:
