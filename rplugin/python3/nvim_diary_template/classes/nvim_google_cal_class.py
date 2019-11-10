@@ -31,11 +31,19 @@ class SimpleNvimGoogleCal:
     A class to deal with the simple interactions with the Google Cal API.
     """
 
-    def __init__(self, nvim: Nvim, options: PluginOptions) -> None:
+    def __init__(
+        self,
+        nvim: Nvim,
+        options: PluginOptions,
+        service: Optional[discovery.Resource] = None,
+    ) -> None:
         self.nvim: Nvim = nvim
         self.options: PluginOptions = options
 
-        self.service: Any = self.setup_google_calendar_api()
+        if service is not None:
+            self.service: discovery.Resource = service
+        else:
+            self.service = self.setup_google_calendar_api()
 
         if self.service_is_not_ready():
             return
@@ -155,7 +163,11 @@ class SimpleNvimGoogleCal:
             return []
 
         page_token = None
+        print(self.service)
+        print(self.service.calendarList)
         calendar_list = self.service.calendarList().list(pageToken=page_token).execute()
+
+        print(calendar_list)
 
         all_calendars: Dict[str, str] = {}
 

@@ -43,7 +43,7 @@ class make_markdown_fileTest(unittest.TestCase):
         assert nvim.current.buffer.lines == ["Edited!"]
         assert nvim.commands == []
 
-        gcal.events.extend(
+        gcal._events.extend(
             [
                 CalendarEvent(
                     name="Event 1",
