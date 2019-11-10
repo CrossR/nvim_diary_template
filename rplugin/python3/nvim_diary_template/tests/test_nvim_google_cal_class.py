@@ -1,5 +1,5 @@
 import unittest
-from typing import Any, List
+from typing import Any, Dict, List, Union
 
 from datetime import date
 from dateutil import parser
