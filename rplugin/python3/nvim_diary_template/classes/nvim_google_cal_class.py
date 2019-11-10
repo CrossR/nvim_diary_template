@@ -1,3 +1,4 @@
+# pylint: disable=R0902
 """nvim_google_cal_class
 
 The google calendar class, with Neovim options to log information
