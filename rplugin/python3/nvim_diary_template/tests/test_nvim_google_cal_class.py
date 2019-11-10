@@ -63,7 +63,7 @@ class SimpleNvimGoogleCalTest(unittest.TestCase):
             "Holidays in United Kingdom": "holInUk",
         }
 
-        result: Dict[str, str] = self.google.get_all_calendars()
+        result: Union[List[str], Dict[str, str]] = self.google.get_all_calendars()
         assert result == all_calendars
 
     def test_filter_calendars(self) -> None:
@@ -79,7 +79,7 @@ class SimpleNvimGoogleCalTest(unittest.TestCase):
             "Holidays in United Kingdom",
         ]
 
-        result: List[Dict[str, str]] = self.google.filter_calendars()
+        result: Dict[str, str] = self.google.filter_calendars()
         assert result == filtered_calendars
 
     def test_upload_to_calendar(self) -> None:
