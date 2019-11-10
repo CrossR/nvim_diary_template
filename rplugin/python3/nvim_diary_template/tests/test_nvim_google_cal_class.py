@@ -7,6 +7,7 @@ from dateutil import parser
 from ..classes.calendar_event_class import CalendarEvent
 from ..classes.nvim_google_cal_class import SimpleNvimGoogleCal
 from ..classes.plugin_options import PluginOptions
+from ..utils.constants import ISO_FORMAT
 from .mocks.mock_gcal import MockGCalService, get_mock_gcal
 from .mocks.mock_nvim import MockNvim
 

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import date
-from typing import List, Callable, Dict, Tuple
+from typing import Any, List, Callable, Dict, Tuple
 from tempfile import mkdtemp
 
 from ...classes.calendar_event_class import CalendarEvent
@@ -76,14 +76,11 @@ class MockGCalService:
         self._event_json: Dict[Any, Any] = {}
         self._cal_json: Dict[Any, Any] = {}
 
-    def __repr__(self):
-        return "Custom Service"
-
     def get_events_for_date(self, date_today: date) -> List[CalendarEvent]:
         return self._events
 
     def events(self) -> MockGCalFunc:
-        sub_func = MockGCalFunc(self._events_json)
+        sub_func = MockGCalFunc(self._event_json)
         return sub_func
 
     def calendarList(self) -> MockGCalFunc:
@@ -92,12 +89,12 @@ class MockGCalService:
 
 
 class MockGCalFunc:
-    def __init__(self, events) -> None:
-        self._json_response: Dict[Any, Any] = {}
+    def __init__(self, input_json: Dict[Any, Any]) -> None:
+        self._json_response: Dict[Any, Any] = input_json
 
-    def list(self, *_: List[Any]) -> MockGCalExec:
+    def list(self, *_: List[Any]) -> MockGCalFunc:
         sub_func = MockGCalFunc(self._json_response)
         return sub_func
 
-    def execute(self):
+    def execute(self) -> Dict[Any, Any]:
         return self._json_response
