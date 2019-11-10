@@ -6,6 +6,7 @@ back to the user.
 """
 
 import json
+from datetime import datetime
 from os import path
 from typing import Any, Dict, List, Optional, Tuple, Union
 
@@ -14,7 +15,7 @@ from pynvim import Nvim
 
 from ..classes.github_issue_class import GitHubIssue, GitHubIssueComment
 from ..classes.plugin_options import PluginOptions
-from ..helpers.file_helpers import check_cache
+from ..helpers.file_helpers import cache_valid, check_cache
 from ..helpers.issue_helpers import (
     check_markdown_style,
     convert_utc_timezone,
@@ -71,6 +72,9 @@ class SimpleNvimGithub:
             True,
         )
 
+        self.issues: List[GitHubIssue] = []
+        self.issues_set: Optional[datetime] = None
+
     @property
     def active_issues(self) -> List[GitHubIssue]:
         """active_issues
@@ -79,6 +83,13 @@ class SimpleNvimGithub:
         If they are out of date, re-run the getting from cache.
         """
 
+        # If the current issues are fine, just use them, rather than reparsing
+        # the json file again.
+        if self.issues_set is not None and cache_valid(
+            self.issues_set, ISSUE_CACHE_DURATION
+        ):
+            return self.issues
+
         active_issues: Union[List[Dict[str, Any]], List[GitHubIssue]] = check_cache(
             self.config_path,
             "open_issues",
@@ -86,7 +97,10 @@ class SimpleNvimGithub:
             self.get_all_open_issues,
         )
 
-        return get_github_objects(active_issues)
+        self.issues = get_github_objects(active_issues)
+        self.issues_set = datetime.now()
+
+        return self.issues
 
     @property
     def active(self) -> bool:

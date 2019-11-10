@@ -59,10 +59,8 @@ def check_cache(
         epoch: str = epoch_search[0] if epoch_search is not None else ""
 
         cache_file_creation_date: datetime = datetime.fromtimestamp(int(epoch))
-        today: datetime = datetime.today()
-        difference: timedelta = today - cache_file_creation_date
 
-        if difference <= data_age:
+        if cache_valid(cache_file_creation_date ,data_age):
 
             if early_return:
                 return []
@@ -105,6 +103,15 @@ def set_cache(config_path: str, data: List[Any], data_name: str) -> None:
 
     for old_cache_file in old_cache_files:
         remove(old_cache_file)
+
+def cache_valid(cache_set_time: datetime, cache_max_age: timedelta) -> bool:
+    """cache_valid
+
+    A helper function to check if a cache is valid.
+    """
+    difference: timedelta = datetime.now() - cache_set_time
+
+    return difference <= cache_max_age
 
 
 def generate_diary_index(options: PluginOptions) -> None:
