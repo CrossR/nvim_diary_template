@@ -84,7 +84,7 @@ def insert_edit_tag(nvim: Nvim, location: str) -> None:
     set_line_content(nvim, [updated_line], line_index=insert_index, line_offset=1)
 
 
-def insert_new_issue(nvim: Nvim, options: PluginOptions) -> None:
+def insert_new_issue(nvim: Nvim) -> None:
     """insert_new_issue
 
     Find the issue that the cursor is currently inside of, and get the next
@@ -107,8 +107,7 @@ def insert_new_issue(nvim: Nvim, options: PluginOptions) -> None:
         )
         new_line_number = current_cursor_pos + offset
 
-    default_labels: str = "".join([f" +label:{l}" for l in options.default_labels])
-    issue_start: str = f"{HEADING_4} {EMPTY_TODO} Issue {{00}}: +new{default_labels}"
+    issue_start: str = f"{HEADING_4} {EMPTY_TODO} Issue {{00}}: +new"
     title_line: str = f"{HEADING_5} Title: "
     comment_line: str = f"{HEADING_5} Comment {{0}} - 0000-00-00 00:00: +new"
 
@@ -313,8 +312,7 @@ def get_latest_update(comments: List[GitHubIssueComment]) -> str:
         if comment.updated_at == "0000-00-00 00:00":
             # Skip the new comments, that don't have a timestamp yet.
             continue
-
-        if parser.parse(latest_update) < parser.parse(comment.updated_at):
+        elif parser.parse(latest_update) < parser.parse(comment.updated_at):
             latest_update = comment.updated_at
 
     return latest_update

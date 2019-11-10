@@ -11,4 +11,3 @@ exclude_lines =
 ignore_errors = True
 omit =
     rplugin/python3/nvim_diary_template/tests/*
-    rplugin/python3/nvim_diary_template/plugin.py

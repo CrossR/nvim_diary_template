@@ -30,7 +30,6 @@ class PluginOptions:
         self.notes_path: str = os.path.join(str(Path.home()), "wiki")
         self.config_path: str = os.path.join(str(Path.home()), "wiki", "config")
         self.daily_headings: List[str] = ["Notes"]
-        self.default_labels: List[str] = []
         self.auto_generate_diary_index = False
         self.use_google_calendar: bool = True
         self.calendar_filter_list: List[str] = []

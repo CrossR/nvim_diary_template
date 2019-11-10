@@ -123,7 +123,7 @@ class DiaryTemplatePlugin:
 
     @neovim.function("DiaryInsertIssue", sync=True)
     def insert_issue(self, *_: List[str]) -> None:
-        insert_new_issue(self._nvim, self.options)
+        insert_new_issue(self._nvim)
 
     @neovim.function("DiaryInsertComment", sync=True)
     def insert_comment(self, *_: List[str]) -> None:
