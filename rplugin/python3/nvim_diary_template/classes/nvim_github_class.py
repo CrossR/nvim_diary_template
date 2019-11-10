@@ -83,7 +83,7 @@ class SimpleNvimGithub:
         If they are out of date, re-run the getting from cache.
         """
 
-        # If the current issues are fine, just use them, rather than reparsing
+        # If the current issues are fine, just use them, rather than loading
         # the json file again.
         if self.issues_set is not None and cache_valid(
             self.issues_set, ISSUE_CACHE_DURATION

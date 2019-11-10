@@ -74,7 +74,7 @@ def make_diary(
     full_markdown.extend(issue_markdown)
     set_buffer_contents(nvim, full_markdown)
 
-    # Add in that days calendar entries
+    # Add in the calendar entries
     days_events: List[CalendarEvent] = []
     if options.use_google_calendar and gcal_service and gcal_service.active:
         date_today_object: date = parser.parse(diary_date).date()
