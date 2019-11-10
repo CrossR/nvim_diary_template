@@ -10,12 +10,12 @@ from typing import Any, Dict, List, Optional, Union
 
 from googleapiclient import discovery, errors
 from httplib2 import Http, HttpLib2Error
-from pynvim import Nvim
 from oauth2client import file
+from pynvim import Nvim
 
 from ..classes.calendar_event_class import CalendarEvent
 from ..classes.plugin_options import PluginOptions
-from ..helpers.file_helpers import check_cache, set_cache
+from ..helpers.file_helpers import cache_valid, check_cache, set_cache
 from ..helpers.google_calendar_helpers import (
     convert_events,
     create_google_event,
@@ -31,11 +31,19 @@ class SimpleNvimGoogleCal:
     A class to deal with the simple interactions with the Google Cal API.
     """
 
-    def __init__(self, nvim: Nvim, options: PluginOptions) -> None:
+    def __init__(
+        self,
+        nvim: Nvim,
+        options: PluginOptions,
+        service: Optional[discovery.Resource] = None,
+    ) -> None:
         self.nvim: Nvim = nvim
         self.options: PluginOptions = options
 
-        self.service: Any = self.setup_google_calendar_api()
+        if service is not None:
+            self.service: discovery.Resource = service
+        else:
+            self.service = self.setup_google_calendar_api()
 
         if self.service_is_not_ready():
             return
@@ -47,17 +55,10 @@ class SimpleNvimGoogleCal:
             self.get_all_calendars,
         )
 
-        self.filter_list: List[str] = options.calendar_filter_list
         self.filtered_calendars: Dict[str, str] = self.filter_calendars()
 
-        loaded_events: Union[List[Dict[str, Any]], List[CalendarEvent]] = check_cache(
-            self.config_path,
-            "events",
-            EVENT_CACHE_DURATION,
-            lambda: self.get_events_for_date(date.today()),
-        )
-
-        self.events: List[CalendarEvent] = get_calendar_objects(loaded_events)
+        self.events: List[CalendarEvent] = []
+        self.events_set: Optional[datetime] = None
 
     @property
     def config_path(self) -> str:
@@ -76,6 +77,13 @@ class SimpleNvimGoogleCal:
         If they are out of date, re-run the getting from cache.
         """
 
+        # If the current events are fine, just use them, rather than reparsing
+        # the json file again.
+        if self.events_set is not None and cache_valid(
+            self.events_set, EVENT_CACHE_DURATION
+        ):
+            return self.events
+
         active_events: Union[List[Dict[str, Any]], List[CalendarEvent]] = check_cache(
             self.config_path,
             "events",
@@ -83,7 +91,10 @@ class SimpleNvimGoogleCal:
             lambda: self.get_events_for_date(date.today()),
         )
 
-        return get_calendar_objects(active_events)
+        self.events = get_calendar_objects(active_events)
+        self.events_set = datetime.now()
+
+        return self.events
 
     @property
     def active(self) -> bool:
@@ -138,7 +149,7 @@ class SimpleNvimGoogleCal:
         return {
             cal_name: cal_id
             for cal_name, cal_id in self.all_calendars.items()
-            if cal_name not in self.filter_list
+            if cal_name not in self.options.calendar_filter_list
         }
 
     def get_all_calendars(self) -> Union[List[str], Dict[str, str]]:
@@ -200,6 +211,7 @@ class SimpleNvimGoogleCal:
         # If we've gone through the trouble of getting the events for today, should store them.
         if current_date == date.today():
             self.events = event_list
+            self.events_set = datetime.now()
 
         return event_list
 

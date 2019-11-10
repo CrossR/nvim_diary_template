@@ -10,22 +10,21 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "^3.6"
-dataclasses = { version = "^0.6.0", python = "~3.6"}
+dataclasses = { version = "^0.7.0", python = "~3.6"}
 google-api-python-client = "^1.7"
-python-dateutil = "^2.7"
-PyGithub = "^1.40"
+python-dateutil = "^2.8"
+PyGithub = "^1.44"
 oauth2client = "^4.1"
 pynvim = "^0.3.2"
 
 [tool.poetry.dev-dependencies]
-black = "^18.3-alpha.0"
-mypy = "^0.620.0"
-pylint = "^2.1"
-pytest = "^3.8"
-pre-commit = "^1.11"
+black = "^19.10b0"
+mypy = "^0.740"
+pylint = "^2.4"
+pytest = "^5.2"
+pre-commit = "^1.2"
 coverage = "^4.5"
-pytest-cov = "^2.6"
+pytest-cov = "^2.8"
 
 [tool.black]
 line-length = 88
-py36 = true

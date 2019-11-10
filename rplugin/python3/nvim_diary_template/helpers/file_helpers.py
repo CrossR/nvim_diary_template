@@ -31,12 +31,16 @@ def check_cache(
     data_name: str,
     data_age: timedelta,
     fallback_function: Callable[[], Any],
+    early_return: bool = False,
 ) -> Any:
     """check_cache
 
     A function to check for valid cache files.
     If one is found, then it can be used, but otherwise the original function
     is called to generate the data and cache it.
+
+    The early return parameter allows the checking of a cache, without actually
+    loading any data from it, in cases where the cache is up to date.
     """
 
     cache_path: str = path.join(config_path, "cache")
@@ -55,10 +59,12 @@ def check_cache(
         epoch: str = epoch_search[0] if epoch_search is not None else ""
 
         cache_file_creation_date: datetime = datetime.fromtimestamp(int(epoch))
-        today: datetime = datetime.today()
-        difference: timedelta = today - cache_file_creation_date
 
-        if difference <= data_age:
+        if cache_valid(cache_file_creation_date, data_age):
+
+            if early_return:
+                return []
+
             with open(cache_file_name) as cache_file:
                 data: Any = json.load(cache_file)
         else:
@@ -97,6 +103,16 @@ def set_cache(config_path: str, data: List[Any], data_name: str) -> None:
 
     for old_cache_file in old_cache_files:
         remove(old_cache_file)
+
+
+def cache_valid(cache_set_time: datetime, cache_max_age: timedelta) -> bool:
+    """cache_valid
+
+    A helper function to check if a cache is valid.
+    """
+    difference: timedelta = datetime.now() - cache_set_time
+
+    return difference <= cache_max_age
 
 
 def generate_diary_index(options: PluginOptions) -> None:
