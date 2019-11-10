@@ -86,7 +86,7 @@ class SimpleNvimGithubTest(unittest.TestCase):
         assert result == issue_list
 
     def test_filter_comments(self) -> None:
-        self.github.issues[1].all_comments[2].tags = ["edit"]
+        self.github.active_issues[1].all_comments[2].tags = ["edit"]
 
         filtered_list: List[GitHubIssue] = [
             GitHubIssue(
@@ -113,7 +113,7 @@ class SimpleNvimGithubTest(unittest.TestCase):
         assert result[1] == change_list
 
     def test_filter_issues(self) -> None:
-        self.github.issues[1].metadata = ["edit"]
+        self.github.active_issues[1].metadata = ["edit"]
 
         filtered_list: List[GitHubIssue] = [
             GitHubIssue(

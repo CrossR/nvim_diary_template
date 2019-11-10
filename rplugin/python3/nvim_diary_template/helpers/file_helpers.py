@@ -60,7 +60,7 @@ def check_cache(
 
         cache_file_creation_date: datetime = datetime.fromtimestamp(int(epoch))
 
-        if cache_valid(cache_file_creation_date ,data_age):
+        if cache_valid(cache_file_creation_date, data_age):
 
             if early_return:
                 return []
