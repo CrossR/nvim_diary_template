@@ -5,27 +5,27 @@ let g:nvim_diary_template#notes_path = get(g:, 'nvim_diary_template#notes_path',
 let g:nvim_diary_template#config_path = get(g:, 'nvim_diary_template#config_path', g:nvim_diary_template#notes_path . '/config')
 
 " Wrap functions in commands
-command DiaryInit call DiaryInit()
-command DiaryOptionsInit call DiaryOptionsInit()
+command! DiaryInit call DiaryInit()
+command! DiaryOptionsInit call DiaryOptionsInit()
 
-command DiaryEditComment call DiaryEditComment()
-command DiaryEditIssue call DiaryEditIssue()
-command DiaryCompleteIssue call DiaryCompleteIssue()
+command! DiaryEditComment call DiaryEditComment()
+command! DiaryEditIssue call DiaryEditIssue()
+command! DiaryCompleteIssue call DiaryCompleteIssue()
 
-command DiaryInsertComment call DiaryInsertComment()
-command DiaryInsertIssue call DiaryInsertIssue()
+command! DiaryInsertComment call DiaryInsertComment()
+command! DiaryInsertIssue call DiaryInsertIssue()
 
-command DiaryUploadNew call DiaryUploadNew()
-command DiaryUploadEdits call DiaryUploadEdits()
-command DiaryUploadCompletion call DiaryUploadCompletion()
-command DiaryUploadIssues call DiaryUploadIssues()
+command! DiaryUploadNew call DiaryUploadNew()
+command! DiaryUploadEdits call DiaryUploadEdits()
+command! DiaryUploadCompletion call DiaryUploadCompletion()
+command! DiaryUploadIssues call DiaryUploadIssues()
 
-command DiaryGetIssues call DiaryGetIssues()
-command DiarySortIssues call DiarySortIssues()
-command DiarySwapGroupSorting call DiarySwapGroupSorting()
+command! DiaryGetIssues call DiaryGetIssues()
+command! DiarySortIssues call DiarySortIssues()
+command! DiarySwapGroupSorting call DiarySwapGroupSorting()
 
-command DiaryGetCalendar call DiaryGetCalendar()
-command DiaryUploadCalendar call DiaryUploadCalendar()
+command! DiaryGetCalendar call DiaryGetCalendar()
+command! DiaryUploadCalendar call DiaryUploadCalendar()
 
 " Setup binds, and fold bits.
 augroup nvim_diary_template_keybinds
