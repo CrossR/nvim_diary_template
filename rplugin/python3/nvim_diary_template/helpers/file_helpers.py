@@ -133,7 +133,7 @@ def generate_diary_index(options: PluginOptions) -> None:
         date_time_diaries, key=lambda d: (d.year, d.month, d.day), reverse=True
     )
 
-    full_markdown: List[str] = ["# Diary Index", ""]
+    full_markdown: List[str] = ["# Diary Index"]
     last_added_year: str = ""
     last_added_month: str = ""
 
@@ -143,7 +143,7 @@ def generate_diary_index(options: PluginOptions) -> None:
         current_year: str = diary.strftime("%Y")
 
         if current_year != last_added_year:
-            full_markdown.append(f"{HEADING_2} {current_year}")
+            full_markdown.extend(("", f"{HEADING_2} {current_year}"))
             last_added_year = current_year
 
         if current_month != last_added_month:
