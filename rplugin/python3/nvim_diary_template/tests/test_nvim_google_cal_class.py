@@ -42,10 +42,8 @@ class SimpleNvimGoogleCalTest(unittest.TestCase):
             ),
         ]
 
-        result: List[CalendarEvent] = self.google.get_events_for_date(date.today())
-        assert result == event_list
-
-        result = self.google.active_events
+        diary_date: date = date(2019, 11, 10)
+        result: List[CalendarEvent] = self.google.get_events_for_date(diary_date)
         assert result == event_list
 
     def test_service_is_not_ready(self) -> None:

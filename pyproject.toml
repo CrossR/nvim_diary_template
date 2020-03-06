@@ -16,6 +16,7 @@ python-dateutil = "^2.8"
 PyGithub = "^1.44"
 oauth2client = "^4.1"
 pynvim = "^0.3.2"
+msgpack = "^1.0.0"
 
 [tool.poetry.dev-dependencies]
 black = "^19.10b0"
